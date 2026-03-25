@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Safe App — Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13; --bg2: #16161d; --bg3: #1e1e28; --card: #1a1a24;
+    --border: rgba(255,255,255,0.07); --accent: #f5c842; --accent2: #e8a020;
+    --green: #2ecc8a; --red: #f05a5a; --orange: #f5884a; --blue: #5b9cf6;
+    --text: #f0f0f0; --text2: #9090a8; --text3: #5a5a72;
+    --radius: 14px; --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #0a0a0e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; font-family: 'Manrope', sans-serif; }
+
+  .app-shell {
+    background: var(--bg); color: var(--text);
+    width: 100%; max-width: 420px; min-height: 820px;
+    position: relative; overflow: hidden;
+    border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  .screen { display: none; flex-direction: column; min-height: 820px; overflow-y: auto; overflow-x: hidden; }
+  .screen.active { display: flex; }
+  .screen::-webkit-scrollbar { width: 0; }
+
+  .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px 0; font-size: 11px; color: var(--text2); flex-shrink: 0; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; flex-shrink: 0; }
+  .icon-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: var(--text2); transition: all .15s; }
+  .icon-btn:active { transform: scale(0.92); }
+
+  .bottom-nav { position: sticky; bottom: 0; background: var(--bg2); border-top: 1px solid var(--border); display: flex; padding: 8px 4px 12px; flex-shrink: 0; z-index: 10; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 6px 4px; border-radius: 10px; transition: all .15s; }
+  .nav-item:active { background: var(--bg3); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.3px; }
+  .nav-item.active .nav-label { color: var(--accent); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px var(--accent)); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .card-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .content { padding: 0 16px 8px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: all .15s; white-space: nowrap; }
+  .chip.active { background: rgba(245,200,66,0.12); border-color: var(--accent); color: var(--accent); }
+
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 20px; border-radius: var(--radius); cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; border: none; transition: all .15s; width: 100%; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); color: #0f0f13; }
+  .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: rgba(240,90,90,0.15); color: var(--red); border: 1px solid rgba(240,90,90,0.3); }
+  .btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 10px; width: auto; }
+
+  .appliance-row { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; transition: all .15s; }
+  .appliance-row:active { background: var(--card); }
+  .appliance-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border: 1px solid var(--border); }
+  .appliance-name { font-size: 14px; font-weight: 600; }
+  .appliance-watts { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .appliance-badge { margin-left: auto; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .badge-green { background: rgba(46,204,138,0.12); color: var(--green); }
+  .badge-orange { background: rgba(245,136,74,0.12); color: var(--orange); }
+  .badge-gray { background: var(--bg2); color: var(--text3); }
+
+  .scenario-card { padding: 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all .15s; }
+  .scenario-card:active { transform: scale(0.98); }
+  .scenario-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .scenario-name { font-size: 15px; font-weight: 700; }
+  .scenario-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .scenario-chip { padding: 3px 8px; background: var(--card); border-radius: 6px; font-size: 11px; color: var(--text2); border: 1px solid var(--border); }
+  .scenario-meta { display: flex; gap: 14px; }
+  .scenario-meta span { font-size: 12px; color: var(--text2); }
+  .scenario-meta strong { color: var(--text); }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; }
+  .form-input { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'Manrope', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s; width: 100%; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'Manrope', sans-serif; font-size: 14px; color: var(--text); width: 100%; outline: none; appearance: none; }
+
+  .power-meter { height: 8px; border-radius: 4px; background: var(--bg2); overflow: hidden; }
+  .power-fill { height: 100%; border-radius: 4px; transition: width .4s ease, background .3s; }
+
+  .stats-row { display: flex; gap: 8px; }
+  .stat-box { flex: 1; background: var(--bg3); border-radius: 10px; padding: 12px; border: 1px solid var(--border); }
+  .stat-val { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .stat-lbl { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+  .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quick-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; transition: all .15s; text-align: left; }
+  .quick-btn:active { transform: scale(0.96); border-color: var(--accent); }
+  .quick-btn-icon { font-size: 22px; margin-bottom: 6px; }
+  .quick-btn-label { font-size: 12px; font-weight: 700; color: var(--text); }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 14px; font-weight: 500; }
+  .toggle-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track { position: absolute; inset: 0; background: var(--bg2); border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: background .2s; }
+  .toggle-track:before { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--text3); transition: all .2s; }
+  .toggle-switch input:checked + .toggle-track { background: rgba(245,200,66,.2); border-color: var(--accent); }
+  .toggle-switch input:checked + .toggle-track:before { background: var(--accent); transform: translateX(20px); }
+
+  .steps { display: flex; gap: 6px; justify-content: center; padding: 12px 0; }
+  .step-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--bg3); transition: all .3s; }
+  .step-dot.active { width: 20px; background: var(--accent); }
+
+  .photo-zone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px 20px; text-align: center; cursor: pointer; transition: all .15s; background: var(--bg3); }
+  .photo-zone:active { border-color: var(--accent); }
+  .photo-zone-icon { font-size: 40px; margin-bottom: 12px; }
+  .photo-zone-text { font-size: 14px; font-weight: 600; color: var(--text2); }
+  .photo-zone-sub { font-size: 12px; color: var(--text3); margin-top: 6px; }
+
+  .onboard-screen { padding: 40px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; height: 100%; justify-content: space-between; min-height: 820px; }
+  .onboard-emoji { font-size: 72px; margin: 30px 0; }
+  .onboard-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; }
+  .onboard-desc { font-size: 15px; color: var(--text2); line-height: 1.6; margin-top: 14px; }
+  .onboard-bottom { width: 100%; }
+
+  .rec-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all .15s; }
+  .rec-card.recommended { border-color: var(--accent); background: rgba(245,200,66,0.04); }
+  .rec-card:active { transform: scale(0.98); }
+  .rec-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .rec-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(245,200,66,0.15); color: var(--accent); margin-bottom: 10px; }
+  .rec-row { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+  .rec-row:last-child { border-bottom: none; }
+  .rec-row-key { color: var(--text2); }
+  .rec-row-val { font-weight: 600; }
+
+  .profile-avatar { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #0f0f13; }
+  .section-divider { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 14px 0 8px; }
+
+  .check-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--bg3); border-radius: 10px; border: 1px solid var(--border); cursor: pointer; transition: all .15s; }
+  .check-row.checked { border-color: rgba(245,200,66,0.4); background: rgba(245,200,66,0.05); }
+  .check-row:active { transform: scale(0.98); }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--text3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .15s; font-size: 13px; }
+  .check-row.checked .check-box { background: var(--accent); border-color: var(--accent); color: #0f0f13; }
+
+  .step-row { display: flex; gap: 12px; padding: 10px 0; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: rgba(245,200,66,0.12); border: 1px solid rgba(245,200,66,0.3); color: var(--accent); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-action { font-size: 14px; font-weight: 600; }
+  .step-detail { font-size: 12px; color: var(--text2); margin-top: 3px; }
+
+  .chips-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .chips-scroll::-webkit-scrollbar { height: 0; }
+
+  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; display: none; z-index: 1000; white-space: nowrap; }
+  .toast.show { display: block; animation: slideUp .3s ease; }
+  .toast-success { background: rgba(46,204,138,0.2); border: 1px solid rgba(46,204,138,0.4); color: var(--green); }
+  .toast-warn { background: rgba(245,136,74,0.2); border: 1px solid rgba(245,136,74,0.4); color: var(--orange); }
+  .toast-error { background: rgba(240,90,90,0.2); border: 1px solid rgba(240,90,90,0.4); color: var(--red); }
+  @keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+  .h-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+  .h-scroll::-webkit-scrollbar { height: 0; }
+  .mini-card { min-width: 90px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+  .mini-card:active { border-color: var(--accent); }
+  .mini-card-icon { font-size: 22px; margin-bottom: 6px; }
+  .mini-card-name { font-size: 11px; font-weight: 600; color: var(--text2); }
+  .mini-card-watts { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  .tip-card { background: rgba(245,200,66,0.06); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--radius); padding: 14px; }
+  .tip-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .tip-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .tip-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text2); cursor: pointer; padding: 4px 0; }
+  .back-btn:active { color: var(--text); }
+  .accent-line { height: 2px; background: linear-gradient(90deg, var(--accent), var(--orange)); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ONBOARDING -->
+  <div class="screen active" id="screen-onboard">
+    <div class="onboard-screen">
+      <div>
+        <div class="onboard-emoji" id="ob-emoji">⚡</div>
+        <div class="onboard-title" id="ob-title">Не знаєш скільки можна підключити?</div>
+        <div class="onboard-desc" id="ob-desc">Люди купують генератори наосліп і палять техніку. Ми вирішимо це за 2 хвилини.</div>
+      </div>
+      <div>
+        <div class="steps">
+          <div class="step-dot active" id="ob-dot-0"></div>
+          <div class="step-dot" id="ob-dot-1"></div>
+          <div class="step-dot" id="ob-dot-2"></div>
+        </div>
+        <div class="onboard-bottom">
+          <button class="btn btn-primary" onclick="obNext()">Далі →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH -->
+  <div class="screen" id="screen-auth">
+    <div style="padding:40px 24px;display:flex;flex-direction:column;height:100%;justify-content:center;gap:20px;">
+      <div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:-1px;">Вхід</div>
+        <div style="font-size:14px;color:var(--text2);margin-top:6px;">Energy Safe App</div>
+      </div>
+      <div class="accent-line" style="width:48px;"></div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="form-group"><div class="form-label">Email</div><input class="form-input" type="email" value="yaroslav@gmail.com"/></div>
+        <div class="form-group"><div class="form-label">Пароль</div><input class="form-input" type="password" value="password123"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="goScreen('screen-home')">Увійти</button>
+      <button class="btn btn-secondary" onclick="goScreen('screen-home')">🔵 Увійти через Google</button>
+      <div style="text-align:center;font-size:13px;color:var(--text3);">Ще немає акаунту? <span style="color:var(--accent);cursor:pointer;font-weight:600;">Реєстрація</span></div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header">
+      <div><div style="font-size:20px;font-weight:800;">Привіт, Ярославе 👋</div><div style="font-size:13px;color:var(--text2);">Вівторок, 17 березня</div></div>
+      <div class="icon-btn">🔔</div>
+    </div>
+    <div class="content">
+      <div class="card">
+        <div class="card-title">Статус системи</div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;">
+          <svg width="160" height="100" viewBox="0 0 160 100" style="overflow:visible;">
+            <defs><linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2ecc8a"/><stop offset="60%" stop-color="#f5c842"/><stop offset="100%" stop-color="#f05a5a"/></linearGradient></defs>
+            <path d="M 20 90 A 60 60 0 0 1 140 90" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10" stroke-linecap="round"/>
+            <path d="M 20 90 A 60 60 0 0 1 140 90" fill="none" stroke="url(#gaugeGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="94"/>
+            <text x="80" y="82" text-anchor="middle" fill="#f0f0f0" font-family="Manrope" font-weight="800" font-size="26">48%</text>
+            <text x="80" y="98" text-anchor="middle" fill="#9090a8" font-family="Manrope" font-size="11">480 Вт з 1000 Вт</text>
+          </svg>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-val" style="color:var(--green);">480</div><div class="stat-lbl">Робоча, Вт</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--orange);">1 200</div><div class="stat-lbl">Пуск, Вт</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--blue);">3.5 год</div><div class="stat-lbl">Автономія</div></div>
+        </div>
+      </div>
+      <div class="quick-grid">
+        <div class="quick-btn" onclick="goScreen('screen-add-device')"><div class="quick-btn-icon">📷</div><div class="quick-btn-label">Додати прилад</div></div>
+        <div class="quick-btn" onclick="goNav('screen-calc')"><div class="quick-btn-icon">⚡</div><div class="quick-btn-label">Розрахувати</div></div>
+        <div class="quick-btn" onclick="goNav('screen-scenarios')"><div class="quick-btn-icon">📋</div><div class="quick-btn-label">Сценарії</div></div>
+        <div class="quick-btn" onclick="goScreen('screen-recs')"><div class="quick-btn-icon">🛒</div><div class="quick-btn-label">Підібрати систему</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Мої прилади</div>
+        <div class="h-scroll">
+          <div class="mini-card"><div class="mini-card-icon">❄️</div><div class="mini-card-name">Холодильник</div><div class="mini-card-watts">150 Вт</div></div>
+          <div class="mini-card"><div class="mini-card-icon">💻</div><div class="mini-card-name">Ноутбук</div><div class="mini-card-watts">65 Вт</div></div>
+          <div class="mini-card"><div class="mini-card-icon">📡</div><div class="mini-card-name">Роутер</div><div class="mini-card-watts">12 Вт</div></div>
+          <div class="mini-card"><div class="mini-card-icon">💡</div><div class="mini-card-name">Лампи</div><div class="mini-card-watts">30 Вт</div></div>
+          <div class="mini-card" onclick="goScreen('screen-add-device')" style="border-style:dashed;opacity:.6"><div class="mini-card-icon">＋</div><div class="mini-card-name">Додати</div><div class="mini-card-watts">&nbsp;</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Активний сценарій</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:15px;font-weight:700;">🌙 Нічний режим</div><div style="font-size:12px;color:var(--text2);margin-top:3px;">Холодильник + Роутер + Лампи</div></div>
+          <div class="appliance-badge badge-green">✅ OK</div>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-top"><span>💡</span><span class="tip-label">Порада дня</span></div>
+        <div class="tip-text">Холодильник має пусковий струм у 3–5 разів більший за робочий. Не вмикай його разом з іншою великою технікою.</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="goNav('screen-home')"><div class="nav-icon">🏠</div><div class="nav-label">Головна</div></div>
+      <div class="nav-item" onclick="goNav('screen-devices')"><div class="nav-icon">⚡</div><div class="nav-label">Прилади</div></div>
+      <div class="nav-item" onclick="goNav('screen-calc')"><div class="nav-icon">🔋</div><div class="nav-label">Розрахунок</div></div>
+      <div class="nav-item" onclick="goNav('screen-scenarios')"><div class="nav-icon">📋</div><div class="nav-label">Сценарії</div></div>
+      <div class="nav-item" onclick="goNav('screen-profile')"><div class="nav-icon">⚙️</div><div class="nav-label">Профіль</div></div>
+    </div>
+  </div>
+
+  <!-- DEVICES -->
+  <div class="screen" id="screen-devices">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div style="font-size:22px;font-weight:800;">Мої прилади</div><button class="btn btn-primary btn-sm" onclick="goScreen('screen-add-device')">+ Додати</button></div>
+    <div class="content">
+      <div class="chips-scroll">
+        <div class="chip active">Всі</div><div class="chip">Кухня</div><div class="chip">Офіс</div><div class="chip">Освітлення</div><div class="chip">Інше</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="appliance-row"><div class="appliance-icon">❄️</div><div><div class="appliance-name">Холодильник</div><div class="appliance-watts">150 Вт · пуск 600 Вт</div></div><div class="appliance-badge badge-green">Кухня</div></div>
+        <div class="appliance-row"><div class="appliance-icon">💻</div><div><div class="appliance-name">Ноутбук</div><div class="appliance-watts">65 Вт</div></div><div class="appliance-badge badge-gray">Офіс</div></div>
+        <div class="appliance-row"><div class="appliance-icon">📡</div><div><div class="appliance-name">Роутер</div><div class="appliance-watts">12 Вт</div></div><div class="appliance-badge badge-gray">Офіс</div></div>
+        <div class="appliance-row"><div class="appliance-icon">💡</div><div><div class="appliance-name">Лампи (4шт)</div><div class="appliance-watts">30 Вт</div></div><div class="appliance-badge badge-gray">Освітлення</div></div>
+        <div class="appliance-row"><div class="appliance-icon">📺</div><div><div class="appliance-name">Телевізор</div><div class="appliance-watts">120 Вт</div></div><div class="appliance-badge badge-orange">Кухня</div></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goNav('screen-home')"><div class="nav-icon">🏠</div><div class="nav-label">Головна</div></div>
+      <div class="nav-item active" onclick="goNav('screen-devices')"><div class="nav-icon">⚡</div><div class="nav-label">Прилади</div></div>
+      <div class="nav-item" onclick="goNav('screen-calc')"><div class="nav-icon">🔋</div><div class="nav-label">Розрахунок</div></div>
+      <div class="nav-item" onclick="goNav('screen-scenarios')"><div class="nav-icon">📋</div><div class="nav-label">Сценарії</div></div>
+      <div class="nav-item" onclick="goNav('screen-profile')"><div class="nav-icon">⚙️</div><div class="nav-label">Профіль</div></div>
+    </div>
+  </div>
+
+  <!-- ADD DEVICE -->
+  <div class="screen" id="screen-add-device">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div class="back-btn" onclick="goBack()">← Назад</div></div>
+    <div class="content">
+      <div style="font-size:20px;font-weight:800;padding-bottom:4px;">Додати прилад</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="quick-btn" onclick="goScreen('screen-photo-scan')" style="text-align:center;padding:24px 16px;">
+          <div style="font-size:36px;margin-bottom:8px;">📷</div>
+          <div style="font-size:14px;font-weight:700;">Фото етикетки</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;">AI розпізнає автоматично</div>
+        </div>
+        <div class="quick-btn" onclick="goScreen('screen-manual-add')" style="text-align:center;padding:24px 16px;">
+          <div style="font-size:36px;margin-bottom:8px;">✏️</div>
+          <div style="font-size:14px;font-weight:700;">Ввести вручну</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;">Заповни характеристики</div>
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-top"><span>💡</span><span class="tip-label">Підказка</span></div>
+        <div class="tip-text">Шукай чорно-жовту наклейку з написом "Вт" або "W" — зазвичай на задній панелі або знизу приладу.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO SCAN -->
+  <div class="screen" id="screen-photo-scan">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div class="back-btn" onclick="goBack()">← Назад</div></div>
+    <div class="content">
+      <div style="font-size:18px;font-weight:800;">📷 Сканування приладу</div>
+      <div class="photo-zone" onclick="simulateScan()">
+        <div class="photo-zone-icon">📸</div>
+        <div class="photo-zone-text">Сфотографуй енергетичну етикетку</div>
+        <div class="photo-zone-sub">Натисни щоб симулювати сканування</div>
+      </div>
+      <button class="btn btn-secondary" onclick="simulateScan()">Завантажити з галереї</button>
+      <div id="scan-result" style="display:none;">
+        <div class="card">
+          <div class="card-title">✅ AI розпізнав</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div style="width:48px;height:48px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid var(--border);">🖨️</div>
+            <div><div style="font-size:15px;font-weight:700;">Принтер HP LaserJet</div><div style="font-size:12px;color:var(--green);margin-top:2px;">Впевненість: 94%</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="form-group"><div class="form-label">Потужність</div><input class="form-input" value="450 Вт"/></div>
+            <div class="form-group"><div class="form-label">Категорія</div><select class="form-select"><option>Офіс</option><option>Кухня</option><option>Освітлення</option></select></div>
+          </div>
+          <div style="margin-top:14px;"><button class="btn btn-primary" onclick="saveDevice()">Зберегти прилад</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANUAL ADD -->
+  <div class="screen" id="screen-manual-add">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div class="back-btn" onclick="goBack()">← Назад</div></div>
+    <div class="content">
+      <div style="font-size:18px;font-weight:800;">✏️ Ввести вручну</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="form-group"><div class="form-label">Назва приладу</div><input class="form-input" placeholder="Наприклад: Холодильник Samsung"/></div>
+        <div class="form-group"><div class="form-label">Категорія</div><select class="form-select"><option>Оберіть категорію</option><option>Кухня</option><option>Офіс</option><option>Освітлення</option><option>Інше</option></select></div>
+        <div class="form-group"><div class="form-label">Робоча потужність (Вт)</div><input class="form-input" type="number" placeholder="150"/></div>
+        <div class="form-group"><div class="form-label">Пусковий струм (Вт) — опційно</div><input class="form-input" type="number" placeholder="Авто × 3.5"/></div>
+        <div class="tip-card"><div class="tip-text">🔎 Не знаєш потужність? Введи назву вище — підтягнемо з каталогу.</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveDevice()">Зберегти</button>
+    </div>
+  </div>
+
+  <!-- CALC -->
+  <div class="screen" id="screen-calc">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div style="font-size:20px;font-weight:800;">🔋 Розрахунок</div><div style="font-size:12px;color:var(--text2);">Інвертор 1000 Вт</div></div>
+    <div class="content">
+      <div class="card-title" style="padding:0;">Вибери що зараз увімкнено</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="check-row checked" onclick="toggleCheck(this,150)"><div class="check-box">✓</div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">❄️</div><div style="flex:1;"><div class="appliance-name">Холодильник</div><div class="appliance-watts">150 Вт · пуск 600 Вт</div></div></div>
+        <div class="check-row checked" onclick="toggleCheck(this,65)"><div class="check-box">✓</div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">💻</div><div style="flex:1;"><div class="appliance-name">Ноутбук</div><div class="appliance-watts">65 Вт</div></div></div>
+        <div class="check-row checked" onclick="toggleCheck(this,12)"><div class="check-box">✓</div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">📡</div><div style="flex:1;"><div class="appliance-name">Роутер</div><div class="appliance-watts">12 Вт</div></div></div>
+        <div class="check-row" onclick="toggleCheck(this,30)"><div class="check-box"></div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">💡</div><div style="flex:1;"><div class="appliance-name">Лампи</div><div class="appliance-watts">30 Вт</div></div></div>
+        <div class="check-row" onclick="toggleCheck(this,120)"><div class="check-box"></div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">📺</div><div style="flex:1;"><div class="appliance-name">Телевізор</div><div class="appliance-watts">120 Вт</div></div></div>
+        <div class="check-row" onclick="toggleCheck(this,2000)"><div class="check-box"></div><div class="appliance-icon" style="width:36px;height:36px;font-size:18px;">🧺</div><div style="flex:1;"><div class="appliance-name">Пральна машина</div><div class="appliance-watts">2000 Вт · пуск 6000 Вт</div></div></div>
+      </div>
+      <div class="card">
+        <div class="stats-row" style="margin-bottom:12px;">
+          <div class="stat-box"><div class="stat-val" id="total-watts" style="color:var(--green);">227</div><div class="stat-lbl">Вт сумарно</div></div>
+          <div class="stat-box"><div class="stat-val" id="pct-watts" style="color:var(--green);">23%</div><div class="stat-lbl">від інвертора</div></div>
+          <div class="stat-box"><div class="stat-val" id="auto-time" style="color:var(--blue);">7.5 год</div><div class="stat-lbl">автономія</div></div>
+        </div>
+        <div style="margin-bottom:8px;"><div class="power-meter"><div class="power-fill" id="power-bar" style="width:23%;background:var(--green);"></div></div></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <span id="status-icon" style="font-size:16px;">✅</span>
+          <span id="status-text" style="font-size:13px;color:var(--green);">Безпечне навантаження</span>
+        </div>
+        <button class="btn btn-primary" onclick="goNav('screen-scenarios')">Зберегти як сценарій</button>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goNav('screen-home')"><div class="nav-icon">🏠</div><div class="nav-label">Головна</div></div>
+      <div class="nav-item" onclick="goNav('screen-devices')"><div class="nav-icon">⚡</div><div class="nav-label">Прилади</div></div>
+      <div class="nav-item active" onclick="goNav('screen-calc')"><div class="nav-icon">🔋</div><div class="nav-label">Розрахунок</div></div>
+      <div class="nav-item" onclick="goNav('screen-scenarios')"><div class="nav-icon">📋</div><div class="nav-label">Сценарії</div></div>
+      <div class="nav-item" onclick="goNav('screen-profile')"><div class="nav-icon">⚙️</div><div class="nav-label">Профіль</div></div>
+    </div>
+  </div>
+
+  <!-- SCENARIOS -->
+  <div class="screen" id="screen-scenarios">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div style="font-size:20px;font-weight:800;">📋 Сценарії</div><button class="btn btn-primary btn-sm">+ Новий</button></div>
+    <div class="content">
+      <div class="chips-scroll"><div class="chip active">Мої сценарії</div><div class="chip">Рекомендовані</div></div>
+      <div class="scenario-card" onclick="goScreen('screen-scenario-detail')">
+        <div class="scenario-header"><div class="scenario-name">🌙 Нічний режим</div><div>✅</div></div>
+        <div class="scenario-chips"><div class="scenario-chip">❄️ Холодильник</div><div class="scenario-chip">📡 Роутер</div><div class="scenario-chip">💡 Лампи</div></div>
+        <div class="scenario-meta"><span><strong>210 Вт</strong></span><span><strong>~8 год</strong> автономії</span><span>21% інвертора</span></div>
+      </div>
+      <div class="scenario-card" onclick="goScreen('screen-scenario-detail')">
+        <div class="scenario-header"><div class="scenario-name">💼 Робочий режим</div><div>✅</div></div>
+        <div class="scenario-chips"><div class="scenario-chip">💻 Ноутбук</div><div class="scenario-chip">📡 Роутер</div><div class="scenario-chip">💡 Лампи</div></div>
+        <div class="scenario-meta"><span><strong>107 Вт</strong></span><span><strong>~16 год</strong> автономії</span><span>11% інвертора</span></div>
+      </div>
+      <div class="scenario-card" onclick="goScreen('screen-scenario-detail')">
+        <div class="scenario-header"><div class="scenario-name">🎬 Вечір з TV</div><div>⚠️</div></div>
+        <div class="scenario-chips"><div class="scenario-chip">📺 Телевізор</div><div class="scenario-chip">❄️ Холодильник</div><div class="scenario-chip">💡 Лампи</div></div>
+        <div class="scenario-meta"><span><strong>300 Вт</strong></span><span><strong>~5.7 год</strong> автономії</span><span>30% інвертора</span></div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goNav('screen-home')"><div class="nav-icon">🏠</div><div class="nav-label">Головна</div></div>
+      <div class="nav-item" onclick="goNav('screen-devices')"><div class="nav-icon">⚡</div><div class="nav-label">Прилади</div></div>
+      <div class="nav-item" onclick="goNav('screen-calc')"><div class="nav-icon">🔋</div><div class="nav-label">Розрахунок</div></div>
+      <div class="nav-item active" onclick="goNav('screen-scenarios')"><div class="nav-icon">📋</div><div class="nav-label">Сценарії</div></div>
+      <div class="nav-item" onclick="goNav('screen-profile')"><div class="nav-icon">⚙️</div><div class="nav-label">Профіль</div></div>
+    </div>
+  </div>
+
+  <!-- SCENARIO DETAIL -->
+  <div class="screen" id="screen-scenario-detail">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div class="back-btn" onclick="goBack()">← Назад</div></div>
+    <div class="content">
+      <div style="font-size:22px;font-weight:800;">🌙 Нічний режим</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val" style="color:var(--green);">210</div><div class="stat-lbl">Вт</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--blue);">~8 год</div><div class="stat-lbl">автономія</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--green);">✅</div><div class="stat-lbl">безпечно</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Прилади у сценарії</div>
+        <div style="display:flex;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>❄️ Холодильник</span><span style="font-weight:700;color:var(--text2);">150 Вт</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>📡 Роутер</span><span style="font-weight:700;color:var(--text2);">12 Вт</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;"><span>💡 Лампи</span><span style="font-weight:700;color:var(--text2);">30 Вт</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Послідовність вмикання</div>
+        <div class="step-row"><div class="step-num">1</div><div><div class="step-action">Роутер (12 Вт)</div><div class="step-detail">Зачекай 10 секунд після вмикання</div></div></div>
+        <div class="step-row"><div class="step-num">2</div><div><div class="step-action">Лампи (30 Вт)</div><div class="step-detail">Можна вмикати всі одразу</div></div></div>
+        <div class="step-row"><div class="step-num">3</div><div><div class="step-action">Холодильник (150 Вт)</div><div class="step-detail" style="color:var(--orange);">⚠️ Не вмикай нічого 30 сек — пуск 600 Вт</div></div></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" style="flex:1;">Редагувати</button>
+        <button class="btn btn-secondary" style="flex:1;">PDF / Share</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECS -->
+  <div class="screen" id="screen-recs">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div class="back-btn" onclick="goBack()">← Назад</div></div>
+    <div class="content">
+      <div style="font-size:20px;font-weight:800;">🛒 Підбір системи</div>
+      <div class="card">
+        <div class="card-title">Твої прилади</div>
+        <div style="font-size:13px;color:var(--text2);">Вибрано 4 прилади · ~257 Вт</div>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <div class="scenario-chip">❄️</div><div class="scenario-chip">💻</div><div class="scenario-chip">📡</div><div class="scenario-chip">💡</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Бюджет</div>
+        <div class="chips-scroll"><div class="chip">до $300</div><div class="chip active">$300–700</div><div class="chip">$700–1500</div><div class="chip">$1500+</div></div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-title">💚 Базова конфігурація</div>
+        <div class="rec-row"><div class="rec-row-key">Інвертор</div><div class="rec-row-val">1000 Вт, чистий синус</div></div>
+        <div class="rec-row"><div class="rec-row-key">Батарея</div><div class="rec-row-val">100 Ah / 12V</div></div>
+        <div class="rec-row"><div class="rec-row-key">Автономія</div><div class="rec-row-val">~4 год при 257 Вт</div></div>
+        <div class="rec-row"><div class="rec-row-key">Ціна</div><div class="rec-row-val">$280–350</div></div>
+      </div>
+      <div class="rec-card recommended">
+        <div class="rec-badge">⭐ Рекомендовано</div>
+        <div class="rec-title">🔆 Оптимальна конфігурація</div>
+        <div class="rec-row"><div class="rec-row-key">Інвертор</div><div class="rec-row-val">2000 Вт, чистий синус</div></div>
+        <div class="rec-row"><div class="rec-row-key">Батарея</div><div class="rec-row-val">200 Ah / 24V LiFePO4</div></div>
+        <div class="rec-row"><div class="rec-row-key">Автономія</div><div class="rec-row-val">~16 год при 257 Вт</div></div>
+        <div class="rec-row"><div class="rec-row-key">Ціна</div><div class="rec-row-val">$550–750</div></div>
+      </div>
+      <button class="btn btn-primary">📄 Завантажити PDF інструкцію</button>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="screen-profile">
+    <div class="status-bar"><span>9:41</span><span>●●● 92%</span></div>
+    <div class="header"><div style="font-size:20px;font-weight:800;">⚙️ Профіль</div></div>
+    <div class="content">
+      <div style="display:flex;align-items:center;gap:14px;padding:4px 0 8px;">
+        <div class="profile-avatar">Я</div>
+        <div><div style="font-size:18px;font-weight:800;">Ярослав</div><div style="font-size:13px;color:var(--text2);margin-top:2px;">yaroslav@gmail.com</div></div>
+      </div>
+      <div class="section-divider">Моя система</div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div><div style="font-size:14px;font-weight:600;">Інвертор</div><div style="font-size:12px;color:var(--text2);">Voltronic Axpert 1000W</div></div><span style="font-size:20px;cursor:pointer;">✏️</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:14px;font-weight:600;">Батарея</div><div style="font-size:12px;color:var(--text2);">100 Ah / 12V</div></div><span style="font-size:20px;cursor:pointer;">✏️</span>
+        </div>
+      </div>
+      <div class="section-divider">Налаштування</div>
+      <div class="card">
+        <div class="toggle-row"><div><div class="toggle-label">Сповіщення</div><div class="toggle-sub">Попередження про навантаження</div></div><label class="toggle-switch"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+        <div class="toggle-row"><div><div class="toggle-label">Темна тема</div><div class="toggle-sub">Увімкнено</div></div><label class="toggle-switch"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+        <div class="toggle-row"><div><div class="toggle-label">Анонімний трекінг</div><div class="toggle-sub">Допомагає покращувати сервіс</div></div><label class="toggle-switch"><input type="checkbox" checked/><div class="toggle-track"></div></label></div>
+      </div>
+      <div class="section-divider">Підписка</div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><div style="font-size:14px;font-weight:700;">Free план</div><div style="font-size:12px;color:var(--text2);margin-top:3px;">Обмежений доступ</div></div>
+          <button class="btn btn-primary btn-sm">Upgrade ✨</button>
+        </div>
+      </div>
+      <button class="btn btn-danger">Вийти</button>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="goNav('screen-home')"><div class="nav-icon">🏠</div><div class="nav-label">Головна</div></div>
+      <div class="nav-item" onclick="goNav('screen-devices')"><div class="nav-icon">⚡</div><div class="nav-label">Прилади</div></div>
+      <div class="nav-item" onclick="goNav('screen-calc')"><div class="nav-icon">🔋</div><div class="nav-label">Розрахунок</div></div>
+      <div class="nav-item" onclick="goNav('screen-scenarios')"><div class="nav-icon">📋</div><div class="nav-label">Сценарії</div></div>
+      <div class="nav-item active" onclick="goNav('screen-profile')"><div class="nav-icon">⚙️</div><div class="nav-label">Профіль</div></div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div class="toast toast-success" id="toast-success">✅ Прилад збережено!</div>
+  <div class="toast toast-warn" id="toast-warn">⚠️ Навантаження понад 90%!</div>
+  <div class="toast toast-error" id="toast-error">❌ Небезпечна комбінація!</div>
+</div>
+
+<script>
+  let history = [];
+  let currentScreen = 'screen-onboard';
+  let obStep = 0;
+  const obData = [
+    { emoji:'⚡', title:'Не знаєш скільки можна підключити?', desc:'Люди купують генератори наосліп і палять техніку. Ми вирішимо це за 2 хвилини.' },
+    { emoji:'📷', title:'Сфотографуй свої прилади', desc:'AI розпізнає характеристики автоматично. Або введи вручну — як зручніше.' },
+    { emoji:'🛡️', title:'Отримай безпечні сценарії', desc:'Додаток розрахує допустимі комбінації і покаже послідовність вмикання.' },
+  ];
+
+  function goScreen(id) {
+    if (currentScreen !== id) history.push(currentScreen);
+    document.getElementById(currentScreen).classList.remove('active');
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id).scrollTop = 0;
+    currentScreen = id;
+  }
+  function goNav(id) { history = []; goScreen(id); }
+  function goBack() {
+    if (history.length > 0) {
+      const prev = history.pop();
+      document.getElementById(currentScreen).classList.remove('active');
+      document.getElementById(prev).classList.add('active');
+      document.getElementById(prev).scrollTop = 0;
+      currentScreen = prev;
+    }
+  }
+  function obNext() {
+    obStep++;
+    if (obStep >= obData.length) { goScreen('screen-auth'); return; }
+    const d = obData[obStep];
+    document.getElementById('ob-emoji').textContent = d.emoji;
+    document.getElementById('ob-title').textContent = d.title;
+    document.getElementById('ob-desc').textContent = d.desc;
+    document.querySelectorAll('.step-dot').forEach((el,i) => el.classList.toggle('active', i === obStep));
+  }
+  function simulateScan() {
+    const r = document.getElementById('scan-result');
+    r.style.display = 'none';
+    setTimeout(() => { r.style.display = 'block'; }, 700);
+  }
+  function saveDevice() { goScreen('screen-devices'); showToast('toast-success'); }
+
+  let totalW = 227;
+  function toggleCheck(el, w) {
+    el.classList.toggle('checked');
+    const isChecked = el.classList.contains('checked');
+    el.querySelector('.check-box').textContent = isChecked ? '✓' : '';
+    totalW = isChecked ? totalW + w : totalW - w;
+    if (totalW < 0) totalW = 0;
+    const limit = 1000;
+    const pct = Math.min(Math.round(totalW / limit * 100), 100);
+    const auto = totalW > 0 ? (100 * 12 * 0.85 / totalW).toFixed(1) : '∞';
+    document.getElementById('total-watts').textContent = totalW;
+    document.getElementById('pct-watts').textContent = pct + '%';
+    document.getElementById('auto-time').textContent = auto + ' год';
+    const bar = document.getElementById('power-bar');
+    bar.style.width = pct + '%';
+    const si = document.getElementById('status-icon');
+    const st = document.getElementById('status-text');
+    const tw = document.getElementById('total-watts');
+    const pw = document.getElementById('pct-watts');
+    if (pct > 90) {
+      bar.style.background='var(--red)'; si.textContent='❌'; st.textContent='Небезпечне навантаження!'; st.style.color='var(--red)'; tw.style.color='var(--red)'; pw.style.color='var(--red)';
+      showToast('toast-error');
+    } else if (pct > 70) {
+      bar.style.background='var(--orange)'; si.textContent='⚠️'; st.textContent='Наближаємось до ліміту'; st.style.color='var(--orange)'; tw.style.color='var(--orange)'; pw.style.color='var(--orange)';
+      showToast('toast-warn');
+    } else {
+      bar.style.background='var(--green)'; si.textContent='✅'; st.textContent='Безпечне навантаження'; st.style.color='var(--green)'; tw.style.color='var(--green)'; pw.style.color='var(--green)';
+    }
+  }
+  function showToast(id) {
+    const el = document.getElementById(id);
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
