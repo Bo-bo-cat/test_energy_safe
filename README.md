@@ -1,7 +1,6 @@
 ## Структура проекту
 
 ```
-skylink/
 ├── frontend/   — Next.js додаток
 ├── backend/    — Python 
 ├── docs/       — Діаграми архітектури та БД
