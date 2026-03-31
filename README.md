@@ -3,9 +3,11 @@
 ```
 skylink/
 ├── frontend/   — Next.js додаток
-├── backend/    — Node.js + Express 
+├── backend/    — Python 
 ├── docs/       — Діаграми архітектури та БД
-├── ai-service/       — Python 
+├── ai-service/ — Python 
+├── .env        — секретики
+├── gitignore  
 └── docker-compose.yml
 ```
 
