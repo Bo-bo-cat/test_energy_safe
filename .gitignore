@@ -1,0 +1,86 @@
+# =========================
+# СЕКРЕТИ ТА КЛЮЧІ (НАЙВАЖЛИВІШЕ)
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+
+# =========================
+# БЕКЕНД (PYTHON / FLASK)
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Віртуальні середовища (якщо запускатимеш локально без Docker)
+venv/
+.venv/
+env/
+.env_python/
+
+# =========================
+# ФРОНТЕНД (NEXT.JS / NODE.JS)
+# =========================
+frontend/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js build output
+frontend/.next/
+.next/
+frontend/out/
+out/
+build/
+
+# Vercel (якщо будеш туди деплоїти)
+.vercel
+
+# =========================
+# DOCKER
+# =========================
+.docker/
+docker-compose.override.yml
+
+# =========================
+# ОПЕРАЦІЙНІ СИСТЕМИ ТА РЕДАКТОРИ (VS Code)
+# =========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Налаштування редакторів
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
