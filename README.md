@@ -1,19 +1,53 @@
 ## Структура проекту
 
 ```
-test_energy_save/
-├── backend/                # Серверна частина (Python/Flask)
-│   ├── app.py              # Основна логіка API та робота з БД
-│   ├── Dockerfile          # Інструкція для збірки бекенд-контейнера
-│   └── requirements.txt    # Залежності (Flask, PyMongo, Requests)
-├── frontend/               # Клієнтська частина (Next.js/React)
-│   ├── src/                # Вихідний код інтерфейсу
-│   ├── package.json        # Налаштування JS-проєкту та бібліотек
-│   ├── Dockerfile          # Інструкція для збірки фронтенд-контейнера
-│   └── .env.local          # Локальні змінні для фронтенду
-├── docker-compose.yml      # Файл для одночасного запуску обох сервісів
-├── .env                    # Глобальні секретні ключі (MONGO_URI)
-└── .gitignore              # Список файлів, що ігноруються Git (напр. .env)
+test_energy_safe/
+├── backend/                        # Серверна частина (Python/Flask)
+│   ├── app.py                      # Основна логіка API та робота з БД
+│   ├── Dockerfile                  # Інструкція для збірки бекенд-контейнера
+│   └── requirements.txt            # Залежності (Flask, PyMongo, Requests)
+│
+├── frontend/                       # Клієнтська частина (Next.js/React)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── layout.tsx          ← сайдбар (для всіх крім auth/onboarding)
+│   │   │   ├── globals.css
+│   │   │   ├── page.tsx            ← / (Головна)
+│   │   │   ├── auth/
+│   │   │   │   ├── layout.tsx      ← без сайдбару
+│   │   │   │   └── page.tsx        ← /auth (Вхід)
+│   │   │   ├── onboarding/
+│   │   │   │   ├── layout.tsx      ← без сайдбару
+│   │   │   │   └── page.tsx        ← /onboarding (Чи є ДБЖ?)
+│   │   │   ├── devices/
+│   │   │   │   ├── page.tsx        ← /devices (Мої прилади)
+│   │   │   │   └── add/
+│   │   │   │       ├── page.tsx    ← /devices/add (Вибір способу)
+│   │   │   │       ├── scan/
+│   │   │   │       │   └── page.tsx ← /devices/add/scan (Сканування)
+│   │   │   │       └── manual/
+│   │   │   │           └── page.tsx ← /devices/add/manual (Вручну)
+│   │   │   ├── calculator/
+│   │   │   │   └── page.tsx        ← /calculator (Розрахунок)
+│   │   │   ├── scenarios/
+│   │   │   │   └── page.tsx        ← /scenarios (Сценарії)
+│   │   │   └── profile/
+│   │   │       └── page.tsx        ← /profile (Профіль)
+│   │   │
+│   │   └── components/
+│   │       ├── Sidebar.tsx         ← навігація зліва
+│   │       ├── Modal.tsx           ← базова модалка
+│   │       ├── DeviceCard.tsx      ← рядок приладу в списку
+│   │       ├── ScenarioCard.tsx    ← картка сценарію
+│   │       └── StatusGauge.tsx     ← кругова діаграма на головній
+│   │
+│   ├── package.json
+│   ├── Dockerfile
+│   └── .env.local
+│
+├── docker-compose.yml
+├── .env
+└── .gitignore
 ```
 
 ## Запуск локально
