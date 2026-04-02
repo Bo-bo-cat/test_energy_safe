@@ -2,44 +2,47 @@
 
 ```
 test_energy_safe/
-├── backend/                        # Серверна частина (Python/Flask)
-│   ├── app.py                      # Основна логіка API та робота з БД
-│   ├── Dockerfile                  # Інструкція для збірки бекенд-контейнера
-│   └── requirements.txt            # Залежності (Flask, PyMongo, Requests)
+├── backend/                            # Серверна частина (Python/Flask)
+│   ├── app.py                          # Основна логіка API та робота з БД
+│   ├── Dockerfile                      # Інструкція для збірки бекенд-контейнера
+│   └── requirements.txt               # Залежності (Flask, PyMongo, Requests)
 │
-├── frontend/                       # Клієнтська частина (Next.js/React)
+├── frontend/                           # Клієнтська частина (Next.js/React)
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── layout.tsx          ← сайдбар (для всіх крім auth/onboarding)
+│   │   │   ├── layout.tsx             ← root (БЕЗ сайдбару, тільки <html><body>)
 │   │   │   ├── globals.css
-│   │   │   ├── page.tsx            ← / (Головна)
-│   │   │   ├── auth/
-│   │   │   │   ├── layout.tsx      ← без сайдбару
-│   │   │   │   └── page.tsx        ← /auth (Вхід)
-│   │   │   ├── onboarding/
-│   │   │   │   ├── layout.tsx      ← без сайдбару
-│   │   │   │   └── page.tsx        ← /onboarding (Чи є ДБЖ?)
-│   │   │   ├── devices/
-│   │   │   │   ├── page.tsx        ← /devices (Мої прилади)
-│   │   │   │   └── add/
-│   │   │   │       ├── page.tsx    ← /devices/add (Вибір способу)
-│   │   │   │       ├── scan/
-│   │   │   │       │   └── page.tsx ← /devices/add/scan (Сканування)
-│   │   │   │       └── manual/
-│   │   │   │           └── page.tsx ← /devices/add/manual (Вручну)
-│   │   │   ├── calculator/
-│   │   │   │   └── page.tsx        ← /calculator (Розрахунок)
-│   │   │   ├── scenarios/
-│   │   │   │   └── page.tsx        ← /scenarios (Сценарії)
-│   │   │   └── profile/
-│   │   │       └── page.tsx        ← /profile (Профіль)
+│   │   │   │
+│   │   │   ├── (main)/                ← групування з сайдбаром (не впливає на URL)
+│   │   │   │   ├── layout.tsx         ← З сайдбаром
+│   │   │   │   ├── page.tsx           ← / (Головна)
+│   │   │   │   ├── devices/
+│   │   │   │   │   ├── page.tsx       ← /devices (Мої прилади)
+│   │   │   │   │   └── add/
+│   │   │   │   │       ├── page.tsx   ← /devices/add (Вибір способу)
+│   │   │   │   │       ├── scan/
+│   │   │   │   │       │   └── page.tsx ← /devices/add/scan (Сканування)
+│   │   │   │   │       └── manual/
+│   │   │   │   │           └── page.tsx ← /devices/add/manual (Вручну)
+│   │   │   │   ├── calculator/
+│   │   │   │   │   └── page.tsx       ← /calculator (Розрахунок)
+│   │   │   │   ├── scenarios/
+│   │   │   │   │   └── page.tsx       ← /scenarios (Сценарії)
+│   │   │   │   └── profile/
+│   │   │   │       └── page.tsx       ← /profile (Профіль)
+│   │   │   │
+│   │   │   ├── auth/                  ← БЕЗ сайдбару
+│   │   │   │   └── page.tsx           ← /auth (Вхід)
+│   │   │   │
+│   │   │   └── onboarding/            ← БЕЗ сайдбару
+│   │   │       └── page.tsx           ← /onboarding (Чи є ДБЖ?)
 │   │   │
 │   │   └── components/
-│   │       ├── Sidebar.tsx         ← навігація зліва
-│   │       ├── Modal.tsx           ← базова модалка
-│   │       ├── DeviceCard.tsx      ← рядок приладу в списку
-│   │       ├── ScenarioCard.tsx    ← картка сценарію
-│   │       └── StatusGauge.tsx     ← кругова діаграма на головній
+│   │       ├── Sidebar.tsx            ← навігація зліва
+│   │       ├── Modal.tsx              ← базова модалка
+│   │       ├── DeviceCard.tsx         ← рядок приладу в списку
+│   │       ├── ScenarioCard.tsx       ← картка сценарію
+│   │       └── StatusGauge.tsx        ← кругова діаграма на головній
 │   │
 │   ├── package.json
 │   ├── Dockerfile
