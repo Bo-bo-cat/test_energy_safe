@@ -1,0 +1,54 @@
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+ENV/
+
+# ─── Environment variables ────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── Node.js ──────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── Next.js ──────────────────────────────────────────────
+.next/
+out/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ─── Docker ───────────────────────────────────────────────
+docker-volumes/
+
+# ─── VS Code ──────────────────────────────────────────────
+.vscode/
+*.code-workspace
+
+# ─── JetBrains (PyCharm, WebStorm, IntelliJ) ──────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ─── Windows ──────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── macOS ────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
