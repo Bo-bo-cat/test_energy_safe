@@ -37,9 +37,7 @@ wheels/
 venv/
 .venv/
 env/
-.env_python/
-node_modules/
-.next/
+.env/
 
 # =========================
 # ФРОНТЕНД (NEXT.JS / NODE.JS)
@@ -57,6 +55,9 @@ frontend/.next/
 frontend/out/
 out/
 build/
+frontend/node_modules/
+frontend/.next/
+
 
 # Vercel (якщо будеш туди деплоїти)
 .vercel
