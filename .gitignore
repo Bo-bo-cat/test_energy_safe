@@ -38,6 +38,8 @@ venv/
 .venv/
 env/
 .env_python/
+node_modules/
+.next/
 
 # =========================
 # ФРОНТЕНД (NEXT.JS / NODE.JS)
