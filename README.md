@@ -1,129 +1,142 @@
+# Energy Safe
+
+Застосунок для підрахунку споживання електроенергії через інвертор/зарядну станцію.
+
+---
+
 ## Структура проекту
 
 ```
 test_energy_safe/
-├── backend/                        # Серверна частина (Python/Flask)
-│   ├── app.py                      # Основна логіка API та робота з БД
-│   ├── Dockerfile                  # Інструкція для збірки бекенд-контейнера
-│   └── requirements.txt            # Залежності (Flask, PyMongo, Requests)
-│
-├── frontend/                       # Клієнтська частина (Next.js/React)
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── layout.tsx          ← сайдбар (для всіх крім auth/onboarding)
-│   │   │   ├── globals.css
-│   │   │   ├── page.tsx            ← / (Головна)
-│   │   │   ├── auth/
-│   │   │   │   ├── layout.tsx      ← без сайдбару
-│   │   │   │   └── page.tsx        ← /auth (Вхід)
-│   │   │   ├── onboarding/
-│   │   │   │   ├── layout.tsx      ← без сайдбару
-│   │   │   │   └── page.tsx        ← /onboarding (Чи є ДБЖ?)
-│   │   │   ├── devices/
-│   │   │   │   ├── page.tsx        ← /devices (Мої прилади)
-│   │   │   │   └── add/
-│   │   │   │       ├── page.tsx    ← /devices/add (Вибір способу)
-│   │   │   │       ├── scan/
-│   │   │   │       │   └── page.tsx ← /devices/add/scan (Сканування)
-│   │   │   │       └── manual/
-│   │   │   │           └── page.tsx ← /devices/add/manual (Вручну)
-│   │   │   ├── calculator/
-│   │   │   │   └── page.tsx        ← /calculator (Розрахунок)
-│   │   │   ├── scenarios/
-│   │   │   │   └── page.tsx        ← /scenarios (Сценарії)
-│   │   │   └── profile/
-│   │   │       └── page.tsx        ← /profile (Профіль)
-│   │   │
-│   │   └── components/
-│   │       ├── Sidebar.tsx         ← навігація зліва
-│   │       ├── Modal.tsx           ← базова модалка
-│   │       ├── DeviceCard.tsx      ← рядок приладу в списку
-│   │       ├── ScenarioCard.tsx    ← картка сценарію
-│   │       └── StatusGauge.tsx     ← кругова діаграма на головній
-│   │
-│   ├── package.json
+├── backend/
+│   ├── app/
+│   │   ├── main.py                 ← FastAPI, CORS, lifespan
+│   │   ├── database.py             ← підключення до MongoDB (Motor)
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   ├── device.py
+│   │   │   └── scenario.py
+│   │   ├── routes/
+│   │   │   ├── users.py
+│   │   │   ├── devices.py
+│   │   │   └── scenarios.py
+│   │   └── services/
+│   │       └── gemini_service.py   ← класифікація пристроїв через Gemini AI
 │   ├── Dockerfile
-│   └── .env.local
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/app/
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   ├── auth/
+│   │   │   └── page.tsx            ← /auth — реєстрація, POST /users
+│   │   ├── onboarding/
+│   │   │   └── page.tsx            ← /onboarding — чи є ДБЖ
+│   │   └── (main)/
+│   │       ├── layout.tsx          ← сайдбар навігація
+│   │       ├── page.tsx            ← / — головна, fetch devices + scenarios
+│   │       ├── devices/
+│   │       │   └── page.tsx        ← /devices — список приладів
+│   │       ├── calculator/
+│   │       │   └── page.tsx        ← /calculator — розрахунок споживання
+│   │       ├── scenarios/
+│   │       │   └── page.tsx        ← /scenarios — список сценаріїв
+│   │       ├── picker/
+│   │       │   └── page.tsx        ← /picker — підбір системи
+│   │       └── profile/
+│   │           └── page.tsx        ← /profile — профіль користувача
+│   ├── Dockerfile
+│   ├── package.json
+│   └── tsconfig.json
 │
 ├── docker-compose.yml
-├── .env
+├── .env                            ← НЕ комітити (є в .gitignore)
 └── .gitignore
 ```
 
-## Запуск локально
+---
 
-### 1. Клонуй репо
-```bash
-git clone <repo-url>
-cd skylink
+## Швидкий старт (Docker)
+
+### 1. Налаштуй змінні середовища
+
+Створи `.env` в корені проекту:
+
+```env
+MONGODB_URL=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/EnergySafeDB?retryWrites=true&w=majority
+DATABASE_NAME=EnergySafeDB
+GEMINI_API_KEY=your_gemini_api_key_here
+ALLOWED_ORIGINS=http://localhost:5000
 ```
 
-### 2. Налаштуй змінні середовища
+### 2. Збілдуй і запусти
+
 ```bash
-cp .env.example .env
-# відредагуй .env під свої налаштування
+docker-compose up --build
 ```
 
-### 3. Запусти базу даних
+Або у фоні:
+
 ```bash
-docker-compose up db
+docker-compose up --build -d
 ```
 
-### 4. Запусти бекенд
+### 3. Відкрий в браузері
+
+| Сервіс | URL |
+|--------|-----|
+| Frontend | http://localhost:5000 |
+| Backend API | http://localhost:8080 |
+| Swagger docs | http://localhost:8080/docs |
+
+### 4. Зупинити
+
+```bash
+docker-compose down
+```
+
+Зупинити і видалити образи:
+
+```bash
+docker-compose down --rmi all
+```
+
+---
+
+## Флоу користувача
+
+1. Відкрий `http://localhost:5000/auth`
+2. Введи ім'я та email → натисни **Увійти** (POST `/users`)
+3. `user_id` зберігається в `localStorage` браузера
+4. Всі сторінки автоматично тягнуть дані для цього користувача
+
+---
+
+## Запуск локально (без Docker)
+
+### Backend
+
 ```bash
 cd backend
-npm install
-npm run dev
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8080
 ```
 
-### 5. Запусти фронтенд
+### Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-# Energy Safe — Backend
+Frontend запускається на порту **5000** (налаштовано в `package.json`).
 
-## Вимоги
-
-- Docker & Docker Compose
-- MongoDB Atlas акаунт
-- Google Gemini API ключ
-
-## Швидкий старт
-
-### 1. Налаштуй змінні середовища
-
-```bash
-cp backend/.env.example .env
-```
-
-Відредагуй `.env`:
+Створи `frontend/.env.local`:
 
 ```env
-MONGODB_URL=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/?retryWrites=true&w=majority
-DATABASE_NAME=energy_safe
-GEMINI_API_KEY=your_gemini_api_key_here
-ALLOWED_ORIGINS=http://localhost:3000,http://frontend:3000
-```
-
-### 2. Запуск через Docker
-
-```bash
-docker-compose up --build
-```
-
-API доступне за адресою: `http://localhost:8080`
-
-Інтерактивна документація: `http://localhost:8080/docs`
-
-### 3. Запуск локально (без Docker)
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
 ---
@@ -133,7 +146,7 @@ uvicorn app.main:app --reload --port 8000
 ### Health
 | Method | Path | Опис |
 |--------|------|------|
-| GET | `/health` | Перевірка стану сервера та БД |
+| GET | `/health` | Стан сервера та з'єднання з БД |
 
 ### Users
 | Method | Path | Опис |
@@ -141,7 +154,7 @@ uvicorn app.main:app --reload --port 8000
 | POST | `/users` | Створити користувача |
 | GET | `/users/{user_id}` | Отримати профіль |
 
-**POST /users — приклад:**
+**POST /users:**
 ```json
 {
   "email": "user@example.com",
@@ -151,18 +164,17 @@ uvicorn app.main:app --reload --port 8000
 }
 ```
 
-
 ### Devices
 | Method | Path | Опис |
 |--------|------|------|
-| POST | `/devices` | Додати пристрій (автокласифікація через Gemini) |
-| GET | `/devices?user_id={id}` | Список пристроїв користувача |
+| POST | `/devices` | Додати пристрій (автокласифікація Gemini) |
+| GET | `/devices?user_id={id}` | Список пристроїв |
 | GET | `/devices/{device_id}` | Один пристрій |
 | PUT | `/devices/{device_id}` | Оновити пристрій |
 | DELETE | `/devices/{device_id}` | Видалити пристрій |
-| POST | `/devices/classify` | Тільки класифікація без збереження |
+| POST | `/devices/classify` | Класифікація без збереження |
 
-**POST /devices — приклад:**
+**POST /devices:**
 ```json
 {
   "user_id": "64f1a2b3c4d5e6f7a8b9c0d1",
@@ -174,24 +186,15 @@ uvicorn app.main:app --reload --port 8000
 }
 ```
 
-**POST /devices/classify — приклад:**
-```json
-{ "model_name": "Samsung RB34" }
-```
-Відповідь:
-```json
-{ "category": "Холодильник", "is_valid": true }
-```
-
 ### Scenarios
 | Method | Path | Опис |
 |--------|------|------|
-| POST | `/scenarios` | Створити сценарій (автопідрахунок споживання) |
+| POST | `/scenarios` | Створити сценарій |
 | GET | `/scenarios?user_id={id}` | Список сценаріїв |
 | GET | `/scenarios/{scenario_id}` | Деталі сценарію |
 | DELETE | `/scenarios/{scenario_id}` | Видалити сценарій |
 
-**POST /scenarios — приклад:**
+**POST /scenarios:**
 ```json
 {
   "user_id": "64f1a2b3c4d5e6f7a8b9c0d1",
@@ -203,19 +206,20 @@ uvicorn app.main:app --reload --port 8000
   ]
 }
 ```
+
 Відповідь включає:
-- `total_consumption_wh` — автоматично підраховане споживання
+- `total_consumption_wh` — автоматично підраховане споживання (Вт·год)
 - `battery_sufficient` — чи вистачить батареї інвертора (якщо є)
 
 ---
 
-## Допустимі категорії пристроїв
+## Категорії пристроїв (Gemini)
 
 `Холодильник`, `Телевізор`, `Пральна машина`, `Мікрохвильовка`, `Кондиціонер`,
 `Ноутбук`, `Роутер`, `Освітлення`, `Зарядний пристрій`, `Посудомийна машина`,
 `Електрочайник`, `Кавоварка`, `Інше`
 
-## Коди помилок Gemini класифікації
+## Коди помилок Gemini
 
 | Код | Причина |
 |-----|---------|
@@ -223,3 +227,29 @@ uvicorn app.main:app --reload --port 8000
 | 422 | Gemini не розпізнав як реальний пристрій |
 | 502 | Помилка з'єднання з Gemini API |
 | 503 | GEMINI_API_KEY не налаштовано |
+
+---
+
+## Зміни які були зроблені
+
+### Docker
+- `frontend/Dockerfile` — оновлено з `node:18` до `node:20` (Next.js 16+ вимагає Node >= 20)
+- `frontend/Dockerfile` — додано `ARG`/`ENV NEXT_PUBLIC_API_URL` для передачі змінної при білді
+- `frontend/Dockerfile` — виправлено `EXPOSE` з 3000 на 5000 (відповідає `package.json`)
+- `docker-compose.yml` — додано сервіс `frontend` з портом 5000, env var та volume
+- `docker-compose.yml` — `build.args` для `NEXT_PUBLIC_API_URL`
+
+### Backend
+- `.env` — виправлено баг `ALLOWED_ORIGINS=ALLOWED_ORIGINS=...` (дубльований ключ)
+- `.env` — виправлено `ALLOWED_ORIGINS` на порт 5000 (порт фронтенду)
+
+### Frontend — підключення до API
+- `auth/page.tsx` — додано форму реєстрації, `POST /users`, збереження `user_id` в `localStorage`
+- `(main)/page.tsx` — `GET /devices` + `GET /scenarios`, реальні дані замість hardcode
+- `devices/page.tsx` — `GET /devices?user_id=...`
+- `calculator/page.tsx` — `GET /devices`, підрахунок `power_watts × daily_usage_hours`
+- `scenarios/page.tsx` — `GET /scenarios?user_id=...`
+- `profile/page.tsx` — `GET /users/{id}`
+
+### Git
+- `.gitignore` — додано `node_modules/`, `.next/`, `.env.example`, `.env.exemple`, IDE файли, системні файли

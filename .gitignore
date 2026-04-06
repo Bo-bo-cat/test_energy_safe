@@ -6,17 +6,21 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.env.example
+.env.exemple
+**/.env.example
+**/.env.exemple
+**/.env.local.exemple
 *.pem
 
 # =========================
-# БЕКЕНД (PYTHON / FLASK)
+# БЕКЕНД (PYTHON / FASTAPI)
 # =========================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -33,8 +37,36 @@ wheels/
 .installed.cfg
 *.egg
 
-# Віртуальні середовища (якщо запускатимеш локально без Docker)
+# Віртуальні середовища
 venv/
 .venv/
 env/
 .env/
+
+# =========================
+# ФРОНТЕНД (NEXT.JS / NODE)
+# =========================
+node_modules/
+.next/
+out/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# =========================
+# DOCKER
+# =========================
+docker-compose.override.yml
+
+# =========================
+# IDE ТА РЕДАКТОРИ
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
