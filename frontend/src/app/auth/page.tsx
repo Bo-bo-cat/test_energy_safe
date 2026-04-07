@@ -9,13 +9,33 @@ export default function AuthPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, has_inverter: false }),
+      body: JSON.stringify({
+        email,
+        name,
+        has_inverter: false,
+        inverter_capacity_wh: null,
+      }),
     });
-    if (!res.ok) return;
-    const user = await res.json();
+
+    let user;
+
+    if (res.status === 409) {
+      // Користувач вже існує — логінимо через GET /users?email=
+      const loginRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users?email=${encodeURIComponent(email)}`
+      );
+      if (!loginRes.ok) return;
+      user = await loginRes.json();
+    } else if (res.ok) {
+      user = await res.json();
+    } else {
+      return;
+    }
+
     if (!user.id) return;
     localStorage.setItem('user_id', user.id);
     localStorage.setItem('user_name', user.name);

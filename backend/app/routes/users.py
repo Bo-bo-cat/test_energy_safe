@@ -20,6 +20,15 @@ def _serialize_user(doc: dict) -> UserResponse:
     )
 
 
+@router.get("", response_model=UserResponse)
+async def get_user_by_email(email: str):
+    db = get_database()
+    doc = await db.users.find_one({"email": email})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+    return _serialize_user(doc)
+
+
 @router.post("", response_model=UserResponse, status_code=201)
 async def create_user(payload: UserCreate):
     db = get_database()
