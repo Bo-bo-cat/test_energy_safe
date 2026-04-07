@@ -42,6 +42,23 @@ app.include_router(devices.router)
 app.include_router(scenarios.router)
 
 
+@app.get("/", tags=["Root"])
+async def root():
+    return {
+        "message": "Ласкаво просимо до Energy Safe API",
+        "description": "Backend для підрахунку споживання електроенергії через інвертор/зарядну станцію",
+        "status": "ok",
+        "version": "1.0.0",
+        "endpoints": {
+            "docs": "/docs",
+            "health": "/health",
+            "users": "/users",
+            "devices": "/devices",
+            "scenarios": "/scenarios",
+        },
+    }
+
+
 @app.get("/health", tags=["Health"])
 async def health_check():
     db_status = "disconnected"

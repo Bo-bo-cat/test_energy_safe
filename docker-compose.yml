@@ -4,7 +4,7 @@ services:
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "8080:8000"
     env_file:
       - .env
     volumes:
@@ -17,7 +17,7 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=http://localhost:8080
     ports:
-      - "5000:5000"
+      - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8080
     volumes:
