@@ -1,0 +1,119 @@
+/* src/app/auth/page.module.css */
+
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;       /* Займає всю ширину екрана */
+  min-height: 100vh; /* Займає всю висоту екрана */
+  background-color: #F4F4F4;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Секція логотипу */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Відступ між іконкою та текстом */
+  position: absolute; top: 40px; left: 40px; /* Абсолютне позиціонування на основі цільового дизайну */
+}
+
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FF6B00;
+}
+
+.logo-icon {
+  width: 20px; /* Налаштуйте розмір у пікселях за бажанням */
+  height: 24px;
+  color: #FF6B00; /* Це встановлює колір для currentColor в SVG */
+  flex-shrink: 0;
+  /* Центрування SVG всередині div часто допомагає для кращого розташування */
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+/* Біла картка форми */
+.auth-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 41px;
+  width: 23.85%;
+  height: 53.98%;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-head {
+  font-size: 42px;
+  font-weight: 700;
+  color: #FF6B00;
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* Стилі інпутів */
+.auth-input {
+  background-color: #EFEFEF; /* Світло-сірий фон інпуту */
+  border: none;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+  outline: none;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.auth-input::placeholder {
+  color: #C0C0C0; /* Світло-сірий колір плейсхолдера */
+  font-weight: 600;
+}
+
+.auth-input:focus {
+  background-color: #E5E5E5; /* Трохи темніший фон при натисканні */
+}
+
+/* Кнопка */
+.submit-button {
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 0px;
+  font-size: 32px;
+  font-weight: 700;
+  margin-top: 32px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+  height: 56px;
+}
+
+.submit-button:hover {
+  background-color: #1A1A1A;
+}
