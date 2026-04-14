@@ -1,12 +1,21 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
+import bcrypt
 
 from app.database import get_database
-from app.models.user import UserCreate, UserResponse
+from app.models.user import UserCreate, UserLogin, UserResponse
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+
+def _hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+
+def _verify_password(password: str, hashed: str) -> bool:
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
 
 def _serialize_user(doc: dict) -> UserResponse:
@@ -20,12 +29,14 @@ def _serialize_user(doc: dict) -> UserResponse:
     )
 
 
-@router.get("", response_model=UserResponse)
-async def get_user_by_email(email: str):
+@router.post("/login", response_model=UserResponse)
+async def login_user(payload: UserLogin):
     db = get_database()
-    doc = await db.users.find_one({"email": email})
+    doc = await db.users.find_one({"email": payload.email})
     if not doc:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+        raise HTTPException(status_code=401, detail="Невірний email або пароль")
+    if not _verify_password(payload.password, doc.get("password_hash", "")):
+        raise HTTPException(status_code=401, detail="Невірний email або пароль")
     return _serialize_user(doc)
 
 
@@ -40,6 +51,7 @@ async def create_user(payload: UserCreate):
     doc = {
         "email": payload.email,
         "name": payload.name,
+        "password_hash": _hash_password(payload.password),
         "has_inverter": payload.has_inverter,
         "inverter_capacity_wh": payload.inverter_capacity_wh,
         "created_at": datetime.now(timezone.utc),

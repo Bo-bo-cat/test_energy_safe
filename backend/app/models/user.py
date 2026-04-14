@@ -6,6 +6,7 @@ from datetime import datetime
 class UserCreate(BaseModel):
     email: EmailStr
     name: str = Field(..., min_length=1, max_length=100)
+    password: str = Field(..., min_length=4)
     has_inverter: bool = False
     inverter_capacity_wh: Optional[float] = Field(default=None, ge=0)
 
@@ -13,10 +14,16 @@ class UserCreate(BaseModel):
         "example": {
             "email": "user@example.com",
             "name": "Іван Іваненко",
+            "password": "secret123",
             "has_inverter": True,
             "inverter_capacity_wh": 1200
         }
     }}
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class UserResponse(BaseModel):

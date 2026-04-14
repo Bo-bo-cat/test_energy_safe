@@ -2,93 +2,161 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { LightningIcon } from '../../components/icons/lightning'; // Переконайся, що шлях правильний
+import { LightningIcon } from '../../components/icons/lightning';
+import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
 
 export default function AuthPage() {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState(''); // Змінили name на password
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
+
+  function switchMode(newMode: 'login' | 'register') {
+    setMode(newMode);
+    setError('');
+    setEmail('');
+    setName('');
+    setPassword('');
+    setShowPassword(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError('');
 
-    // ⚠️ Зверни увагу: я замінив name на password у запиті. 
-    // Переконайся, що твій бекенд готовий приймати 'password'.
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        password, 
-        has_inverter: false,
-        inverter_capacity_wh: null,
-      }),
-    });
+    if (mode === 'login') {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    let user;
+      if (!res.ok) {
+        setError('Невірний email або пароль');
+        return;
+      }
 
-    if (res.status === 409) {
-      const loginRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users?email=${encodeURIComponent(email)}`
-      );
-      if (!loginRes.ok) return;
-      user = await loginRes.json();
-    } else if (res.ok) {
-      user = await res.json();
+      const user = await res.json();
+      localStorage.setItem('user_id', user.id);
+      localStorage.setItem('user_name', user.name);
+      router.push('/');
     } else {
-      return;
-    }
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          name: name.trim() || email.split('@')[0],
+          password,
+          has_inverter: false,
+          inverter_capacity_wh: null,
+        }),
+      });
 
-    if (!user.id) return;
-    localStorage.setItem('user_id', user.id);
-    // Якщо бекенд більше не повертає ім'я, цей рядок можна буде прибрати:
-    if (user.name) localStorage.setItem('user_name', user.name); 
-    router.push('/');
+      if (res.status === 409) {
+        setError('Користувач з таким email вже існує');
+        return;
+      }
+
+      if (!res.ok) {
+        setError('Помилка реєстрації. Спробуйте ще раз.');
+        return;
+      }
+
+      const user = await res.json();
+      localStorage.setItem('user_id', user.id);
+      localStorage.setItem('user_name', user.name);
+      router.push('/');
+    }
   }
 
   return (
     <div className={styles['page-container']}>
-      
+
       <div className={styles['logo-container']}>
         <LightningIcon className={styles['logo-icon']} />
         <div className={styles['logo-text']}>Energy Safe</div>
       </div>
 
       <div className={styles['auth-card']}>
-        <h1 className={styles['auth-head']}>Вхід</h1>
-        
+        <div className={styles['mode-tabs']}>
+          <button
+            type="button"
+            className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`}
+            onClick={() => switchMode('login')}
+          >
+            Вхід
+          </button>
+          <button
+            type="button"
+            className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`}
+            onClick={() => switchMode('register')}
+          >
+            Реєстрація
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
-          
-          {/* Поле Email (тепер перше) */}
+
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>email</label>
-            <input 
-              type="email" /* Додає базову перевірку браузера на наявність @ */
+            <label className={styles['input-label']}>Email</label>
+            <input
+              type="email"
               className={styles['auth-input']}
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              placeholder="useruser@gmail.com" 
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="useruser@gmail.com"
               required
             />
           </div>
 
-          {/* Поле Пароль (тепер друге) */}
+          {mode === 'register' && (
+            <div className={styles['input-group']}>
+              <label className={styles['input-label']}>Ім'я</label>
+              <input
+                type="text"
+                className={styles['auth-input']}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Іван Іваненко"
+              />
+            </div>
+          )}
+
           <div className={styles['input-group']}>
             <label className={styles['input-label']}>Пароль</label>
-            <input 
-              type="password" /* Це перетворить текст на крапочки */
-              className={styles['auth-input']}
-              value={password} 
-              onChange={e => setPassword(e.target.value)} 
-              placeholder="****************" 
-              required
-            />
+            <div className={styles['password-wrapper']}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className={`${styles['auth-input']} ${styles['password-input']}`}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="****************"
+                required
+              />
+              <button
+                type="button"
+                className={styles['eye-button']}
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={-1}
+              >
+                {showPassword
+                  ? <EyeOffIcon className={styles['eye-icon']} />
+                  : <EyeIcon className={styles['eye-icon']} />
+                }
+              </button>
+            </div>
           </div>
 
+          {error && <p className={styles['error-text']}>{error}</p>}
+
           <button type="submit" className={styles['submit-button']}>
-            Увійти
+            {mode === 'login' ? 'Увійти' : 'Зареєструватися'}
           </button>
-          
+
         </form>
       </div>
 

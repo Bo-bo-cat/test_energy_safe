@@ -105,7 +105,7 @@
   border: none;
   border-radius: 8px;
   padding: 0px;
-  font-size: 32px;
+  font-size: 18px;
   font-weight: 700;
   margin-top: 32px;
   cursor: pointer;
@@ -116,4 +116,75 @@
 
 .submit-button:hover {
   background-color: #1A1A1A;
+}
+
+/* Вкладки Вхід / Реєстрація */
+.mode-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E0E0E0;
+}
+
+.mode-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #B0B0B0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.mode-tab-active {
+  color: #FF6B00;
+  border-bottom-color: #FF6B00;
+}
+
+/* Поле пароля з кнопкою-оком */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  width: 100%;
+  padding-right: 48px;
+  box-sizing: border-box;
+}
+
+.eye-button {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #A0A0A0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.eye-button:hover {
+  color: #1A1A1A;
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Текст помилки */
+.error-text {
+  color: #D32F2F;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
 }
