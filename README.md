@@ -86,7 +86,7 @@ docker-compose up --build -d
 
 | Сервіс | URL |
 |--------|-----|
-| Frontend | http://localhost:5000 |
+| Frontend | http://localhost:3000 |
 | Backend API | http://localhost:8080 |
 | Swagger docs | http://localhost:8080/docs |
 
