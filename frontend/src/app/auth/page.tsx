@@ -39,9 +39,10 @@ export default function AuthPage() {
         return;
       }
 
-      const user = await res.json();
-      localStorage.setItem('user_id', user.id);
-      localStorage.setItem('user_name', user.name);
+      const data = await res.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user_id', data.user_id);
+      localStorage.setItem('user_name', data.user_name);
       router.push('/');
     } else {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
@@ -66,9 +67,10 @@ export default function AuthPage() {
         return;
       }
 
-      const user = await res.json();
-      localStorage.setItem('user_id', user.id);
-      localStorage.setItem('user_name', user.name);
+      const data = await res.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user_id', data.user_id);
+      localStorage.setItem('user_name', data.user_name);
       router.push('/');
     }
   }

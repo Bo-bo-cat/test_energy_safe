@@ -6,11 +6,9 @@
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example
-.env.exemple
-**/.env.example
-**/.env.exemple
-**/.env.local.exemple
+**/.env.local
+**/.env
+# .env.example і .env.exemple НЕ ігноруються — це шаблони для розробників
 *.pem
 
 # =========================

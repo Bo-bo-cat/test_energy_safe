@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from app.database import get_database
 from app.models.scenario import ScenarioCreate, ScenarioResponse
+from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/scenarios", tags=["Scenarios"])
 
@@ -24,20 +25,16 @@ def _serialize_scenario(doc: dict) -> ScenarioResponse:
 
 
 @router.post("", response_model=ScenarioResponse, status_code=201)
-async def create_scenario(payload: ScenarioCreate):
+async def create_scenario(
+    payload: ScenarioCreate,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
-    # Verify user exists
-    try:
-        user_oid = ObjectId(payload.user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний user_id")
-
-    user = await db.users.find_one({"_id": user_oid})
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
-    # Validate and fetch all devices
     device_oids = []
     for did in payload.devices_included:
         try:
@@ -58,18 +55,16 @@ async def create_scenario(payload: ScenarioCreate):
             detail=f"Пристрої не знайдено: {', '.join(missing)}"
         )
 
-    # Calculate total consumption: sum(power_watts * duration_hours) for each device
     total_consumption_wh = sum(
         d["power_watts"] * payload.duration_hours for d in devices
     )
 
-    # Determine battery sufficiency
     battery_sufficient: Optional[bool] = None
     if user.get("has_inverter") and user.get("inverter_capacity_wh") is not None:
         battery_sufficient = total_consumption_wh <= user["inverter_capacity_wh"]
 
     doc = {
-        "user_id": payload.user_id,
+        "user_id": user_id,
         "name": payload.name,
         "duration_hours": payload.duration_hours,
         "devices_included": payload.devices_included,
@@ -83,7 +78,7 @@ async def create_scenario(payload: ScenarioCreate):
 
 
 @router.get("", response_model=List[ScenarioResponse])
-async def list_scenarios(user_id: str = Query(..., description="ID користувача")):
+async def list_scenarios(user_id: str = Depends(get_current_user_id)):
     db = get_database()
     cursor = db.scenarios.find({"user_id": user_id})
     scenarios = []
@@ -93,7 +88,10 @@ async def list_scenarios(user_id: str = Query(..., description="ID корист�
 
 
 @router.get("/{scenario_id}", response_model=ScenarioResponse)
-async def get_scenario(scenario_id: str):
+async def get_scenario(
+    scenario_id: str,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
     try:
@@ -104,12 +102,17 @@ async def get_scenario(scenario_id: str):
     doc = await db.scenarios.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
 
     return _serialize_scenario(doc)
 
 
 @router.delete("/{scenario_id}", status_code=204)
-async def delete_scenario(scenario_id: str):
+async def delete_scenario(
+    scenario_id: str,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
     try:
@@ -117,6 +120,10 @@ async def delete_scenario(scenario_id: str):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний scenario_id")
 
-    result = await db.scenarios.delete_one({"_id": oid})
-    if result.deleted_count == 0:
+    doc = await db.scenarios.find_one({"_id": oid})
+    if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
+    await db.scenarios.delete_one({"_id": oid})

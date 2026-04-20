@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -10,6 +10,7 @@ from app.models.device import (
     ClassifyRequest, ClassifyResponse
 )
 from app.services.gemini_service import classify_device
+from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
@@ -35,24 +36,20 @@ async def classify_only(payload: ClassifyRequest):
 
 
 @router.post("", response_model=DeviceResponse, status_code=201)
-async def create_device(payload: DeviceCreate):
+async def create_device(
+    payload: DeviceCreate,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
-    # Verify user exists
-    try:
-        user_oid = ObjectId(payload.user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний user_id")
-
-    user = await db.users.find_one({"_id": user_oid})
+    user = await db.users.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
-    # Classify via Gemini
     classification = await classify_device(payload.model_name)
 
     doc = {
-        "user_id": payload.user_id,
+        "user_id": user_id,
         "model_name": payload.model_name,
         "category": classification["category"],
         "power_watts": payload.power_watts,
@@ -67,7 +64,7 @@ async def create_device(payload: DeviceCreate):
 
 
 @router.get("", response_model=List[DeviceResponse])
-async def list_devices(user_id: str = Query(..., description="ID користувача")):
+async def list_devices(user_id: str = Depends(get_current_user_id)):
     db = get_database()
     cursor = db.devices.find({"user_id": user_id})
     devices = []
@@ -77,7 +74,10 @@ async def list_devices(user_id: str = Query(..., description="ID користу�
 
 
 @router.get("/{device_id}", response_model=DeviceResponse)
-async def get_device(device_id: str):
+async def get_device(
+    device_id: str,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
     try:
@@ -88,12 +88,18 @@ async def get_device(device_id: str):
     doc = await db.devices.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
 
     return _serialize_device(doc)
 
 
 @router.put("/{device_id}", response_model=DeviceResponse)
-async def update_device(device_id: str, payload: DeviceUpdate):
+async def update_device(
+    device_id: str,
+    payload: DeviceUpdate,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
     try:
@@ -101,11 +107,16 @@ async def update_device(device_id: str, payload: DeviceUpdate):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
+    doc = await db.devices.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Пристрій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
     update_data = payload.model_dump(exclude_none=True)
     if not update_data:
         raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 
-    # If model_name changes, re-classify
     if "model_name" in update_data:
         classification = await classify_device(update_data["model_name"])
         update_data["category"] = classification["category"]
@@ -115,14 +126,14 @@ async def update_device(device_id: str, payload: DeviceUpdate):
         {"$set": update_data},
         return_document=True,
     )
-    if not result:
-        raise HTTPException(status_code=404, detail="Пристрій не знайдено")
-
     return _serialize_device(result)
 
 
 @router.delete("/{device_id}", status_code=204)
-async def delete_device(device_id: str):
+async def delete_device(
+    device_id: str,
+    user_id: str = Depends(get_current_user_id),
+):
     db = get_database()
 
     try:
@@ -130,6 +141,10 @@ async def delete_device(device_id: str):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    result = await db.devices.delete_one({"_id": oid})
-    if result.deleted_count == 0:
+    doc = await db.devices.find_one({"_id": oid})
+    if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
+    await db.devices.delete_one({"_id": oid})

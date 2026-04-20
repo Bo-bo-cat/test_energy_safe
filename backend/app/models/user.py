@@ -33,3 +33,10 @@ class UserResponse(BaseModel):
     has_inverter: bool
     inverter_capacity_wh: Optional[float]
     created_at: datetime
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_id: str
+    user_name: str
