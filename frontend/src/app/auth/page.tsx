@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import { LightningIcon } from '../../components/icons/lightning';
+import { LightningIcon } from '../../components/icons/Lightning';
 import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
 
 export default function AuthPage() {
