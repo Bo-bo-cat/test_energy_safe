@@ -49,6 +49,9 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-family: inherit;
+  
+  /* Додаємо цей рядок, щоб прибрати підкреслення */
+  text-decoration: none; 
 }
 
 .add-btn:hover {
