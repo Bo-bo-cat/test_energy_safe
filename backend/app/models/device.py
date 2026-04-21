@@ -8,18 +8,15 @@ VALID_CATEGORIES = [
     "Посудомийна машина", "Електрочайник", "Кавоварка", "Інше"
 ]
 
+
 class DeviceCreate(BaseModel):
     model_name: str = Field(..., min_length=1, max_length=200)
-    power_watts: float = Field(..., gt=0)
-    brand: str = Field(..., min_length=1, max_length=100)
-    daily_usage_hours: float = Field(..., ge=0, le=24)
+    daily_usage_hours: float = Field(default=1.0, ge=0, le=24)
     is_critical: bool = False
 
     model_config = {"json_schema_extra": {
         "example": {
             "model_name": "Samsung RB34",
-            "power_watts": 150,
-            "brand": "Samsung",
             "daily_usage_hours": 24,
             "is_critical": True
         }
@@ -28,8 +25,6 @@ class DeviceCreate(BaseModel):
 
 class DeviceUpdate(BaseModel):
     model_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
-    power_watts: Optional[float] = Field(default=None, gt=0)
-    brand: Optional[str] = Field(default=None, min_length=1, max_length=100)
     daily_usage_hours: Optional[float] = Field(default=None, ge=0, le=24)
     is_critical: Optional[bool] = None
 
@@ -46,6 +41,13 @@ class DeviceResponse(BaseModel):
     created_at: datetime
 
 
+class DeviceCatalogEntry(BaseModel):
+    model_name: str
+    category: str
+    power_watts: float
+    brand: str
+
+
 class ClassifyRequest(BaseModel):
     model_name: str = Field(..., min_length=1, max_length=200)
 
@@ -56,4 +58,6 @@ class ClassifyRequest(BaseModel):
 
 class ClassifyResponse(BaseModel):
     category: str
+    power_watts: float
+    brand: str
     is_valid: bool

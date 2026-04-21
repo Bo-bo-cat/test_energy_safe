@@ -9,7 +9,7 @@ from app.models.device import (
     DeviceCreate, DeviceUpdate, DeviceResponse,
     ClassifyRequest, ClassifyResponse
 )
-from app.services.gemini_service import classify_device
+from app.services.gemini_service import lookup_device_specs
 from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
@@ -29,10 +29,45 @@ def _serialize_device(doc: dict) -> DeviceResponse:
     )
 
 
+async def _get_specs_with_cache(db, model_name: str) -> dict:
+    """Check device_catalog first; call Gemini only on cache miss."""
+    model_key = model_name.strip().lower()
+    cached = await db.device_catalog.find_one({"model_key": model_key})
+    if cached:
+        return {
+            "category": cached["category"],
+            "power_watts": cached["power_watts"],
+            "brand": cached["brand"],
+        }
+
+    specs = await lookup_device_specs(model_name)
+
+    await db.device_catalog.update_one(
+        {"model_key": model_key},
+        {"$setOnInsert": {
+            "model_key": model_key,
+            "model_name": model_name.strip(),
+            "category": specs["category"],
+            "power_watts": specs["power_watts"],
+            "brand": specs["brand"],
+            "created_at": datetime.now(timezone.utc),
+        }},
+        upsert=True,
+    )
+
+    return {
+        "category": specs["category"],
+        "power_watts": specs["power_watts"],
+        "brand": specs["brand"],
+    }
+
+
 @router.post("/classify", response_model=ClassifyResponse)
 async def classify_only(payload: ClassifyRequest):
-    result = await classify_device(payload.model_name)
-    return ClassifyResponse(**result)
+    """Classify a device by model name without adding it (uses catalog cache)."""
+    db = get_database()
+    specs = await _get_specs_with_cache(db, payload.model_name)
+    return ClassifyResponse(is_valid=True, **specs)
 
 
 @router.post("", response_model=DeviceResponse, status_code=201)
@@ -46,14 +81,14 @@ async def create_device(
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
-    classification = await classify_device(payload.model_name)
+    specs = await _get_specs_with_cache(db, payload.model_name)
 
     doc = {
         "user_id": user_id,
-        "model_name": payload.model_name,
-        "category": classification["category"],
-        "power_watts": payload.power_watts,
-        "brand": payload.brand,
+        "model_name": payload.model_name.strip(),
+        "category": specs["category"],
+        "power_watts": specs["power_watts"],
+        "brand": specs["brand"],
         "daily_usage_hours": payload.daily_usage_hours,
         "is_critical": payload.is_critical,
         "created_at": datetime.now(timezone.utc),
@@ -118,8 +153,10 @@ async def update_device(
         raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 
     if "model_name" in update_data:
-        classification = await classify_device(update_data["model_name"])
-        update_data["category"] = classification["category"]
+        specs = await _get_specs_with_cache(db, update_data["model_name"])
+        update_data["category"] = specs["category"]
+        update_data["power_watts"] = specs["power_watts"]
+        update_data["brand"] = specs["brand"]
 
     result = await db.devices.find_one_and_update(
         {"_id": oid},

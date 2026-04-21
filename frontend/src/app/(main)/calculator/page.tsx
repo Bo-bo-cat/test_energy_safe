@@ -5,11 +5,13 @@ export default function CalculatorPage() {
   const [devices, setDevices] = useState<any[]>([]);
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices?user_id=${userId}`)
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(r => r.json())
-      .then(setDevices);
+      .then(data => { if (Array.isArray(data)) setDevices(data); });
   }, []);
 
   const totalWh = devices.reduce((sum, d) => sum + d.power_watts * d.daily_usage_hours, 0);

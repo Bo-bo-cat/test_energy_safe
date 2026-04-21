@@ -13,6 +13,8 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_to_mongo()
+    db = get_database()
+    await db.device_catalog.create_index("model_key", unique=True)
     yield
     await close_mongo_connection()
 
