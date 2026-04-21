@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
+import Link from 'next/link';
 
 import { FridgeIcon } from '../../../components/icons/Fridge';
 import { LaptopIcon } from '../../../components/icons/Laptop';
@@ -47,7 +48,6 @@ export default function DevicesPage() {
   return (
     <div className={styles['wrap']}>
       
-      {/* Шапка, Фільтри та Кнопка згруповані для CSS Grid */}
       <div className={styles['top-section']}>
         <h1 className={styles['title']}>Мої прилади</h1>
         
@@ -57,10 +57,11 @@ export default function DevicesPage() {
           <button className={styles['filter-chip']}>Офіс</button>
         </div>
 
-        <button className={styles['add-btn']} type="button">
+        {/* 2. Замінили <button> на <Link> і додали href */}
+        <Link href="/devices/add" className={styles['add-btn']}>
           <span className={styles['plus-icon']}>+</span>
           Додати
-        </button>
+        </Link>
       </div>
 
       {/* Список приладів */}

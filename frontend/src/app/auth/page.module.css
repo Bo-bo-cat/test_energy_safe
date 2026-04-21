@@ -89,8 +89,9 @@
   gap: 8px;
 }
 
+/* Збільшили базовий текст для ПК */
 .input-label {
-  font-size: 14px;
+  font-size: 16px; 
   font-weight: 700;
   color: #1A1A1A;
 }
@@ -100,8 +101,8 @@
   background-color: #EFEFEF;
   border: 2px solid transparent;
   border-radius: 8px;
-  padding: 14px 16px;
-  font-size: 15px;
+  padding: 16px; /* Збільшили відступи */
+  font-size: 16px; /* Збільшили шрифт */
   font-weight: 600;
   color: #1A1A1A;
   outline: none;
@@ -119,7 +120,6 @@
   border-color: #FF6B00;
 }
 
-/* Поле пароля з кнопкою-оком */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -154,7 +154,6 @@
   height: 20px;
 }
 
-/* Текст помилки */
 .error-text {
   color: #D32F2F;
   font-size: 13px;
@@ -162,7 +161,6 @@
   margin: 0;
 }
 
-/* Кнопка */
 .submit-button {
   background-color: #2D2D2D;
   color: #FFFFFF;
@@ -182,13 +180,13 @@
 }
 
 /* =========================================
-   МОБІЛЬНА АДАПТАЦІЯ (1 В 1 ЗА МАКЕТОМ)
+   МОБІЛЬНА АДАПТАЦІЯ (Розширено до 950px)
    ========================================= */
-@media (max-width: 768px) {
+@media (max-width: 950px) {
   .page-container {
-    align-items: flex-start; /* Вимикаємо центрування, притискаємо картку до верху */
-    padding-top: 88px;       /* Відступ для логотипу */
-    padding-bottom: 40px;    /* Відступ знизу, щоб можна було скролити */
+    align-items: flex-start; 
+    padding-top: 88px;       
+    padding-bottom: 40px;    
   }
 
   .logo-container {
@@ -196,60 +194,108 @@
     left: 20px;
   }
 
-  .logo-text {
-    font-size: 20px;
-  }
-
-  .logo-icon {
-    width: 16px;
-    height: 20px;
-  }
-
   .auth-card {
-    margin: 0 16px; /* Відступи по боках екрану */
-    width: 100%;
-    max-width: none; /* Дозволяємо картці розтягнутись */
+    width: calc(100% - 32px); /* Жорстко задаємо ширину з урахуванням відступів */
+    max-width: 440px;         /* Не даємо розтягнутися занадто сильно на планшетах */
+    margin: 0 16px; 
     padding: 32px 20px;
-    border-radius: 16px; /* Трохи більше скруглення самої картки */
-    box-shadow: none; /* Прибираємо тінь, як на SVG макеті */
+    border-radius: 16px; 
+    box-shadow: none; 
   }
 
-  /* Вкладки */
   .mode-tabs {
     margin-bottom: 32px;
-    border-bottom: 1px solid #1A1A1A; /* Тонка чорна/темна лінія на всю ширину */
+    border-bottom: 1px solid #1A1A1A; 
   }
 
   .mode-tab {
-    font-size: 24px; /* Робимо текст вкладок значно більшим */
-    color: #1A1A1A; /* Неактивний текст тепер чорний (як на макеті), а не сірий */
+    font-size: 24px; 
+    color: #1A1A1A; 
     padding-bottom: 12px;
-    margin-bottom: -1px; /* Щоб перекрити нижню лінію контейнера */
+    margin-bottom: -1px; 
     border-bottom: 2px solid transparent;
   }
 
   .mode-tab-active {
     color: #FF6B00;
-    border-bottom: 2px solid #FF6B00; /* Помаранчевий маркер активної вкладки */
+    border-bottom: 2px solid #FF6B00; 
   }
 
-  /* Форма */
   .input-group {
     gap: 12px;
   }
 
   .input-label {
-    font-size: 16px; /* Трохи більші лейбли */
+    font-size: 18px; /* Великі лейбли для мобільного */
   }
 
   .auth-input {
-    padding: 16px;
-    font-size: 16px;
-    border-radius: 12px; /* Посилене скруглення інпутів */
+    padding: 18px 16px; /* Більше місця для натискання */
+    font-size: 18px; /* Великий текст інпуту */
+    border-radius: 12px; 
   }
 
   .submit-button {
     margin-top: 24px;
-    border-radius: 12px; /* Посилене скруглення кнопки */
+    height: 64px; /* Висока масивна кнопка */
+    font-size: 20px;
+    border-radius: 12px; 
+  }
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .page-container {
+    padding: 56px 16px 24px; /* Робимо менший верхній відступ під логотип */
+    min-height: 100vh;
+    height: auto;
+  }
+  
+  .logo-container {
+    top: 16px;
+    left: 24px;
+  }
+
+  .auth-card {
+    width: calc(100% - 32px); /* Розтягуємо картку */
+    max-width: 500px;         /* Даємо їй трохи більше місця по ширині в горизонталі */
+    margin: 0 auto;           /* Центруємо по екрану */
+    padding: 20px; 
+  }
+  
+  .mode-tabs {
+    margin-bottom: 16px; /* Відсовуємо поля від вкладок на меншу відстань */
+  }
+
+  .mode-tab {
+    font-size: 18px; /* Менший текст вкладок */
+    padding-bottom: 8px;
+  }
+
+  .auth-form {
+    gap: 12px; /* Поля стоять значно щільніше одне до одного */
+  }
+
+  .input-group {
+    gap: 4px; /* Лейбл стоїть ближче до свого інпуту */
+  }
+
+  .input-label {
+    font-size: 14px; /* Зменшуємо лейбли (Email, Ім'я, Пароль) */
+  }
+
+  .auth-input {
+    padding: 12px 16px; /* Робимо інпути тоншими по висоті */
+    font-size: 15px;
+    border-radius: 8px;
+  }
+  
+  .submit-button {
+    margin-top: 8px; /* Підтягуємо кнопку ближче до інпутів */
+    height: 48px; /* Тонша кнопка */
+    font-size: 16px;
+    border-radius: 8px;
   }
 }

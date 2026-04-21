@@ -4,7 +4,7 @@ export function CameraIcon({ className }: { className?: string }) {
   return (
     <svg 
       className={className} 
-      viewBox="0 0 512 512"
+      viewBox="0 0 731 512"
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
     >

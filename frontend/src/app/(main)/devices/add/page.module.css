@@ -1,0 +1,164 @@
+/* src/app/(main)/devices/add/page.module.css */
+
+.page {
+  --bg: #efeee9;
+  --card: #fbfbfa;
+  --card-line: #d9d8d2;
+  --hint-bg: #d9d9d9;
+  --text: #2f2f2f;
+  --orange: #ff6e00;
+  --icon: #2c2c2c;
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  box-sizing: border-box; /* ГАРАНТУЄМО ПРАВИЛЬНИЙ РОЗРАХУНОК ШИРИНИ */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  margin: 0 0 40px;
+  text-align: center;
+  color: var(--orange);
+  font-size: clamp(32px, 6vw, 56px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 900px; /* ФІКСОВАНА ШИРИНА ДЛЯ КНОПОК */
+  margin: 0 auto 32px;
+  box-sizing: border-box;
+}
+
+.card {
+  flex: 1;
+  max-width: 450px;
+  aspect-ratio: 1 / 0.8;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.icon-camera { width: 120px; height: 95px; }
+.icon-pencil { width: 95px; height: 95px; }
+
+/* ПІДКАЗКА — ТЕПЕР СТРОГО ПО КРАЯХ КНОПОК */
+.hint {
+  width: 100%;
+  max-width: 900px; /* ТОЧНО ТАКА Ж ШИРИНА, ЯК У .cards */
+  margin: 0 auto;
+  background: var(--hint-bg);
+  border-radius: 16px;
+  padding: 24px 30px;
+  box-sizing: border-box; /* ОБОВ'ЯЗКОВО, ЩОБ ПАДДІНГ НЕ РОЗШИРЮВАВ БЛОК */
+}
+
+.hint-title {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.hint-text {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+/* =========================================
+   ВЕРТИКАЛЬНИЙ МОБІЛЬНИЙ (Portrait)
+   ========================================= */
+@media (max-width: 600px) and (orientation: portrait) {
+  .title { font-size: 36px; margin-bottom: 32px; }
+
+  .cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+  }
+  
+  .card {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: 180px;
+  }
+
+  .card-title { font-size: 26px; }
+
+  .hint { max-width: 100%; }
+  .hint-title { font-size: 22px; }
+  .hint-text { font-size: 18px; }
+}
+
+/* =========================================
+   ГОРИЗОНТАЛЬНИЙ МОБІЛЬНИЙ (Landscape)
+   ========================================= */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page { padding: 10px 20px; justify-content: center; }
+  
+  .title { 
+    font-size: 32px; /* ЗБІЛЬШИВ ЗАГОЛОВОК */
+    margin-bottom: 25px; /* ПІДНЯВ ВИЩЕ (збільшив відступ знизу) */
+    font-weight: 950;
+  }
+
+  .cards {
+    gap: 20px;
+    max-width: 700px; /* ЗБЛИЗИВ КНОПКИ */
+    margin-bottom: 20px;
+  }
+
+  .card {
+    height: 130px; 
+    max-width: 320px;
+  }
+
+  .card-inner { gap: 8px; }
+
+  .icon-camera { width: 55px; height: 44px; }
+  .icon-pencil { width: 44px; height: 44px; }
+
+  .card-title { font-size: 18px; }
+
+  .hint { 
+    max-width: 700px; /* ПІДКАЗКА ПІДЛАШТОВУЄТЬСЯ ПІД КНОПКИ */
+    padding: 12px 20px; 
+  }
+  .hint-title { font-size: 18px; }
+  .hint-text { font-size: 15px; }
+}
