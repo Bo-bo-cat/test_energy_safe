@@ -49,6 +49,9 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   font-family: inherit;
+  
+  /* Додаємо цей рядок, щоб прибрати підкреслення */
+  text-decoration: none; 
 }
 
 .add-btn:hover {
@@ -281,4 +284,65 @@
     font-size: 12px;
   }
   
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .top-section {
+    row-gap: 20px; /* Збільшили відступ між заголовком та фільтрами (було 12px) */
+    margin-bottom: 20px;
+  }
+  
+  .title {
+    font-size: 28px; 
+  }
+
+  .filters {
+    margin-bottom: 16px;
+    margin-top: 4px; /* Додатково опускаємо плашки трохи нижче */
+  }
+
+  .filter-chip {
+    padding: 8px 0; /* Робимо плашки вищими (було 4px) */
+    font-size: 12px;
+    height: auto;
+  }
+
+  .device-list {
+    gap: 8px; 
+  }
+
+  .device-item {
+    padding: 8px 16px; 
+  }
+
+  .device-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .device-svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .device-name {
+    font-size: 14px;
+  }
+
+  .summary-card {
+    padding: 16px;
+    margin-top: 16px;
+  }
+  
+  .summary-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .summary-value {
+    font-size: 18px;
+  }
 }

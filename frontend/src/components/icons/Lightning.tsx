@@ -1,4 +1,3 @@
-// src/components/icons/LightningIcon.tsx
 import React from 'react';
 
 export function LightningIcon({ className }: { className?: string }) {
