@@ -4,8 +4,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;       /* Займає всю ширину екрана */
-  min-height: 100vh; /* Займає всю висоту екрана */
+  width: 100%;
+  min-height: 100vh;
   background-color: #F4F4F4;
   position: relative;
   font-family: 'Inter', sans-serif;
@@ -15,10 +15,11 @@
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 10px; /* Відступ між іконкою та текстом */
-  position: absolute; top: 40px; left: 40px; /* Абсолютне позиціонування на основі цільового дизайну */
+  gap: 10px;
+  position: absolute; 
+  top: 40px; 
+  left: 40px; 
 }
-
 
 .logo-text {
   font-size: 24px;
@@ -27,11 +28,10 @@
 }
 
 .logo-icon {
-  width: 20px; /* Налаштуйте розмір у пікселях за бажанням */
+  width: 20px;
   height: 24px;
-  color: #FF6B00; /* Це встановлює колір для currentColor в SVG */
+  color: #FF6B00;
   flex-shrink: 0;
-  /* Центрування SVG всередині div часто допомагає для кращого розташування */
   display: flex;
   align-items: center;
   justify-content: center; 
@@ -42,19 +42,39 @@
   background-color: #FFFFFF;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
-  padding: 41px;
-  width: 23.85%;
-  height: 53.98%;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
 }
 
-.auth-head {
-  font-size: 42px;
+/* Вкладки Вхід / Реєстрація */
+.mode-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E0E0E0;
+}
+
+.mode-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 0;
+  font-size: 18px;
   font-weight: 700;
+  color: #B0B0B0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-tab-active {
   color: #FF6B00;
-  margin-top: 0;
-  margin-bottom: 32px;
+  border-bottom-color: #FF6B00;
 }
 
 .auth-form {
@@ -77,73 +97,26 @@
 
 /* Стилі інпутів */
 .auth-input {
-  background-color: #EFEFEF; /* Світло-сірий фон інпуту */
-  border: none;
+  background-color: #EFEFEF;
+  border: 2px solid transparent;
   border-radius: 8px;
   padding: 14px 16px;
   font-size: 15px;
   font-weight: 600;
   color: #1A1A1A;
   outline: none;
-  font-family: inherit;
-  transition: background-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .auth-input::placeholder {
-  color: #C0C0C0; /* Світло-сірий колір плейсхолдера */
-  font-weight: 600;
+  color: #C0C0C0;
 }
 
 .auth-input:focus {
-  background-color: #E5E5E5; /* Трохи темніший фон при натисканні */
-}
-
-/* Кнопка */
-.submit-button {
-  background-color: #2D2D2D;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 8px;
-  padding: 0px;
-  font-size: 18px;
-  font-weight: 700;
-  margin-top: 32px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-family: inherit;
-  height: 56px;
-}
-
-.submit-button:hover {
-  background-color: #1A1A1A;
-}
-
-/* Вкладки Вхід / Реєстрація */
-.mode-tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #E0E0E0;
-}
-
-.mode-tab {
-  flex: 1;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  padding: 10px 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #B0B0B0;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 0.2s ease, border-color 0.2s ease;
-}
-
-.mode-tab-active {
-  color: #FF6B00;
-  border-bottom-color: #FF6B00;
+  background-color: #FFFFFF;
+  border-color: #FF6B00;
 }
 
 /* Поле пароля з кнопкою-оком */
@@ -151,25 +124,25 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .password-input {
   width: 100%;
   padding-right: 48px;
-  box-sizing: border-box;
 }
 
 .eye-button {
   position: absolute;
-  right: 14px;
+  right: 12px;
   background: none;
   border: none;
-  padding: 0;
+  padding: 4px;
   cursor: pointer;
   color: #A0A0A0;
   display: flex;
   align-items: center;
-  transition: color 0.2s ease;
+  justify-content: center;
 }
 
 .eye-button:hover {
@@ -187,4 +160,96 @@
   font-size: 13px;
   font-weight: 600;
   margin: 0;
+}
+
+/* Кнопка */
+.submit-button {
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #1A1A1A;
+}
+
+/* =========================================
+   МОБІЛЬНА АДАПТАЦІЯ (1 В 1 ЗА МАКЕТОМ)
+   ========================================= */
+@media (max-width: 768px) {
+  .page-container {
+    align-items: flex-start; /* Вимикаємо центрування, притискаємо картку до верху */
+    padding-top: 88px;       /* Відступ для логотипу */
+    padding-bottom: 40px;    /* Відступ знизу, щоб можна було скролити */
+  }
+
+  .logo-container {
+    top: 24px;
+    left: 20px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+  }
+
+  .logo-icon {
+    width: 16px;
+    height: 20px;
+  }
+
+  .auth-card {
+    margin: 0 16px; /* Відступи по боках екрану */
+    width: 100%;
+    max-width: none; /* Дозволяємо картці розтягнутись */
+    padding: 32px 20px;
+    border-radius: 16px; /* Трохи більше скруглення самої картки */
+    box-shadow: none; /* Прибираємо тінь, як на SVG макеті */
+  }
+
+  /* Вкладки */
+  .mode-tabs {
+    margin-bottom: 32px;
+    border-bottom: 1px solid #1A1A1A; /* Тонка чорна/темна лінія на всю ширину */
+  }
+
+  .mode-tab {
+    font-size: 24px; /* Робимо текст вкладок значно більшим */
+    color: #1A1A1A; /* Неактивний текст тепер чорний (як на макеті), а не сірий */
+    padding-bottom: 12px;
+    margin-bottom: -1px; /* Щоб перекрити нижню лінію контейнера */
+    border-bottom: 2px solid transparent;
+  }
+
+  .mode-tab-active {
+    color: #FF6B00;
+    border-bottom: 2px solid #FF6B00; /* Помаранчевий маркер активної вкладки */
+  }
+
+  /* Форма */
+  .input-group {
+    gap: 12px;
+  }
+
+  .input-label {
+    font-size: 16px; /* Трохи більші лейбли */
+  }
+
+  .auth-input {
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px; /* Посилене скруглення інпутів */
+  }
+
+  .submit-button {
+    margin-top: 24px;
+    border-radius: 12px; /* Посилене скруглення кнопки */
+  }
 }

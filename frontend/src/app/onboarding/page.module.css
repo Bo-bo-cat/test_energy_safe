@@ -1,0 +1,145 @@
+/* src/app/onboarding/page.module.css */
+
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F4F4F4;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Секція логотипу */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute; 
+  top: 40px; 
+  left: 40px; 
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FF6B00;
+}
+
+.logo-icon {
+  width: 20px;
+  height: 24px;
+  color: #FF6B00;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+/* Біла картка онбордингу */
+.onboard-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 48px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Обгортка для великої іконки (Помаранчевий закруглений квадрат, як на макеті) */
+.icon-wrapper {
+  background-color: #FF6B00;
+  width: 140px;
+  height: 140px;
+  border-radius: 24px; /* Робить квадрат із м'якими кутами */
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Центрує іконку всередині квадрата */
+}
+
+/* Сама іконка системи (робимо її білою і трохи меншою за фон) */
+.system-icon {
+  width: 84px; 
+  height: 84px;
+  color: #FFFFFF;
+  fill: #FFFFFF;
+}
+
+/* Текст запитання */
+.question-text {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+/* Контейнер для кнопок (щоб вони стояли поруч) */
+.button-group {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Самі кнопки */
+.action-button {
+  flex: 1; /* Змушує кнопки ділити ширину навпіл порівну */
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+}
+
+.action-button:hover {
+  background-color: #1A1A1A;
+}
+
+/* =========================================
+   МОБІЛЬНА АДАПТАЦІЯ
+   ========================================= */
+@media (max-width: 768px) {
+  .page-container {
+    align-items: flex-start;
+    padding-top: 100px; /* Відступ зверху під логотип */
+  }
+
+  .logo-container {
+    top: 24px;
+    left: 20px;
+  }
+
+  .onboard-card {
+    margin: 0 16px; /* Відступи по краях екрана */
+    padding: 40px 20px;
+    border-radius: 16px;
+  }
+
+  .icon-wrapper {
+    width: 112px;
+    height: 112px;
+    border-radius: 20px;
+  }
+
+  .system-icon {
+    width: 64px; 
+    height: 64px;
+  }
+
+  .question-text {
+    font-size: 22px; /* Менший шрифт для компактності */
+    margin-bottom: 32px;
+  }
+}

@@ -68,3 +68,8 @@ docker-compose.override.yml
 *.swo
 .DS_Store
 Thumbs.db
+
+# =========================
+# ЗОБРАЖЕННЯ ТА ІКОНКИ
+# =========================
+*.svg

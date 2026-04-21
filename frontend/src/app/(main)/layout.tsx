@@ -15,6 +15,7 @@ import { ProfileIcon } from '../../components/icons/Profile';
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Масив навігації з компонентами іконок
   const navItems = [
     { href: '/', label: 'Головна', Icon: HomeIcon },
     { href: '/devices', label: 'Прилади', Icon: DeviceIcon },
