@@ -8,18 +8,20 @@ export default function HomePage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
+    const token = localStorage.getItem('access_token');
     const name = localStorage.getItem('user_name');
     if (name) setUserName(name);
-    if (!userId) return;
+    if (!token) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices?user_id=${userId}`)
-      .then(r => r.json())
-      .then(setDevices);
+    const headers = { Authorization: `Bearer ${token}` };
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios?user_id=${userId}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers })
       .then(r => r.json())
-      .then(setScenarios);
+      .then(data => { if (Array.isArray(data)) setDevices(data); });
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, { headers })
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setScenarios(data); });
   }, []);
 
   const totalWatts = devices.reduce((sum, d) => sum + d.power_watts, 0);

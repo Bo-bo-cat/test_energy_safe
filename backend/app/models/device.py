@@ -9,7 +9,6 @@ VALID_CATEGORIES = [
 ]
 
 class DeviceCreate(BaseModel):
-    user_id: str
     model_name: str = Field(..., min_length=1, max_length=200)
     power_watts: float = Field(..., gt=0)
     brand: str = Field(..., min_length=1, max_length=100)
@@ -18,7 +17,6 @@ class DeviceCreate(BaseModel):
 
     model_config = {"json_schema_extra": {
         "example": {
-            "user_id": "64f1a2b3c4d5e6f7a8b9c0d1",
             "model_name": "Samsung RB34",
             "power_watts": 150,
             "brand": "Samsung",

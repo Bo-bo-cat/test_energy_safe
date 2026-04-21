@@ -5,7 +5,8 @@ from bson.errors import InvalidId
 import bcrypt
 
 from app.database import get_database
-from app.models.user import UserCreate, UserLogin, UserResponse
+from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse
+from app.auth import create_access_token
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -29,7 +30,7 @@ def _serialize_user(doc: dict) -> UserResponse:
     )
 
 
-@router.post("/login", response_model=UserResponse)
+@router.post("/login", response_model=TokenResponse)
 async def login_user(payload: UserLogin):
     db = get_database()
     doc = await db.users.find_one({"email": payload.email})
@@ -37,10 +38,15 @@ async def login_user(payload: UserLogin):
         raise HTTPException(status_code=401, detail="Невірний email або пароль")
     if not _verify_password(payload.password, doc.get("password_hash", "")):
         raise HTTPException(status_code=401, detail="Невірний email або пароль")
-    return _serialize_user(doc)
+    user_id = str(doc["_id"])
+    return TokenResponse(
+        access_token=create_access_token(user_id),
+        user_id=user_id,
+        user_name=doc["name"],
+    )
 
 
-@router.post("", response_model=UserResponse, status_code=201)
+@router.post("", response_model=TokenResponse, status_code=201)
 async def create_user(payload: UserCreate):
     db = get_database()
 
@@ -57,8 +63,12 @@ async def create_user(payload: UserCreate):
         "created_at": datetime.now(timezone.utc),
     }
     result = await db.users.insert_one(doc)
-    doc["_id"] = result.inserted_id
-    return _serialize_user(doc)
+    user_id = str(result.inserted_id)
+    return TokenResponse(
+        access_token=create_access_token(user_id),
+        user_id=user_id,
+        user_name=doc["name"],
+    )
 
 
 @router.get("/{user_id}", response_model=UserResponse)

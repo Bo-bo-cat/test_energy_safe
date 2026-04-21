@@ -4,14 +4,14 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #F4F4F4;
+  background-color: #F4F4F4; /* Світлий фон для контенту */
   font-family: 'Inter', sans-serif;
 }
 
-/* Сайдбар (Базовий вигляд для ПК) */
+/* Сайдбар */
 .sidebar {
   width: 280px;
-  background-color: #E6E6E6;
+  background-color: #E6E6E6; /* Колір фону з твого макета Sidebar.svg */
   display: flex;
   flex-direction: column;
   padding: 40px 24px;
@@ -49,7 +49,7 @@
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 8px; /* Невеликий відступ між елементами */
 }
 
 /* Посилання в меню (неактивне) */
@@ -58,9 +58,9 @@
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  border-radius: 16px;
+  border-radius: 16px; /* Велике скруглення за макетом */
   text-decoration: none;
-  color: #1A1A1A;
+  color: #1A1A1A; /* Майже чорний колір тексту */
   font-size: 18px;
   font-weight: 700;
   transition: all 0.2s ease-in-out;
@@ -71,13 +71,13 @@
   background-color: #DCDCDC;
 }
 
-/* АКТИВНИЙ СТАН */
+/* АКТИВНИЙ СТАН (коли ми на цій сторінці) */
 .nav-link-active {
-  background-color: #FF6B00;
-  color: #FFFFFF;
+  background-color: #FF6B00; /* Помаранчевий фон */
+  color: #FFFFFF; /* Білий текст */
 }
 
-/* Контейнер для іконки */
+/* Контейнер для іконки всередині посилання */
 .icon-wrapper {
   display: flex;
   align-items: center;
@@ -90,10 +90,11 @@
 .nav-icon {
   width: 100%;
   height: 100%;
-  color: #1A1A1A;
+  color: #1A1A1A; /* Чорна іконка за замовчуванням */
   transition: color 0.2s ease;
 }
 
+/* Робимо іконку білою, якщо пункт меню активний */
 .nav-link-active .nav-icon {
   color: #FFFFFF;
 }
@@ -107,9 +108,11 @@
 }
 
 /* =========================================
-   Адаптація для Планшетів (будь-яка орієнтація)
+   Адаптація для екранів (Планшети та Мобільні)
    ========================================= */
+
 @media (max-width: 1024px) {
+  /* Планшети: просто робимо сайдбар вужчим */
   .sidebar {
     width: 220px;
     padding: 32px 16px;
@@ -120,29 +123,30 @@
   }
 }
 
-/* =========================================
-   Мобільні телефони: ВЕРТИКАЛЬНЕ положення (Portrait)
-   ========================================= */
-@media (max-width: 950px) and (orientation: portrait) {
+@media (max-width: 768px) {
+  /* Мобільні телефони: перетворюємо на нижнє меню (Bottom Bar) */
   .layout-container {
     flex-direction: column;
   }
 
   .sidebar {
     width: 100%;
-    height: auto;
-    position: fixed;
-    bottom: 0;
-    top: auto;
+    height: auto;          /* Скидаємо висоту на весь екран */
+    position: fixed;       /* Фіксуємо поверх усього контенту */
+    bottom: 0;             /* Притискаємо до низу */
+    top: auto;             /* Скасовуємо верхню прив'язку */
     left: 0;
     flex-direction: row;
-    padding: 8px 8px;
+    padding: 8px 8px;      /* Невеликі відступи для мобільного */
     border-right: none;
-    border-top: 1px solid #DCDCDC;
+    border-top: 1px solid #DCDCDC; /* Лінія тепер зверху меню */
     z-index: 1000;
+    
+    /* Додаємо padding для безпечної зони на сучасних iPhone (смужка внизу) */
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
   }
 
+  /* Ховаємо логотип у нижньому меню */
   .logo-container {
     display: none; 
   }
@@ -155,11 +159,11 @@
   }
 
   .nav-link {
-    flex-direction: column;
+    flex-direction: column; /* Ставимо іконку над текстом */
     gap: 6px;
     padding: 12px 4px;
-    font-size: 11px;
-    flex: 1;
+    font-size: 11px;        /* Зменшуємо шрифт, щоб влізло 6 пунктів */
+    flex: 1;                /* Усі пункти ділять ширину порівну */
     justify-content: center;
     border-radius: 16px;
     text-align: center;
@@ -170,42 +174,10 @@
     height: 24px;
   }
 
+  /* Щоб контент сторінок не ховався під фіксованим меню, 
+     додаємо відступ знизу для головного контейнера */
   .main-content {
     padding: 24px 16px;
     padding-bottom: 100px; /* Запас місця під нижнє меню */
-  }
-}
-
-/* =========================================
-   Мобільні телефони: ГОРИЗОНТАЛЬНЕ положення (Landscape)
-   ========================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .sidebar {
-    width: 160px; /* Робимо його ще вужчим */
-    padding: 16px 8px;
-  }
-
-  .logo-container {
-    margin-bottom: 16px; /* Зменшуємо відступ */
-    gap: 8px;
-  }
-
-  .logo-icon {
-    width: 16px;
-    height: 24px;
-  }
-
-  .logo-text {
-    font-size: 16px; /* Менший логотип */
-  }
-
-  .nav-link {
-    padding: 8px 10px;
-    font-size: 13px; /* Менший текст меню */
-    gap: 10px;
-  }
-
-  .main-content {
-    padding: 16px 24px; /* Менші відступи навколо контенту */
   }
 }

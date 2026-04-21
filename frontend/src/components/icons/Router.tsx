@@ -1,4 +1,3 @@
-// src/components/icons/LightningIcon.tsx
 import React from 'react';
 
 export function RouterIcon({ className }: { className?: string }) {
