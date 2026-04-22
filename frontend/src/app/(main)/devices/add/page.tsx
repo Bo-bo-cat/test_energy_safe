@@ -1,17 +1,29 @@
 'use client';
+
 import Link from 'next/link';
 import styles from './page.module.css';
 import { CameraIcon } from '../../../../components/icons/Camera';
 import { PenIcon } from '../../../../components/icons/Pen';
 
 export default function AddDevicePage() {
+  
+  // Функція для обробки кліку по кнопці "Фото етикетки"
+  const handleCameraClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Зупиняємо перехід за посиланням
+    alert('Скоро буде!'); // Показуємо сповіщення
+  };
+
   return (
     <main className={styles['page']}>
       <h1 className={styles['title']}>Додати прилад</h1>
 
       <section className={styles['cards']}>
-        {/* Кнопка 1: Фото етикетки -> перехід на /devices/add/scan */}
-        <Link href="/devices/add/scan" className={styles['card']}>
+        {/* Кнопка 1: Фото етикетки -> викликає alert замість переходу */}
+        <Link 
+          href="#" 
+          onClick={handleCameraClick} 
+          className={styles['card']}
+        >
           <div className={styles['card-inner']}>
             <span className={styles['icon']}>
               <CameraIcon className={styles['icon-camera']} />
@@ -20,7 +32,7 @@ export default function AddDevicePage() {
           </div>
         </Link>
 
-        {/* Кнопка 2: Ввести вручну -> перехід на /devices/add/manual */}
+        {/* Кнопка 2: Ввести вручну -> перехід на форму */}
         <Link href="/devices/add/manual" className={styles['card']}>
           <div className={styles['card-inner']}>
             <span className={styles['icon']}>
