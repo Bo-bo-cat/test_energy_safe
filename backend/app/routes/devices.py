@@ -9,7 +9,7 @@ from app.models.device import (
     DeviceCreate, DeviceUpdate, DeviceResponse,
     ClassifyRequest, ClassifyResponse
 )
-from app.services.gemini_service import lookup_device_specs
+from app.services.ai_service import lookup_device_specs
 from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
@@ -22,6 +22,7 @@ def _serialize_device(doc: dict) -> DeviceResponse:
         model_name=doc["model_name"],
         category=doc["category"],
         power_watts=doc["power_watts"],
+        startup_current_watts=doc.get("startup_current_watts"),
         brand=doc["brand"],
         daily_usage_hours=doc["daily_usage_hours"],
         is_critical=doc["is_critical"],
@@ -30,13 +31,14 @@ def _serialize_device(doc: dict) -> DeviceResponse:
 
 
 async def _get_specs_with_cache(db, model_name: str) -> dict:
-    """Check device_catalog first; call Gemini only on cache miss."""
+    """Check device_catalog first; call AI only on cache miss."""
     model_key = model_name.strip().lower()
     cached = await db.device_catalog.find_one({"model_key": model_key})
     if cached:
         return {
             "category": cached["category"],
             "power_watts": cached["power_watts"],
+            "startup_current_watts": cached.get("startup_current_watts"),
             "brand": cached["brand"],
         }
 
@@ -49,6 +51,7 @@ async def _get_specs_with_cache(db, model_name: str) -> dict:
             "model_name": model_name.strip(),
             "category": specs["category"],
             "power_watts": specs["power_watts"],
+            "startup_current_watts": specs.get("startup_current_watts"),
             "brand": specs["brand"],
             "created_at": datetime.now(timezone.utc),
         }},
@@ -58,6 +61,7 @@ async def _get_specs_with_cache(db, model_name: str) -> dict:
     return {
         "category": specs["category"],
         "power_watts": specs["power_watts"],
+        "startup_current_watts": specs.get("startup_current_watts"),
         "brand": specs["brand"],
     }
 
@@ -81,7 +85,10 @@ async def create_device(
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
-    specs = await _get_specs_with_cache(db, payload.model_name)
+    if payload.category and payload.power_watts is not None:
+        specs = {"category": payload.category, "power_watts": payload.power_watts, "brand": ""}
+    else:
+        specs = await _get_specs_with_cache(db, payload.model_name)
 
     doc = {
         "user_id": user_id,
@@ -89,6 +96,7 @@ async def create_device(
         "category": specs["category"],
         "power_watts": specs["power_watts"],
         "brand": specs["brand"],
+        "startup_current_watts": payload.startup_current_watts,
         "daily_usage_hours": payload.daily_usage_hours,
         "is_critical": payload.is_critical,
         "created_at": datetime.now(timezone.utc),

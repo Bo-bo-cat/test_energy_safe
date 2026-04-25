@@ -35,17 +35,31 @@ export default function DevicesPage() {
   const [activeFilter, setActiveFilter] = useState('Усі');
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
 
-    // fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices?user_id=${userId}`)
-    //   .then((r) => r.json())
-    //   .then((data) => {
-    //     if (Array.isArray(data) && data.length > 0) {
-    //       setDevices(data);
-    //     }
-    //   })
-    //   .catch((err) => console.error('Помилка завантаження:', err));
+    const categoryToIcon: Record<string, string> = {
+      'Холодильник': 'fridge', 'Ноутбук': 'laptop', 'Роутер': 'router',
+      'Освітлення': 'light', 'Телевізор': 'tv',
+    };
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setDevices(data.map((d: any) => ({
+            id: d.id,
+            name: d.model_name,
+            power_watt: d.power_watts,
+            startup_power_watt: d.startup_current_watts ?? null,
+            tag: d.category,
+            iconName: categoryToIcon[d.category] ?? 'other',
+          })));
+        }
+      })
+      .catch((err) => console.error('Помилка завантаження:', err));
   }, []);
 
   // Відфільтрований масив приладів

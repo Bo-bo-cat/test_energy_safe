@@ -10,18 +10,18 @@
 test_energy_safe/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                 ← FastAPI, CORS, lifespan
+│   │   ├── main.py                 ← FastAPI, CORS, JWT, lifespan
 │   │   ├── database.py             ← підключення до MongoDB (Motor)
 │   │   ├── models/
 │   │   │   ├── user.py
-│   │   │   ├── device.py
+│   │   │   ├── device.py           ← VALID_CATEGORIES список
 │   │   │   └── scenario.py
 │   │   ├── routes/
 │   │   │   ├── users.py
-│   │   │   ├── devices.py
+│   │   │   ├── devices.py          ← POST /devices/classify, POST /devices
 │   │   │   └── scenarios.py
 │   │   └── services/
-│   │       └── gemini_service.py   ← класифікація пристроїв через Gemini AI
+│   │       └── ai_service.py       ← класифікація через Groq AI (llama-3.3-70b)
 │   ├── Dockerfile
 │   └── requirements.txt
 │
@@ -30,14 +30,20 @@ test_energy_safe/
 │   │   ├── layout.tsx
 │   │   ├── globals.css
 │   │   ├── auth/
-│   │   │   └── page.tsx            ← /auth — реєстрація, POST /users
+│   │   │   └── page.tsx            ← /auth — реєстрація/вхід, JWT в localStorage
 │   │   ├── onboarding/
 │   │   │   └── page.tsx            ← /onboarding — чи є ДБЖ
 │   │   └── (main)/
 │   │       ├── layout.tsx          ← сайдбар навігація
 │   │       ├── page.tsx            ← / — головна, fetch devices + scenarios
 │   │       ├── devices/
-│   │       │   └── page.tsx        ← /devices — список приладів
+│   │       │   ├── page.tsx        ← /devices — список приладів
+│   │       │   └── add/
+│   │       │       ├── page.tsx        ← /devices/add — вибір способу
+│   │       │       ├── manual/
+│   │       │       │   └── page.tsx    ← /devices/add/manual — форма + AI пошук
+│   │       │       └── scan/
+│   │       │           └── page.tsx    ← /devices/add/scan — скоро буде
 │   │       ├── calculator/
 │   │       │   └── page.tsx        ← /calculator — розрахунок споживання
 │   │       ├── scenarios/
@@ -46,12 +52,14 @@ test_energy_safe/
 │   │       │   └── page.tsx        ← /picker — підбір системи
 │   │       └── profile/
 │   │           └── page.tsx        ← /profile — профіль користувача
+│   ├── src/components/icons/       ← SVG іконки як React компоненти
 │   ├── Dockerfile
 │   ├── package.json
 │   └── tsconfig.json
 │
 ├── docker-compose.yml
 ├── .env                            ← НЕ комітити (є в .gitignore)
+├── .env.example                    ← шаблон змінних (безпечно комітити)
 └── .gitignore
 ```
 
@@ -61,14 +69,17 @@ test_energy_safe/
 
 ### 1. Налаштуй змінні середовища
 
-Створи `.env` в корені проекту:
+Створи `.env` в корені проекту (скопіюй з `.env.example`):
 
 ```env
 MONGODB_URL=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/EnergySafeDB?retryWrites=true&w=majority
 DATABASE_NAME=EnergySafeDB
-GEMINI_API_KEY=your_gemini_api_key_here
+GROQ_API_KEY=your_groq_api_key_here
+JWT_SECRET_KEY=your-super-secret-key-change-this
 ALLOWED_ORIGINS=http://localhost:5000
 ```
+
+> Отримати безкоштовний Groq API ключ: https://console.groq.com
 
 ### 2. Збілдуй і запусти
 
@@ -104,15 +115,6 @@ docker-compose down --rmi all
 
 ---
 
-## Флоу користувача
-
-1. Відкрий `http://localhost:5000/auth`
-2. Введи ім'я та email → натисни **Увійти** (POST `/users`)
-3. `user_id` зберігається в `localStorage` браузера
-4. Всі сторінки автоматично тягнуть дані для цього користувача
-
----
-
 ## Запуск локально (без Docker)
 
 ### Backend
@@ -141,6 +143,35 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 
 ---
 
+## Флоу користувача
+
+1. Відкрий `http://localhost:5000/auth`
+2. Введи ім'я та email → натисни **Увійти**
+3. `access_token` (JWT) зберігається в `localStorage` браузера
+4. Всі запити до API автоматично надсилають токен в заголовку `Authorization: Bearer <token>`
+
+---
+
+## Додавання приладу
+
+На сторінці `/devices/add` доступні два способи:
+
+### Ввести вручну (`/devices/add/manual`)
+
+1. Введи назву моделі (наприклад: `Gorenje RK4182PW4`)
+2. Натисни **Знайти** — Groq AI автоматично визначить:
+   - Категорію
+   - Потужність (Вт)
+   - Пусковий струм (для пристроїв з двигуном)
+3. Перевір/відкоригуй поля
+4. Натисни **Зберегти**
+
+### Фото етикетки (`/devices/add/scan`)
+
+Поки в розробці — буде доступно найближчим часом.
+
+---
+
 ## API Endpoints
 
 ### Health
@@ -151,7 +182,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 ### Users
 | Method | Path | Опис |
 |--------|------|------|
-| POST | `/users` | Створити користувача |
+| POST | `/users` | Реєстрація / вхід (повертає JWT токен) |
 | GET | `/users/{user_id}` | Отримати профіль |
 
 **POST /users:**
@@ -164,23 +195,47 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 }
 ```
 
+**Відповідь:**
+```json
+{
+  "access_token": "eyJ...",
+  "token_type": "bearer",
+  "user_id": "64f1a2b3c4d5e6f7a8b9c0d1"
+}
+```
+
 ### Devices
 | Method | Path | Опис |
 |--------|------|------|
-| POST | `/devices` | Додати пристрій (автокласифікація Gemini) |
-| GET | `/devices?user_id={id}` | Список пристроїв |
+| POST | `/devices/classify` | AI класифікація без збереження |
+| POST | `/devices` | Додати пристрій |
+| GET | `/devices?user_id={id}` | Список пристроїв користувача |
 | GET | `/devices/{device_id}` | Один пристрій |
 | PUT | `/devices/{device_id}` | Оновити пристрій |
 | DELETE | `/devices/{device_id}` | Видалити пристрій |
-| POST | `/devices/classify` | Класифікація без збереження |
 
-**POST /devices:**
+**POST /devices/classify** — тільки визначає категорію та потужність, нічого не зберігає:
+```json
+{ "model_name": "Gorenje RK4182PW4" }
+```
+Відповідь:
 ```json
 {
-  "user_id": "64f1a2b3c4d5e6f7a8b9c0d1",
-  "model_name": "Samsung RB34",
+  "is_valid": true,
+  "category": "Холодильник",
   "power_watts": 150,
-  "brand": "Samsung",
+  "startup_current_watts": 525,
+  "brand": "Gorenje"
+}
+```
+
+**POST /devices** — зберігає пристрій (потрібен JWT токен):
+```json
+{
+  "model_name": "Gorenje RK4182PW4",
+  "category": "Холодильник",
+  "power_watts": 150,
+  "startup_current_watts": 525,
   "daily_usage_hours": 24,
   "is_critical": true
 }
@@ -213,43 +268,50 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 
 ---
 
-## Категорії пристроїв (Gemini)
+## Категорії пристроїв
 
 `Холодильник`, `Телевізор`, `Пральна машина`, `Мікрохвильовка`, `Кондиціонер`,
 `Ноутбук`, `Роутер`, `Освітлення`, `Зарядний пристрій`, `Посудомийна машина`,
 `Електрочайник`, `Кавоварка`, `Інше`
 
-## Коди помилок Gemini
+---
+
+## Коди помилок AI класифікації
 
 | Код | Причина |
 |-----|---------|
 | 400 | Порожня або занадто коротка назва |
-| 422 | Gemini не розпізнав як реальний пристрій |
-| 502 | Помилка з'єднання з Gemini API |
-| 503 | GEMINI_API_KEY не налаштовано |
+| 422 | Пристрій не розпізнано як побутовий електроприлад |
+| 502 | Помилка з'єднання з Groq API |
+| 503 | `GROQ_API_KEY` не налаштовано або недійсний |
 
 ---
 
 ## Зміни які були зроблені
 
-### Docker
-- `frontend/Dockerfile` — оновлено з `node:18` до `node:20` (Next.js 16+ вимагає Node >= 20)
-- `frontend/Dockerfile` — додано `ARG`/`ENV NEXT_PUBLIC_API_URL` для передачі змінної при білді
-- `frontend/Dockerfile` — виправлено `EXPOSE` з 3000 на 5000 (відповідає `package.json`)
-- `docker-compose.yml` — додано сервіс `frontend` з портом 5000, env var та volume
-- `docker-compose.yml` — `build.args` для `NEXT_PUBLIC_API_URL`
-
 ### Backend
-- `.env` — виправлено баг `ALLOWED_ORIGINS=ALLOWED_ORIGINS=...` (дубльований ключ)
-- `.env` — виправлено `ALLOWED_ORIGINS` на порт 5000 (порт фронтенду)
+- `ai_service.py` — новий сервіс класифікації через **Groq API** (модель `llama-3.3-70b-versatile`), замінив попередній `gemini_service.py`
+- `devices.py` — додано ендпоінт `POST /devices/classify` для пошуку без збереження; авторизація через JWT
+- `device.py` — оновлено модель, додано `VALID_CATEGORIES`
+- `requirements.txt` — оновлено залежності (додано `httpx`, `python-jose`)
+- `.env.example` — додано `JWT_SECRET_KEY`
 
-### Frontend — підключення до API
-- `auth/page.tsx` — додано форму реєстрації, `POST /users`, збереження `user_id` в `localStorage`
-- `(main)/page.tsx` — `GET /devices` + `GET /scenarios`, реальні дані замість hardcode
-- `devices/page.tsx` — `GET /devices?user_id=...`
-- `calculator/page.tsx` — `GET /devices`, підрахунок `power_watts × daily_usage_hours`
-- `scenarios/page.tsx` — `GET /scenarios?user_id=...`
-- `profile/page.tsx` — `GET /users/{id}`
+### Frontend — нові сторінки
+- `/devices/add` — вибір способу додавання (вручну або фото)
+- `/devices/add/manual` — форма з кнопкою **Знайти**: AI автоматично заповнює категорію та потужність
+- `/devices/add/scan` — заглушка "Скоро буде!"
+
+### Frontend — оновлені сторінки
+- `auth/page.tsx` — збереження `access_token` (JWT) замість `user_id`
+- `devices/page.tsx` — повний UI зі списком приладів та кнопкою додавання
+- `onboarding/page.tsx` — оновлений UI
+
+### Frontend — іконки
+Додано SVG іконки як React компоненти: `AirFryer`, `Alert`, `Calc`, `Camera`, `Charger`, `Check`, `Checkbox`, `Coffee_Machine`, `Conditioner`, `Device`, `Fridge`, `Home`, `Laptop`, `Light`, `Pen`, `Profile`, `Router`, `Scenario`, `System`, `Tv`
+
+### Docker
+- `frontend/Dockerfile` — оновлено з `node:18` до `node:20`, додано `ARG`/`ENV NEXT_PUBLIC_API_URL`
+- `docker-compose.yml` — налаштовано сервіс `frontend` з портом 5000 та передачею env vars при білді
 
 ### Git
-- `.gitignore` — додано `node_modules/`, `.next/`, `.env.example`, `.env.exemple`, IDE файли, системні файли
+- `.gitignore` — захищено `.env` файли, `node_modules/`, `.next/`, IDE файли

@@ -4,53 +4,106 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
+const CATEGORIES = [
+  'Холодильник', 'Телевізор', 'Пральна машина', 'Мікрохвильовка',
+  'Кондиціонер', 'Ноутбук', 'Роутер', 'Освітлення', 'Зарядний пристрій',
+  'Посудомийна машина', 'Електрочайник', 'Кавоварка', 'Інше',
+];
+
+const API = process.env.NEXT_PUBLIC_API_URL;
+
 export default function ManualAddDevicePage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  
-  // Стан для форми
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
     power: '',
-    startupPower: ''
+    startupPower: '',
   });
 
-  // Обробник змін в інпутах
+  const [searching, setSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'name') setError('');
   };
 
-  // Обробник відправки форми
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSearch = async () => {
+    if (!formData.name.trim()) return;
+    setError('');
+    setSearching(true);
 
     try {
-      // ⚠️ ТУТ МАЄ БУТИ ВАШ РОУТ АПІ (наприклад, /api/devices)
-      const response = await fetch('/api/devices', {
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`${API}/devices/classify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ model_name: formData.name.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 422) {
+        setError(data.detail || 'Це не схоже на побутовий електроприлад');
+        return;
+      }
+      if (!res.ok) {
+        setError('Помилка пошуку. Спробуйте ще раз');
+        return;
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        category: data.category || '',
+        power: String(data.power_watts || ''),
+        startupPower: data.startup_current_watts ? String(Math.round(data.startup_current_watts)) : '',
+      }));
+    } catch {
+      setError('Помилка мережі');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`${API}/devices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...formData,
-          power: Number(formData.power),
-          // Якщо пускова потужність не введена, передаємо null або 0
-          startupPower: formData.startupPower ? Number(formData.startupPower) : null, 
+          model_name: formData.name.trim(),
+          category: formData.category,
+          power_watts: Number(formData.power),
+          startup_current_watts: formData.startupPower ? Number(formData.startupPower) : null,
+          daily_usage_hours: 1,
+          is_critical: false,
         }),
       });
 
-      if (response.ok) {
-        // Успішно збережено — повертаємося до списку приладів
-        router.push('/devices');
-      } else {
-        console.error('Помилка при збереженні приладу');
-        // Тут можна додати вивід помилки для користувача
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.detail || 'Помилка збереження');
+        return;
       }
-    } catch (error) {
-      console.error('Помилка мережі:', error);
+
+      router.push('/devices');
+    } catch {
+      setError('Помилка мережі');
     } finally {
       setIsLoading(false);
     }
@@ -64,16 +117,28 @@ export default function ManualAddDevicePage() {
         {/* Назва приладу */}
         <div className={styles['input-group']}>
           <label htmlFor="name" className={styles['label']}>Назва приладу</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Наприклад: Холодильник Samsung"
-            className={styles['input']}
-            required
-          />
+          <div className={styles['search-row']}>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
+              placeholder="Наприклад: Gorenje RK4182PW4"
+              className={styles['input']}
+              required
+            />
+            <button
+              type="button"
+              onClick={handleSearch}
+              disabled={searching || !formData.name.trim()}
+              className={styles['search-btn']}
+            >
+              {searching ? 'Пошук...' : 'Знайти'}
+            </button>
+          </div>
+          {error && <p className={styles['error']}>{error}</p>}
         </div>
 
         {/* Категорія */}
@@ -87,12 +152,10 @@ export default function ManualAddDevicePage() {
             className={`${styles['input']} ${styles['select']}`}
             required
           >
-            <option value="" disabled hidden>Оберіть категорії</option>
-            <option value="fridge">Холодильник</option>
-            <option value="router">Роутер</option>
-            <option value="lighting">Освітлення</option>
-            <option value="tv">Телевізор</option>
-            <option value="other">Інше</option>
+            <option value="" disabled hidden>Оберіть категорію</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
           </select>
         </div>
 
@@ -112,7 +175,7 @@ export default function ManualAddDevicePage() {
           />
         </div>
 
-        {/* Пусковий струм (Необов'язково) */}
+        {/* Пусковий струм */}
         <div className={styles['input-group']}>
           <label htmlFor="startupPower" className={styles['label']}>Пусковий струм (Вт)</label>
           <input
@@ -128,8 +191,8 @@ export default function ManualAddDevicePage() {
         </div>
 
         {/* Кнопка */}
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className={styles['submit-btn']}
           disabled={isLoading}
         >

@@ -75,6 +75,61 @@
   color: #C0C0C0; 
 }
 
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.search-row .input {
+  flex: 1;
+}
+
+.search-btn {
+  background-color: #FF6B00;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+}
+
+.search-btn:hover:not(:disabled) {
+  background-color: #e05e00;
+}
+
+.search-btn:disabled {
+  background-color: #A0A0A0;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #e53935;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 4px 0 0 0;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #FF6B00;
+  cursor: pointer;
+}
+
+
 .submit-btn {
   background-color: #2D2D2D;
   color: #FFFFFF;
