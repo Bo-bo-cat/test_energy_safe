@@ -9,14 +9,7 @@ import { RouterIcon } from '../../../components/icons/Router';
 import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
 
-const initialDevices = [
-  { id: 1, name: 'Холодильник', power_watt: 150, startup_power_watt: 600, tag: 'Дім', iconName: 'fridge' },
-  { id: 2, name: 'Ноутбук', power_watt: 65, startup_power_watt: null, tag: 'Офіс', iconName: 'laptop' },
-  { id: 3, name: 'Роутер', power_watt: 12, startup_power_watt: null, tag: 'Дім', iconName: 'router' },
-  { id: 4, name: 'Лампи (4 шт.)', power_watt: 30, startup_power_watt: null, tag: 'Офіс', iconName: 'light' },
-  { id: 5, name: 'Телевізор', power_watt: 120, startup_power_watt: null, tag: 'Дім', iconName: 'tv' },
-];
-
+// Функція для відмальовки відповідної іконки
 const renderDeviceIcon = (iconName?: string) => {
   switch (iconName) {
     case 'fridge': return <FridgeIcon className={styles['device-svg']} />;
@@ -28,41 +21,56 @@ const renderDeviceIcon = (iconName?: string) => {
   }
 };
 
+// Розумне визначення тегу "Дім" чи "Офіс" на основі категорії для фільтрів
+const getLocationTag = (category: string) => {
+  const officeCategories = ['Ноутбук', 'Роутер', 'Освітлення', 'Зарядний пристрій'];
+  return officeCategories.includes(category) ? 'Офіс' : 'Дім';
+};
+
 export default function DevicesPage() {
-  const [devices, setDevices] = useState<any[]>(initialDevices);
-  
-  // Додаємо стан для збереження активного фільтра
+  const [devices, setDevices] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Стан завантаження
   const [activeFilter, setActiveFilter] = useState('Усі');
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    if (!token) return;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
+    // Словник для співставлення категорії з бази даних та назви іконки
     const categoryToIcon: Record<string, string> = {
-      'Холодильник': 'fridge', 'Ноутбук': 'laptop', 'Роутер': 'router',
-      'Освітлення': 'light', 'Телевізор': 'tv',
+      'Холодильник': 'fridge', 
+      'Ноутбук': 'laptop', 
+      'Роутер': 'router',
+      'Освітлення': 'light', 
+      'Телевізор': 'tv',
     };
 
+    // Запит до вашої БД
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
+          // Мапимо дані з бази під наш інтерфейс
           setDevices(data.map((d: any) => ({
             id: d.id,
             name: d.model_name,
             power_watt: d.power_watts,
             startup_power_watt: d.startup_current_watts ?? null,
-            tag: d.category,
-            iconName: categoryToIcon[d.category] ?? 'other',
+            tag: getLocationTag(d.category), // Автоматично присвоюємо Дім/Офіс
+            iconName: categoryToIcon[d.category] ?? 'other', // Підбираємо іконку
           })));
         }
       })
-      .catch((err) => console.error('Помилка завантаження:', err));
+      .catch((err) => console.error('Помилка завантаження:', err))
+      .finally(() => setIsLoading(false)); // Вимикаємо лоадер після завантаження
   }, []);
 
-  // Відфільтрований масив приладів
+  // Фільтрація приладів
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
     return device.tag === activeFilter;
@@ -101,12 +109,12 @@ export default function DevicesPage() {
         </Link>
       </div>
 
-      {/* Виводимо ВІДФІЛЬТРОВАНИЙ список приладів */}
       <div className={styles['device-list']}>
-        {filteredDevices.map((device) => {
-          return (
+        {isLoading ? (
+          <p style={{ color: '#1A1A1A', fontWeight: 500 }}>Завантаження приладів...</p>
+        ) : filteredDevices.length > 0 ? (
+          filteredDevices.map((device) => (
             <div key={device.id} className={styles['device-item']}>
-              
               <div className={styles['device-left']}>
                 <span className={styles['device-icon']}>
                   {renderDeviceIcon(device.iconName)}
@@ -118,15 +126,18 @@ export default function DevicesPage() {
                 <span className={styles['device-power']}>
                   {device.power_watt} Вт {device.startup_power_watt ? `- пуск ${device.startup_power_watt} Вт` : ''}
                 </span>
-                <span className={styles['device-tag']}>{device.tag || 'Прилад'}</span>
+                <span className={styles['device-tag']}>{device.tag}</span>
               </div>
-
             </div>
-          );
-        })}
+          ))
+        ) : (
+          <p style={{ color: '#A0A0A0', fontWeight: 500 }}>
+            {activeFilter === 'Усі' ? 'У вас ще немає доданих приладів.' : `Немає приладів у категорії "${activeFilter}".`}
+          </p>
+        )}
       </div>
 
-      {/* Картка загальної потужності тепер рахує тільки видимі (відфільтровані) прилади */}
+      {/* Картка загальної потужності (рахує тільки видимі прилади) */}
       <div className={styles['summary-card']}>
         <div className={styles['summary-label']}>Загальна потужність</div>
         <div className={styles['summary-value']}>

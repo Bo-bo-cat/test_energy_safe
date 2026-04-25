@@ -87,7 +87,7 @@
 }
 
 .search-btn {
-  background-color: #FF6B00;
+  background-color: #2d2d2d;
   color: #FFFFFF;
   border: none;
   border-radius: 10px;
@@ -101,7 +101,7 @@
 }
 
 .search-btn:hover:not(:disabled) {
-  background-color: #e05e00;
+  background-color: #1A1A1A;
 }
 
 .search-btn:disabled {
