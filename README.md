@@ -103,6 +103,7 @@ docker-compose up --build -d
 
 ### 4. Зупинити
 
+
 ```bash
 docker-compose down
 ```
