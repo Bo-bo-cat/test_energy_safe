@@ -25,11 +25,24 @@ export default function ManualAddDevicePage() {
   const [searching, setSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({ name: '', category: '', power: '' });
+
+  const validate = () => {
+    const errors = { name: '', category: '', power: '' };
+    if (!formData.name.trim()) errors.name = 'Введіть назву приладу';
+    if (!formData.category) errors.category = 'Оберіть категорію';
+    if (!formData.power) errors.power = 'Введіть потужність';
+    else if (isNaN(Number(formData.power))) errors.power = 'Потужність має бути числом';
+    else if (Number(formData.power) <= 0) errors.power = 'Потужність має бути більше 0';
+    setFieldErrors(errors);
+    return !errors.name && !errors.category && !errors.power;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (name === 'name') setError('');
+    setFieldErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const handleSearch = async () => {
@@ -74,6 +87,8 @@ export default function ManualAddDevicePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
+
     setIsLoading(true);
     setError('');
 
@@ -127,7 +142,6 @@ export default function ManualAddDevicePage() {
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
               placeholder="Наприклад: Gorenje RK4182PW4"
               className={styles['input']}
-              required
             />
             <button
               type="button"
@@ -138,6 +152,7 @@ export default function ManualAddDevicePage() {
               {searching ? 'Пошук...' : 'Знайти'}
             </button>
           </div>
+          {fieldErrors.name && <p className={styles['error']}>{fieldErrors.name}</p>}
           {error && <p className={styles['error']}>{error}</p>}
         </div>
 
@@ -150,13 +165,13 @@ export default function ManualAddDevicePage() {
             value={formData.category}
             onChange={handleChange}
             className={`${styles['input']} ${styles['select']}`}
-            required
           >
             <option value="" disabled hidden>Оберіть категорію</option>
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
+          {fieldErrors.category && <p className={styles['error']}>{fieldErrors.category}</p>}
         </div>
 
         {/* Потужність */}
@@ -170,9 +185,8 @@ export default function ManualAddDevicePage() {
             onChange={handleChange}
             placeholder="150"
             className={styles['input']}
-            required
-            min="1"
           />
+          {fieldErrors.power && <p className={styles['error']}>{fieldErrors.power}</p>}
         </div>
 
         {/* Пусковий струм */}
@@ -186,7 +200,6 @@ export default function ManualAddDevicePage() {
             onChange={handleChange}
             placeholder="Авто * 3.5"
             className={styles['input']}
-            min="1"
           />
         </div>
 
