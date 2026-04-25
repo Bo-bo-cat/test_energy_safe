@@ -30,6 +30,9 @@ const renderDeviceIcon = (iconName?: string) => {
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState<any[]>(initialDevices);
+  
+  // Додаємо стан для збереження активного фільтра
+  const [activeFilter, setActiveFilter] = useState('Усі');
 
   useEffect(() => {
     const userId = localStorage.getItem('user_id');
@@ -45,6 +48,12 @@ export default function DevicesPage() {
     //   .catch((err) => console.error('Помилка завантаження:', err));
   }, []);
 
+  // Відфільтрований масив приладів
+  const filteredDevices = devices.filter((device) => {
+    if (activeFilter === 'Усі') return true;
+    return device.tag === activeFilter;
+  });
+
   return (
     <div className={styles['wrap']}>
       
@@ -52,21 +61,35 @@ export default function DevicesPage() {
         <h1 className={styles['title']}>Мої прилади</h1>
         
         <div className={styles['filters']}>
-          <button className={styles['filter-chip']}>Усі</button>
-          <button className={styles['filter-chip']}>Дім</button>
-          <button className={styles['filter-chip']}>Офіс</button>
+          <button 
+            className={`${styles['filter-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
+            onClick={() => setActiveFilter('Усі')}
+          >
+            Усі
+          </button>
+          <button 
+            className={`${styles['filter-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
+            onClick={() => setActiveFilter('Дім')}
+          >
+            Дім
+          </button>
+          <button 
+            className={`${styles['filter-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
+            onClick={() => setActiveFilter('Офіс')}
+          >
+            Офіс
+          </button>
         </div>
 
-        {/* 2. Замінили <button> на <Link> і додали href */}
         <Link href="/devices/add" className={styles['add-btn']}>
           <span className={styles['plus-icon']}>+</span>
           Додати
         </Link>
       </div>
 
-      {/* Список приладів */}
+      {/* Виводимо ВІДФІЛЬТРОВАНИЙ список приладів */}
       <div className={styles['device-list']}>
-        {devices.map((device) => {
+        {filteredDevices.map((device) => {
           return (
             <div key={device.id} className={styles['device-item']}>
               
@@ -89,17 +112,17 @@ export default function DevicesPage() {
         })}
       </div>
 
-      {/* Картка загальної потужності */}
+      {/* Картка загальної потужності тепер рахує тільки видимі (відфільтровані) прилади */}
       <div className={styles['summary-card']}>
         <div className={styles['summary-label']}>Загальна потужність</div>
         <div className={styles['summary-value']}>
           <span className={styles['accent']}>
-            {devices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
+            {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
           </span> Вт 
-          {devices.some(d => d.startup_power_watt) && (
+          {filteredDevices.some(d => d.startup_power_watt) && (
             <>
               , пуск <span className={styles['accent']}>
-                {Math.max(...devices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
+                {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
               </span> Вт
             </>
           )}

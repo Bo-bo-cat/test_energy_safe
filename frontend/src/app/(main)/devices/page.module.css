@@ -22,7 +22,7 @@
   grid-area: title;
   margin: 0;
   font-size: 48px;
-  font-weight: 800;
+  font-weight: 700;
   color: #FF6B00;
   letter-spacing: -0.02em;
 }
@@ -81,6 +81,17 @@
 
 .filter-chip:hover {
   background-color: #F4F4F4;
+}
+
+/* Стиль для активної плашки фільтра */
+.filter-chip.active {
+  background-color: #1A1A1A; /* Темний фон */
+  color: #FFFFFF; /* Білий текст */
+  border-color: #1A1A1A;
+}
+
+.filter-chip.active:hover {
+  background-color: #2D2D2D; 
 }
 
 /* Список приладів */
