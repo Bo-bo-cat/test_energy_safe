@@ -8,8 +8,19 @@ import { LaptopIcon } from '../../../components/icons/Laptop';
 import { RouterIcon } from '../../../components/icons/Router';
 import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
+import { ArrowIcon } from '../../../components/icons/Arrow';
+import { DeleteIcon } from '../../../components/icons/Delete';
+import { HomeIcon } from '../../../components/icons/Home';
+import { OfficeIcon } from '../../../components/icons/Office';
 
-// Функція для відмальовки відповідної іконки
+const categoryToIcon: Record<string, string> = {
+  'Холодильник': 'fridge', 
+  'Ноутбук': 'laptop', 
+  'Роутер': 'router',
+  'Освітлення': 'light', 
+  'Телевізор': 'tv',
+};
+
 const renderDeviceIcon = (iconName?: string) => {
   switch (iconName) {
     case 'fridge': return <FridgeIcon className={styles['device-svg']} />;
@@ -21,16 +32,17 @@ const renderDeviceIcon = (iconName?: string) => {
   }
 };
 
-// Розумне визначення тегу "Дім" чи "Офіс" на основі категорії для фільтрів
 const getLocationTag = (category: string) => {
   const officeCategories = ['Ноутбук', 'Роутер', 'Освітлення', 'Зарядний пристрій'];
   return officeCategories.includes(category) ? 'Офіс' : 'Дім';
 };
 
 export default function DevicesPage() {
+  // Починаємо з порожнього списку
   const [devices, setDevices] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Стан завантаження
+  const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -39,46 +51,73 @@ export default function DevicesPage() {
       return;
     }
 
-    // Словник для співставлення категорії з бази даних та назви іконки
-    const categoryToIcon: Record<string, string> = {
-      'Холодильник': 'fridge', 
-      'Ноутбук': 'laptop', 
-      'Роутер': 'router',
-      'Освітлення': 'light', 
-      'Телевізор': 'tv',
-    };
-
-    // Запит до вашої БД
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          // Мапимо дані з бази під наш інтерфейс
           setDevices(data.map((d: any) => ({
             id: d.id,
             name: d.model_name,
+            category: d.category,
             power_watt: d.power_watts,
             startup_power_watt: d.startup_current_watts ?? null,
-            tag: getLocationTag(d.category), // Автоматично присвоюємо Дім/Офіс
-            iconName: categoryToIcon[d.category] ?? 'other', // Підбираємо іконку
+            tag: d.tag || getLocationTag(d.category),
+            iconName: categoryToIcon[d.category] ?? 'other',
           })));
         }
       })
       .catch((err) => console.error('Помилка завантаження:', err))
-      .finally(() => setIsLoading(false)); // Вимикаємо лоадер після завантаження
+      .finally(() => setIsLoading(false));
   }, []);
 
-  // Фільтрація приладів
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
     return device.tag === activeFilter;
   });
 
+  const groupedDevices = filteredDevices.reduce((acc, device) => {
+    const cat = device.category || 'Інше';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(device);
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
+  };
+
+  const handleToggleLocation = async (id: number, newTag: string) => {
+    setDevices(prev => prev.map(d => d.id === id ? { ...d, tag: newTag } : d));
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices/${id}`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ tag: newTag }) 
+      });
+    } catch (err) { console.error(err); }
+  };
+
+  const handleDelete = async (id: number) => {
+    setDevices(prev => prev.filter(d => d.id !== id));
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (err) { console.error(err); }
+  };
+
   return (
     <div className={styles['wrap']}>
-      
       <div className={styles['top-section']}>
         <h1 className={styles['title']}>Мої прилади</h1>
         
@@ -90,16 +129,16 @@ export default function DevicesPage() {
             Усі
           </button>
           <button 
-            className={`${styles['filter-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
+            className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
             onClick={() => setActiveFilter('Дім')}
           >
-            Дім
+            <HomeIcon className={styles['filter-icon']} />
           </button>
           <button 
-            className={`${styles['filter-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
+            className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
             onClick={() => setActiveFilter('Офіс')}
           >
-            Офіс
+            <OfficeIcon className={styles['filter-icon']} />
           </button>
         </div>
 
@@ -112,22 +151,64 @@ export default function DevicesPage() {
       <div className={styles['device-list']}>
         {isLoading ? (
           <p style={{ color: '#1A1A1A', fontWeight: 500 }}>Завантаження приладів...</p>
-        ) : filteredDevices.length > 0 ? (
-          filteredDevices.map((device) => (
-            <div key={device.id} className={styles['device-item']}>
-              <div className={styles['device-left']}>
-                <span className={styles['device-icon']}>
-                  {renderDeviceIcon(device.iconName)}
-                </span>
-                <span className={styles['device-name']}>{device.name}</span>
+        ) : Object.keys(groupedDevices).length > 0 ? (
+          Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
+            <div key={categoryName} className={styles['category-group']}>
+              <div 
+                className={styles['category-header']} 
+                onClick={() => toggleCategory(categoryName)}
+              >
+                <div className={styles['category-header-left']}>
+                  <span className={styles['device-icon']}>
+                    {renderDeviceIcon(categoryToIcon[categoryName] || 'other')}
+                  </span>
+                  <span className={styles['category-title']}>{categoryName}</span>
+                </div>
+                <ArrowIcon 
+                  className={`${styles['arrow-icon']} ${expandedCategories[categoryName] ? styles['arrow-up'] : ''}`} 
+                />
               </div>
 
-              <div className={styles['device-right']}>
-                <span className={styles['device-power']}>
-                  {device.power_watt} Вт {device.startup_power_watt ? `- пуск ${device.startup_power_watt} Вт` : ''}
-                </span>
-                <span className={styles['device-tag']}>{device.tag}</span>
-              </div>
+              {expandedCategories[categoryName] && (
+                <div className={styles['dropdown-container']}>
+                  <div className={styles['dropdown-scroll']}>
+                    {items.map((device: any) => (
+                      <div key={device.id} className={styles['dropdown-item']}>
+                        <div className={styles['item-name']}>{device.name}</div>
+                        
+                        <div className={styles['item-controls']}>
+                          <span className={styles['item-power']}>
+                            {device.power_watt} Вт {device.startup_power_watt ? `- пуск ${device.startup_power_watt} Вт` : ''}
+                          </span>
+                          
+                          <div className={styles['action-group']}>
+                            <button
+                              className={`${styles['action-btn']} ${device.tag === 'Дім' ? styles['active'] : ''}`}
+                              onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Дім'); }}
+                            >
+                              <HomeIcon className={styles['action-icon']} />
+                              Дім
+                            </button>
+                            <button
+                              className={`${styles['action-btn']} ${device.tag === 'Офіс' ? styles['active'] : ''}`}
+                              onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Офіс'); }}
+                            >
+                              <OfficeIcon className={styles['action-icon']} />
+                              Офіс
+                            </button>
+                            <button
+                              className={`${styles['action-btn']} ${styles['delete-btn']}`}
+                              onClick={(e) => { e.stopPropagation(); handleDelete(device.id); }}
+                            >
+                              <DeleteIcon className={styles['action-icon']} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))
         ) : (
@@ -137,7 +218,6 @@ export default function DevicesPage() {
         )}
       </div>
 
-      {/* Картка загальної потужності (рахує тільки видимі прилади) */}
       <div className={styles['summary-card']}>
         <div className={styles['summary-label']}>Загальна потужність</div>
         <div className={styles['summary-value']}>
@@ -153,7 +233,6 @@ export default function DevicesPage() {
           )}
         </div>
       </div>
-
     </div>
   );
 }
