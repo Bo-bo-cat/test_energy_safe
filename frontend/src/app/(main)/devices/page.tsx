@@ -63,7 +63,7 @@ export default function DevicesPage() {
             category: d.category,
             power_watt: d.power_watts,
             startup_power_watt: d.startup_current_watts ?? null,
-            tag: getLocationTag(d.category), 
+            tag: d.tag || getLocationTag(d.category),
             iconName: categoryToIcon[d.category] ?? 'other',
           })));
         }
@@ -174,7 +174,7 @@ export default function DevicesPage() {
                   <div className={styles['dropdown-scroll']}>
                     {items.map((device: any) => (
                       <div key={device.id} className={styles['dropdown-item']}>
-                        <div className={styles['item-name']}>[{device.name}]</div>
+                        <div className={styles['item-name']}>{device.name}</div>
                         
                         <div className={styles['item-controls']}>
                           <span className={styles['item-power']}>
@@ -182,19 +182,21 @@ export default function DevicesPage() {
                           </span>
                           
                           <div className={styles['action-group']}>
-                            <button 
+                            <button
                               className={`${styles['action-btn']} ${device.tag === 'Дім' ? styles['active'] : ''}`}
                               onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Дім'); }}
                             >
                               <HomeIcon className={styles['action-icon']} />
+                              Дім
                             </button>
-                            <button 
+                            <button
                               className={`${styles['action-btn']} ${device.tag === 'Офіс' ? styles['active'] : ''}`}
                               onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Офіс'); }}
                             >
                               <OfficeIcon className={styles['action-icon']} />
+                              Офіс
                             </button>
-                            <button 
+                            <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => { e.stopPropagation(); handleDelete(device.id); }}
                             >
