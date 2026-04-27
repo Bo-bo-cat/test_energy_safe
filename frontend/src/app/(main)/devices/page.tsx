@@ -32,10 +32,6 @@ const renderDeviceIcon = (iconName?: string) => {
   }
 };
 
-const getLocationTag = (category: string) => {
-  const officeCategories = ['Ноутбук', 'Роутер', 'Освітлення', 'Зарядний пристрій'];
-  return officeCategories.includes(category) ? 'Офіс' : 'Дім';
-};
 
 export default function DevicesPage() {
   // Починаємо з порожнього списку
@@ -63,7 +59,7 @@ export default function DevicesPage() {
             category: d.category,
             power_watt: d.power_watts,
             startup_power_watt: d.startup_current_watts ?? null,
-            tag: d.tag || getLocationTag(d.category),
+            tag: d.tag,
             iconName: categoryToIcon[d.category] ?? 'other',
           })));
         }

@@ -14,6 +14,12 @@ from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
+_OFFICE_CATEGORIES = {"Ноутбук", "Роутер", "Освітлення", "Зарядний пристрій"}
+
+
+def _default_tag(category: str) -> str:
+    return "Офіс" if category in _OFFICE_CATEGORIES else "Дім"
+
 
 def _serialize_device(doc: dict) -> DeviceResponse:
     return DeviceResponse(
@@ -26,6 +32,7 @@ def _serialize_device(doc: dict) -> DeviceResponse:
         brand=doc["brand"],
         daily_usage_hours=doc["daily_usage_hours"],
         is_critical=doc["is_critical"],
+        tag=doc.get("tag") or _default_tag(doc["category"]),
         created_at=doc["created_at"],
     )
 
@@ -99,6 +106,7 @@ async def create_device(
         "startup_current_watts": payload.startup_current_watts,
         "daily_usage_hours": payload.daily_usage_hours,
         "is_critical": payload.is_critical,
+        "tag": _default_tag(specs["category"]),
         "created_at": datetime.now(timezone.utc),
     }
     result = await db.devices.insert_one(doc)
@@ -165,6 +173,37 @@ async def update_device(
         update_data["category"] = specs["category"]
         update_data["power_watts"] = specs["power_watts"]
         update_data["brand"] = specs["brand"]
+
+    result = await db.devices.find_one_and_update(
+        {"_id": oid},
+        {"$set": update_data},
+        return_document=True,
+    )
+    return _serialize_device(result)
+
+
+@router.patch("/{device_id}", response_model=DeviceResponse)
+async def patch_device(
+    device_id: str,
+    payload: DeviceUpdate,
+    user_id: str = Depends(get_current_user_id),
+):
+    db = get_database()
+
+    try:
+        oid = ObjectId(device_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний device_id")
+
+    doc = await db.devices.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Пристрій не знайдено")
+    if doc["user_id"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
+    update_data = payload.model_dump(exclude_none=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 
     result = await db.devices.find_one_and_update(
         {"_id": oid},

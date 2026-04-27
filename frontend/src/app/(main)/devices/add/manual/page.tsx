@@ -30,6 +30,7 @@ export default function ManualAddDevicePage() {
   const validate = () => {
     const errors = { name: '', category: '', power: '' };
     if (!formData.name.trim()) errors.name = 'Введіть назву приладу';
+    else if (/^\d+$/.test(formData.name.trim())) errors.name = 'Назва приладу не може бути числом';
     if (!formData.category) errors.category = 'Оберіть категорію';
     if (!formData.power) errors.power = 'Введіть потужність';
     else if (isNaN(Number(formData.power))) errors.power = 'Потужність має бути числом';

@@ -30,6 +30,7 @@ class DeviceUpdate(BaseModel):
     model_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
     daily_usage_hours: Optional[float] = Field(default=None, ge=0, le=24)
     is_critical: Optional[bool] = None
+    tag: Optional[str] = None
 
 
 class DeviceResponse(BaseModel):
@@ -42,6 +43,7 @@ class DeviceResponse(BaseModel):
     brand: str
     daily_usage_hours: float
     is_critical: bool
+    tag: str = "Дім"
     created_at: datetime
 
 

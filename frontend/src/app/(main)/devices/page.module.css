@@ -109,7 +109,7 @@
 .device-svg { width: 24px; height: 24px; }
 
 .arrow-icon {
-  width: 24px; height: 24px;
+  width: 16px; height: 16px;
   transition: transform 0.3s ease;
 }
 .arrow-up { transform: rotate(180deg); }
