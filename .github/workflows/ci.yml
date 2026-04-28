@@ -1,0 +1,29 @@
+name: CI Tests
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get code from repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
