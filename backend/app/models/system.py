@@ -5,7 +5,7 @@ from datetime import datetime
 
 class SystemCreate(BaseModel):
     model: str = Field(..., min_length=1, max_length=200)
-    type: str = Field(default="UPS")
+    type: str = Field(default="ДБЖ")
     power: float = Field(..., gt=0, description="Потужність у Вт")
     battery: str = Field(..., description="Ємність батареї, напр. '256 Wh'")
     autonomy: str = Field(..., description="Час автономії, напр. '2 год'")
@@ -14,13 +14,25 @@ class SystemCreate(BaseModel):
     model_config = {"json_schema_extra": {
         "example": {
             "model": "EcoFlow RIVER 2",
-            "type": "UPS",
+            "type": "Портативна електростанція",
             "power": 300,
             "battery": "256 Wh",
             "autonomy": "2 год",
             "selected_for_calculation": False
         }
     }}
+
+
+class SystemByName(BaseModel):
+    model: str = Field(..., min_length=1, max_length=200)
+
+    model_config = {"json_schema_extra": {
+        "example": {"model": "EcoFlow RIVER 2"}
+    }}
+
+
+class SystemUpdate(BaseModel):
+    selected_for_calculation: Optional[bool] = None
 
 
 class SystemResponse(BaseModel):
