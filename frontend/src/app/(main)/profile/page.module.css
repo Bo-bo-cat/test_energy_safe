@@ -1,0 +1,94 @@
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 32px;
+  font-family: 'Inter', sans-serif;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #FF6B00; /* Твій фірмовий помаранчевий */
+  margin: 0 0 32px 0;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  /* background-color прибрано звідси */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.userName {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.userEmail {
+  font-size: 18px;
+  font-weight: 500;
+  color: #8E8E93;
+  margin: 0;
+}
+
+/* Велика помаранчева кнопка видалення з макета */
+.deleteBtn {
+  background-color: #FF6B00;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0px 4px 12px rgba(255, 107, 0, 0.2);
+}
+
+.deleteBtn:hover {
+  background-color: #E05A00;
+}
+
+.deleteBtn:active {
+  transform: scale(0.98);
+}
+
+/* Адаптація під мобільні */
+@media (max-width: 768px) {
+  .profileHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .userName {
+    font-size: 28px;
+  }
+  
+  .deleteBtn {
+    width: 100%;
+  }
+}

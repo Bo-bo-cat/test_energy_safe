@@ -49,35 +49,56 @@
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Невеликий відступ між елементами */
+  gap: 8px;
 }
 
-/* Посилання в меню (неактивне) */
-.nav-link {
+/* Базовий стиль для посилань та кнопки логауту */
+.nav-link, 
+.logout-btn {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  border-radius: 16px; /* Велике скруглення за макетом */
+  border-radius: 16px;
   text-decoration: none;
-  color: #1A1A1A; /* Майже чорний колір тексту */
+  color: #1A1A1A;
   font-size: 18px;
   font-weight: 700;
   transition: all 0.2s ease-in-out;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
-/* Ефект при наведенні */
-.nav-link:hover:not(.nav-link-active) {
+/* Ефект при наведенні для неактивних посилань та кнопки логауту */
+.nav-link:hover:not(.nav-link-active),
+.logout-btn:hover {
   background-color: #DCDCDC;
+  color: #2C2C2C; /* Чіткий темний колір при наведенні */
 }
 
-/* АКТИВНИЙ СТАН (коли ми на цій сторінці) */
+/* Зміна кольору іконки при наведенні */
+.nav-link:hover:not(.nav-link-active) .nav-icon,
+.logout-btn:hover .nav-icon {
+  color: #2C2C2C;
+}
+
+/* АКТИВНИЙ СТАН */
 .nav-link-active {
   background-color: #FF6B00; /* Помаранчевий фон */
   color: #FFFFFF; /* Білий текст */
 }
 
-/* Контейнер для іконки всередині посилання */
+/* Секція логауту - притискає кнопку до низу */
+.logout-section {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* Контейнер для іконки */
 .icon-wrapper {
   display: flex;
   align-items: center;
@@ -90,11 +111,11 @@
 .nav-icon {
   width: 100%;
   height: 100%;
-  color: #1A1A1A; /* Чорна іконка за замовчуванням */
+  color: #1A1A1A;
   transition: color 0.2s ease;
 }
 
-/* Робимо іконку білою, якщо пункт меню активний */
+/* Біла іконка в активному стані */
 .nav-link-active .nav-icon {
   color: #FFFFFF;
 }
@@ -108,45 +129,40 @@
 }
 
 /* =========================================
-   Адаптація для екранів (Планшети та Мобільні)
+   Адаптація для екранів
    ========================================= */
 
 @media (max-width: 1024px) {
-  /* Планшети: просто робимо сайдбар вужчим */
   .sidebar {
     width: 220px;
     padding: 32px 16px;
   }
-  .nav-link {
+  .nav-link, .logout-btn {
     font-size: 16px;
     padding: 14px 16px;
   }
 }
 
 @media (max-width: 768px) {
-  /* Мобільні телефони: перетворюємо на нижнє меню (Bottom Bar) */
   .layout-container {
     flex-direction: column;
   }
 
   .sidebar {
     width: 100%;
-    height: auto;          /* Скидаємо висоту на весь екран */
-    position: fixed;       /* Фіксуємо поверх усього контенту */
-    bottom: 0;             /* Притискаємо до низу */
-    top: auto;             /* Скасовуємо верхню прив'язку */
+    height: auto;
+    position: fixed;
+    bottom: 0;
+    top: auto;
     left: 0;
     flex-direction: row;
-    padding: 8px 8px;      /* Невеликі відступи для мобільного */
+    padding: 8px 8px;
     border-right: none;
-    border-top: 1px solid #DCDCDC; /* Лінія тепер зверху меню */
+    border-top: 1px solid #DCDCDC;
     z-index: 1000;
-    
-    /* Додаємо padding для безпечної зони на сучасних iPhone (смужка внизу) */
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
   }
 
-  /* Ховаємо логотип у нижньому меню */
   .logo-container {
     display: none; 
   }
@@ -156,28 +172,30 @@
     width: 100%;
     justify-content: space-between;
     gap: 4px;
+    flex: 5; /* Займає 5 часток для пунктів меню */
   }
 
-  .nav-link {
-    flex-direction: column; /* Ставимо іконку над текстом */
+  .logout-section {
+    margin-top: 0;
+    padding-top: 0;
+    flex: 1; /* Займає 1 частку в ряду */
+    display: flex;
+  }
+
+  .nav-link, .logout-btn {
+    flex-direction: column;
     gap: 6px;
     padding: 12px 4px;
-    font-size: 11px;        /* Зменшуємо шрифт, щоб влізло 6 пунктів */
-    flex: 1;                /* Усі пункти ділять ширину порівну */
+    font-size: 11px;
+    flex: 1;
     justify-content: center;
     border-radius: 16px;
     text-align: center;
+    align-items: center;
   }
 
-  .icon-wrapper {
-    width: 24px;
-    height: 24px;
-  }
-
-  /* Щоб контент сторінок не ховався під фіксованим меню, 
-     додаємо відступ знизу для головного контейнера */
   .main-content {
     padding: 24px 16px;
-    padding-bottom: 100px; /* Запас місця під нижнє меню */
+    padding-bottom: 100px;
   }
-}
+} 

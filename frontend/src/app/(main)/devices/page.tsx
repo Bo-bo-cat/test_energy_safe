@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Імпортуємо всі іконки
+// Іконки
 import { FridgeIcon } from '../../../components/icons/Fridge';
 import { LaptopIcon } from '../../../components/icons/Laptop';
 import { RouterIcon } from '../../../components/icons/Router';
@@ -14,7 +14,7 @@ import { DeleteIcon } from '../../../components/icons/Delete';
 import { HomeIcon } from '../../../components/icons/Home';
 import { OfficeIcon } from '../../../components/icons/Office';
 
-// ІМПОРТУЄМО НАШ НОВИЙ КОМПОНЕНТ МОДАЛКИ
+// Компонент модалки
 import { DecisionModal } from '../../../components/DecisionModal';
 
 const categoryToIcon: Record<string, string> = {
@@ -37,13 +37,12 @@ const renderDeviceIcon = (iconName?: string) => {
 };
 
 export default function DevicesPage() {
-  // Починаємо з порожнього списку (плейсхолдери видалено)
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   
-  // Стан для відстеження, який прилад ми хочемо видалити (зберігаємо його ID)
+  // Стейт для керування модалкою видалення
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
 
   useEffect(() => {
@@ -58,7 +57,7 @@ export default function DevicesPage() {
     })
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setDevices(data.map((d: any) => ({
             id: d.id,
             name: d.model_name,
@@ -106,24 +105,27 @@ export default function DevicesPage() {
     } catch (err) { console.error(err); }
   };
 
-  // ФУНКЦІЯ: Остаточне підтвердження видалення
+  // Функція підтвердженого видалення
   const confirmDelete = async () => {
     if (deviceToDelete === null) return;
     
     const id = deviceToDelete;
-    
-    // Закриваємо модалку та прибираємо прилад з інтерфейсу миттєво
-    setDeviceToDelete(null); 
+    // Оптимістичне видалення з UI
     setDevices(prev => prev.filter(d => d.id !== id));
-    
+    setDeviceToDelete(null); // Закриваємо модалку
+
     const token = localStorage.getItem('access_token');
     if (!token) return;
+
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err);
+      // У разі помилки можна оновити список з бекенду знову
+    }
   };
 
   return (
@@ -156,6 +158,22 @@ export default function DevicesPage() {
           <span className={styles['plus-icon']}>+</span>
           Додати
         </Link>
+      </div>
+
+      <div className={styles['summary-card']}>
+        <div className={styles['summary-label']}>Загальна потужність</div>
+        <div className={styles['summary-value']}>
+          <span className={styles['accent']}>
+            {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
+          </span> Вт 
+          {filteredDevices.some(d => d.startup_power_watt) && (
+            <>
+              , пуск <span className={styles['accent']}>
+                {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
+              </span> Вт
+            </>
+          )}
+        </div>
       </div>
 
       <div className={styles['device-list']}>
@@ -206,18 +224,15 @@ export default function DevicesPage() {
                               <OfficeIcon className={styles['action-icon']} />
                               Офіс
                             </button>
-                            
-                            {/* КНОПКА ВИДАЛЕННЯ: Відкриває модалку */}
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => { 
                                 e.stopPropagation(); 
-                                setDeviceToDelete(device.id); 
+                                setDeviceToDelete(device.id); // Відкриваємо модалку
                               }}
                             >
                               <DeleteIcon className={styles['action-icon']} />
                             </button>
-
                           </div>
                         </div>
                       </div>
@@ -234,31 +249,13 @@ export default function DevicesPage() {
         )}
       </div>
 
-      <div className={styles['summary-card']}>
-        <div className={styles['summary-label']}>Загальна потужність</div>
-        <div className={styles['summary-value']}>
-          <span className={styles['accent']}>
-            {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
-          </span> Вт 
-          {filteredDevices.some(d => d.startup_power_watt) && (
-            <>
-              , пуск <span className={styles['accent']}>
-                {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
-              </span> Вт
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* НОВИЙ КОМПОНЕНТ МОДАЛКИ: Рендериться лише якщо deviceToDelete не null */}
+      {/* Сама модалка підтвердження */}
+      {/* Сама модалка підтвердження */}
       <DecisionModal 
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}
         onConfirm={confirmDelete}
-        title="Видалити прилад?"
-        text="Ви дійсно хочете видалити цей прилад? Цю дію неможливо скасувати."
       />
-
     </div>
   );
 }

@@ -1,0 +1,338 @@
+/* src/app/(main)/systems/page.module.css */
+
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 32px;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Заголовок */
+.pageTitle {
+  font-size: 36px;
+  font-weight: 800;
+  color: #FF6B00;
+  margin: 0 0 24px 0;
+}
+
+/* Перемикач табів */
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.tabBtn {
+  padding: 8px 16px;
+  border: 1px solid #DCDCDC;
+  border-radius: 6px;
+  background-color: #FFFFFF;
+  color: #1A1A1A;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtn.active {
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border-color: #2D2D2D;
+}
+
+/* Блок введення системи */
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #2D2D2D;
+  margin: 0 0 20px 0;
+}
+
+.inputRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 48px;
+  width: 100%;
+}
+
+.addInput {
+  flex: 1;
+  padding: 16px 20px;
+  border: 1px solid #DCDCDC;
+  border-radius: 12px;
+  font-size: 18px;
+  color: #1A1A1A;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.addInput:focus { border-color: #FF6B00; }
+
+.addBtn {
+  background-color: #FF6B00;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 0 32px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addBtn:hover { background-color: #E05A00; }
+
+/* --- СІТКА КАРТОК --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1A1A1A;
+  word-break: break-word; /* Щоб довгі назви не ламали сітку */
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.iconBtn:hover { opacity: 0.7; }
+
+/* Іконки в картках */
+.actionIconOrange {
+  width: 24px;
+  height: 24px;
+  color: #FF6B00;
+}
+
+.actionIconGray {
+  width: 24px;
+  height: 24px;
+  color: #FF6B00;
+}
+
+/* --- ХАРАКТЕРИСТИКИ --- */
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.specRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid #E0E0E0;
+  padding-bottom: 8px;
+}
+
+.specLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #A0A0A0;
+}
+
+.specValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  min-height: 17px;
+}
+
+/* Кнопка "Плюс" */
+.plusBtnContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.plusIcon {
+  font-size: 32px;
+  font-weight: 800;
+  color: #FF6B00;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.plusIcon:hover { transform: scale(1.1); }
+
+/* --- НИЖНІ БЛОКИ --- */
+.bottomBox {
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 24px;
+  display: inline-block;
+  background-color: #FFFFFF;
+}
+
+.bottomBoxTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin-bottom: 12px;
+}
+
+.bottomBoxValue {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1A1A1A;
+}
+
+.accent { color: #FF6B00; }
+
+.hintBox {
+  background-color: #DCDCDC;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-top: 24px;
+}
+
+.hintTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2D2D2D;
+  margin-bottom: 4px;
+}
+
+.hintText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2D2D2D;
+}
+
+
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
+   ========================================= */
+
+/* Планшети */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Мобільні телефони (Вертикально) */
+@media (max-width: 768px) {
+  .wrap {
+    padding-top: 16px;
+    padding-bottom: 120px; /* Запас під нижнє мобільне меню */
+  }
+
+  .pageTitle {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .sectionTitle {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .tabs {
+    margin-bottom: 24px;
+  }
+
+  /* Ставимо інпут і кнопку одне під одним */
+  .inputRow {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .addBtn {
+    padding: 16px; /* Більша зона для натискання пальцем */
+    width: 100%;
+  }
+
+  /* Картки на всю ширину */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+  
+  .bottomBox, .hintBox {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Мобільні телефони (Горизонтально / Landscape) */
+@media (max-width: 900px) and (orientation: landscape) {
+  .wrap {
+    padding-bottom: 90px;
+  }
+
+  /* Повертаємо інпут і кнопку в один ряд, бо є місце */
+  .inputRow {
+    flex-direction: row;
+  }
+
+  .addBtn {
+    width: auto;
+    padding: 0 24px;
+  }
+
+  /* Робимо 2 колонки, щоб не розтягувати картки на всю довжину */
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,10 +1,12 @@
+/* src/components/DecisionModal/DecisionModal.module.css */
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(26, 26, 26, 0.5);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,67 +14,70 @@
   padding: 16px;
   box-sizing: border-box;
   backdrop-filter: blur(2px);
+  font-family: 'Inter', sans-serif;
 }
 
-.box {
+.modal {
   background-color: #FFFFFF;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 12px; /* Легке закруглення як на SVG */
+  padding: 40px 32px;
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
-  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes popIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  align-items: center;
+  text-align: center;
 }
 
 .title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-  color: #1A1A1A;
+  font-size: 40px;
+  font-weight: 900; /* Дуже жирний шрифт, як на макеті */
+  color: #2D2D2D;
+  margin: 0 0 32px 0;
+  letter-spacing: -0.02em;
 }
 
-.text {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #707070;
-  line-height: 1.4;
-}
-
-.actions {
+/* Виправляємо вашу помилку: тепер блок не порожній */
+.buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 16px;
+  width: 100%;
 }
 
-.btnCancel {
+.btn {
   flex: 1;
-  padding: 12px;
-  background-color: #F4F4F4;
-  color: #1A1A1A;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 28px;
+  font-weight: 800;
   cursor: pointer;
-}
-
-.btnConfirm {
-  flex: 1;
-  padding: 12px;
-  background-color: #FF3B30;
+  border: none;
+  font-family: inherit;
+  background-color: #2D2D2D; /* Темний колір обох кнопок */
   color: #FFFFFF;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background-color: #1A1A1A;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Мобільна адаптація */
+@media (max-width: 480px) {
+  .modal {
+    padding: 32px 24px;
+  }
+  .title {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+  .btn {
+    font-size: 22px;
+    padding: 14px;
+  }
 }

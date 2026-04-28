@@ -71,23 +71,15 @@
   text-decoration: none;
 }
 
-/* --- АКОРДЕОНИ (ОСНОВНИЙ СПИСОК) --- */
+/* --- АКОРДЕОНИ --- */
 .device-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   max-height: 65vh;
   overflow-y: auto;
+  padding-right: 8px;
   -webkit-overflow-scrolling: touch;
-  
-  /* Приховуємо скролбар для Firefox та Edge */
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
-}
-
-/* Приховуємо скролбар для Chrome, Safari та Opera */
-.device-list::-webkit-scrollbar {
-  display: none;
 }
 
 .category-group { display: flex; flex-direction: column; gap: 8px; }
@@ -117,37 +109,28 @@
 .device-svg { width: 24px; height: 24px; }
 
 .arrow-icon {
-  width: 12px; height: 12px;
+  width: 16px; height: 16px;
   transition: transform 0.3s ease;
 }
 .arrow-up { transform: rotate(180deg); }
 
 /* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
-/* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
 .dropdown-container {
   background-color: #F8F8F8;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
-  padding: 16px;
+  padding: 10px;
 }
 
 .dropdown-scroll {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 235px; 
+  gap: 8px;
+  max-height: 200px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  
-  /* Приховуємо скролбар для Firefox та Edge */
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
 }
 
-/* Приховуємо скролбар для Chrome, Safari та Opera */
-.dropdown-scroll::-webkit-scrollbar {
-  display: none;
-}
 .dropdown-item {
   display: flex;
   align-items: center;
@@ -208,7 +191,7 @@
   border: 1px solid #E0E0E0;
   border-radius: 12px;
   padding: 16px 20px;
-  margin-top: 20px;
+  margin-bottom: 20px; /* ЗМІНЕНО З margin-top НА margin-bottom */
   width: fit-content;
 }
 
@@ -222,15 +205,98 @@
 .summary-value { font-size: 24px; font-weight: 700; }
 .accent { color: #FF6B00; }
 
-/* --- МОБІЛЬНА АДАПТАЦІЯ --- */
-@media (max-width: 768px) {
-  .title { font-size: 32px; }
-  .category-title { font-size: 18px; }
-  .dropdown-item { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .item-controls { width: 100%; justify-content: space-between; }
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (МОБІЛЬНІ ТА ПЛАНШЕТИ)
+   ========================================= */
+
+/* Планшети та загальні зміни для менших екранів */
+@media (max-width: 1024px) {
+  .top-section {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "filters"
+      "button";
+    row-gap: 16px;
+  }
+  
+  .add-btn {
+    justify-content: center;
+  }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
-  .device-list { max-height: 45vh; }
-  .dropdown-scroll { max-height: 150px; }
+/* Мобільні телефони (Вертикально) */
+@media (max-width: 768px) {
+  .wrap {
+    padding-top: 16px;
+    padding-bottom: 120px; /* Запас під нижнє мобільне меню */
+  }
+
+  .title { 
+    font-size: 28px; 
+  }
+  
+  .category-title { 
+    font-size: 18px; 
+  }
+  
+  /* Фільтри можуть прокручуватися горизонтально, якщо їх буде багато */
+  .filters {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .summary-card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+  }
+
+  .dropdown-item { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 12px; 
+  }
+  
+  .item-controls { 
+    width: 100%; 
+    justify-content: space-between; 
+  }
+
+  .action-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .delete-btn {
+    flex: 0 0 auto; /* Кошик не розтягуємо */
+  }
+}
+
+/* Мобільні телефони (Горизонтально / Landscape) */
+@media (max-width: 900px) and (orientation: landscape) {
+  .wrap {
+    padding-bottom: 90px;
+  }
+
+  .device-list { 
+    max-height: 45vh; 
+  }
+  
+  .dropdown-scroll { 
+    max-height: 150px; 
+  }
+
+  .top-section {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "title button"
+      "filters filters";
+  }
 }
