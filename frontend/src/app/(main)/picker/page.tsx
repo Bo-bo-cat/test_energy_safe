@@ -57,7 +57,8 @@ export default function PickerPage() {
     setLoading(false);
     if (!res.ok) {
       const data = await res.json();
-      setError(data.detail || 'Помилка. Перевірте назву системи.');
+      const detail = data.detail;
+      setError(Array.isArray(detail) ? 'Помилка. Перевірте назву системи.' : (detail || 'Помилка. Перевірте назву системи.'));
       return;
     }
     const system = await res.json();
