@@ -1,0 +1,212 @@
+/* src/app/(main)/devices/add/manual/page.module.css */
+
+.page-wrapper {
+  width: 100%;
+  /* Прибрали max-width та margin: 0 auto, щоб форма могла розтягуватися */
+  /* padding: ВЕРХ ПРАВО НИЗ ЛІВО */
+  padding: 40px 108px 60px 108px; /* Рівно 64px від сайдбару і 90px від правого краю */
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.title {
+  color: #FF6B00;
+  font-size: 36px;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 32px; 
+  letter-spacing: -0.02em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.input {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 16px; 
+  font-weight: 500;
+  color: #1A1A1A;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.input::placeholder {
+  color: #C0C0C0;
+  font-weight: 500;
+}
+
+.input:focus {
+  border-color: #FF6B00;
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+}
+
+/* Стиль для випадаючого списку */
+.select {
+  appearance: none; 
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%231A1A1A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center; 
+  padding-right: 40px;
+}
+
+.select:invalid {
+  color: #C0C0C0; 
+}
+
+
+.search-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.search-row .input {
+  flex: 1;
+}
+
+.search-btn {
+  background-color: #2d2d2d;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+}
+
+.search-btn:hover:not(:disabled) {
+  background-color: #1A1A1A;
+}
+
+.search-btn:disabled {
+  background-color: #A0A0A0;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #e53935;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 4px 0 0 0;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #FF6B00;
+  cursor: pointer;
+}
+
+
+.submit-btn {
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 8px; 
+  font-family: inherit;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #1A1A1A;
+}
+
+.submit-btn:disabled {
+  background-color: #A0A0A0;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Адаптація для планшетів та мобільних
+   ========================================= */
+@media (max-width: 950px) {
+  .page-wrapper {
+    /* Повертаємо стандартні відступи на мобільних, 
+       інакше 90px справа стисне форму */
+    padding: 32px 24px; 
+  }
+
+  .title {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+
+  .form {
+    gap: 20px;
+  }
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .page-wrapper {
+    padding: 16px 24px;
+  }
+
+  .title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .form {
+    gap: 12px;
+  }
+
+  .input-group {
+    gap: 6px;
+  }
+
+  .label {
+    font-size: 14px;
+  }
+
+  .input {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 4px;
+  }
+}

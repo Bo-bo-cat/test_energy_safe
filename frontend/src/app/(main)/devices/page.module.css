@@ -1,0 +1,219 @@
+/* src/app/(main)/devices/page.module.css */
+
+.wrap {
+  width: 100%;
+  max-width: 1440px;
+  padding-top: 32px;
+  font-family: 'Inter', sans-serif;
+}
+
+.top-section {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title title"
+    "filters button";
+  row-gap: 14px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.title {
+  grid-area: title;
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: #FF6B00;
+  letter-spacing: -0.02em;
+}
+
+.filters {
+  grid-area: filters;
+  display: flex;
+  gap: 12px;
+}
+
+.filter-chip {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 20px;
+  width: 80px; 
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-chip { width: 54px; }
+.filter-icon { width: 22px; height: 22px; }
+
+.filter-chip.active {
+  background-color: #1A1A1A; 
+  color: #FFFFFF; 
+  border-color: #1A1A1A;
+}
+
+.add-btn {
+  grid-area: button;
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+/* --- АКОРДЕОНИ --- */
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding-right: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-group { display: flex; flex-direction: column; gap: 8px; }
+
+.category-header {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.category-header-left { display: flex; align-items: center; gap: 12px; }
+.category-title { font-size: 18px; font-weight: 800; }
+
+.device-icon {
+  width: 44px; height: 44px;
+  background-color: #F9F9F9;
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.device-svg { width: 24px; height: 24px; }
+
+.arrow-icon {
+  width: 16px; height: 16px;
+  transition: transform 0.3s ease;
+}
+.arrow-up { transform: rotate(180deg); }
+
+/* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
+.dropdown-container {
+  background-color: #F8F8F8;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.dropdown-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #EFEFEF;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.item-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1A1A1A;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-power {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B6B6B;
+  white-space: nowrap;
+}
+
+.item-controls { display: flex; align-items: center; gap: 16px; }
+.action-group { display: flex; gap: 8px; }
+
+.action-btn {
+  height: 36px;
+  padding: 0 12px;
+  background: #FFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1A1A;
+  white-space: nowrap;
+}
+
+.action-btn.active { background: #1A1A1A; color: #FFF; border-color: #1A1A1A; }
+.delete-btn { color: #FF6B00; padding: 0 10px; }
+.action-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+.plus-icon {
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* --- ПІДСУМОК --- */
+.summary-card {
+  background: #FFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 20px;
+  width: fit-content;
+}
+
+.summary-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6B6B6B;
+  margin-bottom: 8px;
+}
+
+.summary-value { font-size: 24px; font-weight: 700; }
+.accent { color: #FF6B00; }
+
+/* --- МОБІЛЬНА АДАПТАЦІЯ --- */
+@media (max-width: 768px) {
+  .title { font-size: 32px; }
+  .category-title { font-size: 18px; }
+  .dropdown-item { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .item-controls { width: 100%; justify-content: space-between; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .device-list { max-height: 45vh; }
+  .dropdown-scroll { max-height: 150px; }
+}

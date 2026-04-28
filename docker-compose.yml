@@ -1,11 +1,10 @@
-version: '3.8'
+version: "3.9"
 
 services:
   backend:
     build: ./backend
-    container_name: energy-backend
     ports:
-      - "5000:5000"
+      - "8080:8000"
     env_file:
       - .env
     volumes:
@@ -13,12 +12,18 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
-    container_name: energy-frontend
+    build:
+      context: ./frontend
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
     depends_on:
       - backend
-    volumes:
-      - ./frontend/src:/app/src
     restart: unless-stopped

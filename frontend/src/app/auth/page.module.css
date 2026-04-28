@@ -1,0 +1,301 @@
+/* src/app/auth/page.module.css */
+
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F4F4F4;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Секція логотипу */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute; 
+  top: 40px; 
+  left: 40px; 
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FF6B00;
+}
+
+.logo-icon {
+  width: 20px;
+  height: 24px;
+  color: #FF6B00;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+/* Біла картка форми */
+.auth-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+/* Вкладки Вхід / Реєстрація */
+.mode-tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #E0E0E0;
+}
+
+.mode-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #B0B0B0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-tab-active {
+  color: #FF6B00;
+  border-bottom-color: #FF6B00;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Збільшили базовий текст для ПК */
+.input-label {
+  font-size: 16px; 
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+/* Стилі інпутів */
+.auth-input {
+  background-color: #EFEFEF;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 16px; /* Збільшили відступи */
+  font-size: 16px; /* Збільшили шрифт */
+  font-weight: 600;
+  color: #1A1A1A;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-input::placeholder {
+  color: #C0C0C0;
+}
+
+.auth-input:focus {
+  background-color: #FFFFFF;
+  border-color: #FF6B00;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.eye-button {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #A0A0A0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eye-button:hover {
+  color: #1A1A1A;
+}
+
+.eye-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.error-text {
+  color: #D32F2F;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.submit-button {
+  background-color: #2D2D2D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  height: 56px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #1A1A1A;
+}
+
+/* =========================================
+   МОБІЛЬНА АДАПТАЦІЯ (Розширено до 950px)
+   ========================================= */
+@media (max-width: 950px) {
+  .page-container {
+    align-items: flex-start; 
+    padding-top: 88px;       
+    padding-bottom: 40px;    
+  }
+
+  .logo-container {
+    top: 24px;
+    left: 20px;
+  }
+
+  .auth-card {
+    width: calc(100% - 32px); /* Жорстко задаємо ширину з урахуванням відступів */
+    max-width: 440px;         /* Не даємо розтягнутися занадто сильно на планшетах */
+    margin: 0 16px; 
+    padding: 32px 20px;
+    border-radius: 16px; 
+    box-shadow: none; 
+  }
+
+  .mode-tabs {
+    margin-bottom: 32px;
+    border-bottom: 1px solid #1A1A1A; 
+  }
+
+  .mode-tab {
+    font-size: 24px; 
+    color: #1A1A1A; 
+    padding-bottom: 12px;
+    margin-bottom: -1px; 
+    border-bottom: 2px solid transparent;
+  }
+
+  .mode-tab-active {
+    color: #FF6B00;
+    border-bottom: 2px solid #FF6B00; 
+  }
+
+  .input-group {
+    gap: 12px;
+  }
+
+  .input-label {
+    font-size: 18px; /* Великі лейбли для мобільного */
+  }
+
+  .auth-input {
+    padding: 18px 16px; /* Більше місця для натискання */
+    font-size: 18px; /* Великий текст інпуту */
+    border-radius: 12px; 
+  }
+
+  .submit-button {
+    margin-top: 24px;
+    height: 64px; /* Висока масивна кнопка */
+    font-size: 20px;
+    border-radius: 12px; 
+  }
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .page-container {
+    padding: 56px 16px 24px; /* Робимо менший верхній відступ під логотип */
+    min-height: 100vh;
+    height: auto;
+  }
+  
+  .logo-container {
+    top: 16px;
+    left: 24px;
+  }
+
+  .auth-card {
+    width: calc(100% - 32px); /* Розтягуємо картку */
+    max-width: 500px;         /* Даємо їй трохи більше місця по ширині в горизонталі */
+    margin: 0 auto;           /* Центруємо по екрану */
+    padding: 20px; 
+  }
+  
+  .mode-tabs {
+    margin-bottom: 16px; /* Відсовуємо поля від вкладок на меншу відстань */
+  }
+
+  .mode-tab {
+    font-size: 18px; /* Менший текст вкладок */
+    padding-bottom: 8px;
+  }
+
+  .auth-form {
+    gap: 12px; /* Поля стоять значно щільніше одне до одного */
+  }
+
+  .input-group {
+    gap: 4px; /* Лейбл стоїть ближче до свого інпуту */
+  }
+
+  .input-label {
+    font-size: 14px; /* Зменшуємо лейбли (Email, Ім'я, Пароль) */
+  }
+
+  .auth-input {
+    padding: 12px 16px; /* Робимо інпути тоншими по висоті */
+    font-size: 15px;
+    border-radius: 8px;
+  }
+  
+  .submit-button {
+    margin-top: 8px; /* Підтягуємо кнопку ближче до інпутів */
+    height: 48px; /* Тонша кнопка */
+    font-size: 16px;
+    border-radius: 8px;
+  }
+}

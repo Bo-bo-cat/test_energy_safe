@@ -6,17 +6,19 @@
 .env.development.local
 .env.test.local
 .env.production.local
+**/.env.local
+**/.env
+# .env.example і .env.exemple НЕ ігноруються — це шаблони для розробників
 *.pem
 
 # =========================
-# БЕКЕНД (PYTHON / FLASK)
+# БЕКЕНД (PYTHON / FASTAPI)
 # =========================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -32,55 +34,46 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Віртуальні середовища (якщо запускатимеш локально без Docker)
+# Віртуальні середовища
 venv/
 .venv/
 env/
-.env_python/
+.env/
 
 # =========================
-# ФРОНТЕНД (NEXT.JS / NODE.JS)
+# ФРОНТЕНД (NEXT.JS / NODE)
 # =========================
-frontend/node_modules/
 node_modules/
+.next/
+out/
+.cache/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
-
-# Next.js build output
-frontend/.next/
-.next/
-frontend/out/
-out/
-build/
-
-# Vercel (якщо будеш туди деплоїти)
-.vercel
+.pnp/
+.pnp.js
 
 # =========================
 # DOCKER
 # =========================
-.docker/
 docker-compose.override.yml
 
 # =========================
-# ОПЕРАЦІЙНІ СИСТЕМИ ТА РЕДАКТОРИ (VS Code)
+# IDE ТА РЕДАКТОРИ
 # =========================
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Налаштування редакторів
 .vscode/
 .idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# =========================
+# CLAUDE CODE
+# =========================
+.claude/
+
+# =========================
+# ЗОБРАЖЕННЯ ТА ІКОНКИ
+# =========================
+*.svg
