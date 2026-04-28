@@ -71,15 +71,23 @@
   text-decoration: none;
 }
 
-/* --- АКОРДЕОНИ --- */
+/* --- АКОРДЕОНИ (ОСНОВНИЙ СПИСОК) --- */
 .device-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   max-height: 65vh;
   overflow-y: auto;
-  padding-right: 8px;
   -webkit-overflow-scrolling: touch;
+  
+  /* Приховуємо скролбар для Firefox та Edge */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+/* Приховуємо скролбар для Chrome, Safari та Opera */
+.device-list::-webkit-scrollbar {
+  display: none;
 }
 
 .category-group { display: flex; flex-direction: column; gap: 8px; }
@@ -109,28 +117,37 @@
 .device-svg { width: 24px; height: 24px; }
 
 .arrow-icon {
-  width: 16px; height: 16px;
+  width: 12px; height: 12px;
   transition: transform 0.3s ease;
 }
 .arrow-up { transform: rotate(180deg); }
 
 /* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
+/* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
 .dropdown-container {
   background-color: #F8F8F8;
   border: 1px solid #E0E0E0;
   border-radius: 12px;
-  padding: 10px;
+  padding: 16px;
 }
 
 .dropdown-scroll {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 200px;
+  gap: 12px;
+  max-height: 235px; 
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  
+  /* Приховуємо скролбар для Firefox та Edge */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
+/* Приховуємо скролбар для Chrome, Safari та Opera */
+.dropdown-scroll::-webkit-scrollbar {
+  display: none;
+}
 .dropdown-item {
   display: flex;
   align-items: center;
