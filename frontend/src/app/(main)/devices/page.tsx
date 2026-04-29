@@ -32,7 +32,7 @@ const renderDeviceIcon = (iconName?: string) => {
     case 'router': return <RouterIcon className={styles['device-svg']} />;
     case 'light': return <LightIcon className={styles['device-svg']} />;
     case 'tv': return <TvIcon className={styles['device-svg']} />;
-    default: return <div className={styles['device-svg']} style={{ backgroundColor: '#E0E0E0', borderRadius: '4px' }} />;
+    default: return <div className={styles['device-svg']} style={{ backgroundColor: 'var(--border-color)', borderRadius: '4px' }} />;
   }
 };
 
@@ -75,7 +75,7 @@ export default function DevicesPage() {
 
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
-    return device.tag === activeFilter;
+    return device.tag === activeFilter || device.tag === 'Усі'; 
   });
 
   const groupedDevices = filteredDevices.reduce((acc, device) => {
@@ -105,14 +105,12 @@ export default function DevicesPage() {
     } catch (err) { console.error(err); }
   };
 
-  // Функція підтвердженого видалення
   const confirmDelete = async () => {
     if (deviceToDelete === null) return;
     
     const id = deviceToDelete;
-    // Оптимістичне видалення з UI
     setDevices(prev => prev.filter(d => d.id !== id));
-    setDeviceToDelete(null); // Закриваємо модалку
+    setDeviceToDelete(null); 
 
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -124,7 +122,6 @@ export default function DevicesPage() {
       });
     } catch (err) { 
       console.error(err);
-      // У разі помилки можна оновити список з бекенду знову
     }
   };
 
@@ -178,7 +175,7 @@ export default function DevicesPage() {
 
       <div className={styles['device-list']}>
         {isLoading ? (
-          <p style={{ color: '#1A1A1A', fontWeight: 500 }}>Завантаження приладів...</p>
+          <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>Завантаження приладів...</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
           Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
             <div key={categoryName} className={styles['category-group']}>
@@ -228,7 +225,7 @@ export default function DevicesPage() {
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => { 
                                 e.stopPropagation(); 
-                                setDeviceToDelete(device.id); // Відкриваємо модалку
+                                setDeviceToDelete(device.id); 
                               }}
                             >
                               <DeleteIcon className={styles['action-icon']} />
@@ -243,14 +240,12 @@ export default function DevicesPage() {
             </div>
           ))
         ) : (
-          <p style={{ color: '#A0A0A0', fontWeight: 500 }}>
+          <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>
             {activeFilter === 'Усі' ? 'У вас ще немає доданих приладів.' : `Немає приладів у категорії "${activeFilter}".`}
           </p>
         )}
       </div>
 
-      {/* Сама модалка підтвердження */}
-      {/* Сама модалка підтвердження */}
       <DecisionModal 
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}

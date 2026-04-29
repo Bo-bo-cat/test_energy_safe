@@ -6,13 +6,15 @@
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
+  color: var(--text-main); /* Основний колір тексту */
+  transition: color 0.3s ease;
 }
 
 /* Заголовок */
 .pageTitle {
   font-size: 36px;
   font-weight: 800;
-  color: #FF6B00;
+  color: var(--accent-orange);
   margin: 0 0 24px 0;
 }
 
@@ -25,10 +27,10 @@
 
 .tabBtn {
   padding: 8px 16px;
-  border: 1px solid #DCDCDC;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background-color: #FFFFFF;
-  color: #1A1A1A;
+  background-color: var(--bg-card);
+  color: var(--text-main);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -36,16 +38,16 @@
 }
 
 .tabBtn.active {
-  background-color: #2D2D2D;
-  color: #FFFFFF;
-  border-color: #2D2D2D;
+  background-color: var(--text-main); /* Темний фон у світлій, світлий у темній */
+  color: var(--bg-main); /* Контрастний текст */
+  border-color: var(--text-main);
 }
 
 /* Блок введення системи */
 .sectionTitle {
   font-size: 28px;
   font-weight: 800;
-  color: #2D2D2D;
+  color: var(--text-main);
   margin: 0 0 20px 0;
 }
 
@@ -59,22 +61,29 @@
 .addInput {
   flex: 1;
   padding: 16px 20px;
-  border: 1px solid #DCDCDC;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
+  background-color: var(--bg-card); /* Додано фон для інпуту */
   font-size: 18px;
-  color: #1A1A1A;
+  color: var(--text-main);
   font-family: inherit;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s, color 0.3s;
   box-sizing: border-box;
   width: 100%;
 }
 
-.addInput:focus { border-color: #FF6B00; }
+.addInput::placeholder {
+  color: var(--text-muted); /* Колір плейсхолдера */
+}
+
+.addInput:focus { 
+  border-color: var(--accent-orange); 
+}
 
 .addBtn {
-  background-color: #FF6B00;
-  color: #FFFFFF;
+  background-color: var(--accent-orange);
+  color: #FFFFFF; /* Залишаємо білим для помаранчевого фону */
   border: none;
   border-radius: 12px;
   padding: 0 32px;
@@ -89,7 +98,9 @@
   justify-content: center;
 }
 
-.addBtn:hover { background-color: #E05A00; }
+.addBtn:hover { 
+  opacity: 0.9; /* Трохи змінили ховер для універсальності, або можна залишити #E05A00 */
+}
 
 /* --- СІТКА КАРТОК --- */
 .grid {
@@ -100,16 +111,17 @@
 }
 
 .card {
-  background-color: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, background-color 0.3s, border-color 0.3s;
 }
 
 .card:hover {
+  /* Легка тінь, адаптована (може знадобитися своя змінна для тіні в майбутньому, але поки залишимо напівпрозору чорну) */
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
 }
 
@@ -124,8 +136,8 @@
 .cardTitle {
   font-size: 20px;
   font-weight: 800;
-  color: #1A1A1A;
-  word-break: break-word; /* Щоб довгі назви не ламали сітку */
+  color: var(--text-main);
+  word-break: break-word; 
 }
 
 .cardActions {
@@ -152,13 +164,15 @@
 .actionIconOrange {
   width: 24px;
   height: 24px;
-  color: #FF6B00;
+  color: var(--accent-orange);
 }
 
 .actionIconGray {
   width: 24px;
   height: 24px;
-  color: #FF6B00;
+  /* Було помаранчевим у вашому коді, але назва Gray. 
+     Якщо це помилка, змініть на var(--text-muted) або залиште var(--accent-orange) */
+  color: var(--accent-orange); 
 }
 
 /* --- ХАРАКТЕРИСТИКИ --- */
@@ -172,20 +186,20 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 8px;
 }
 
 .specLabel {
   font-size: 12px;
   font-weight: 600;
-  color: #A0A0A0;
+  color: var(--text-muted);
 }
 
 .specValue {
   font-size: 14px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--text-main);
   min-height: 17px;
 }
 
@@ -199,7 +213,7 @@
 .plusIcon {
   font-size: 32px;
   font-weight: 800;
-  color: #FF6B00;
+  color: var(--accent-orange);
   background: none;
   border: none;
   cursor: pointer;
@@ -210,46 +224,49 @@
 
 /* --- НИЖНІ БЛОКИ --- */
 .bottomBox {
-  border: 1px solid #E0E0E0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 24px;
   display: inline-block;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .bottomBoxTitle {
   font-size: 16px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--text-main);
   margin-bottom: 12px;
 }
 
 .bottomBoxValue {
   font-size: 24px;
   font-weight: 800;
-  color: #1A1A1A;
+  color: var(--text-main);
 }
 
-.accent { color: #FF6B00; }
+.accent { color: var(--accent-orange); }
 
 .hintBox {
-  background-color: #DCDCDC;
+  background-color: var(--bg-card-inner); /* Використовуємо вкладений фон замість сірого */
   border-radius: 12px;
   padding: 20px 24px;
   margin-top: 24px;
+  border: 1px solid var(--border-color); /* Додав тонку рамку для кращого виділення */
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .hintTitle {
   font-size: 16px;
   font-weight: 800;
-  color: #2D2D2D;
+  color: var(--text-main);
   margin-bottom: 4px;
 }
 
 .hintText {
   font-size: 14px;
   font-weight: 600;
-  color: #2D2D2D;
+  color: var(--text-muted); /* Трохи приглушений текст для підказки */
 }
 
 
@@ -269,7 +286,7 @@
 @media (max-width: 768px) {
   .wrap {
     padding-top: 16px;
-    padding-bottom: 120px; /* Запас під нижнє мобільне меню */
+    padding-bottom: 120px; 
   }
 
   .pageTitle {
@@ -286,7 +303,6 @@
     margin-bottom: 24px;
   }
 
-  /* Ставимо інпут і кнопку одне під одним */
   .inputRow {
     flex-direction: column;
     gap: 12px;
@@ -294,11 +310,10 @@
   }
 
   .addBtn {
-    padding: 16px; /* Більша зона для натискання пальцем */
+    padding: 16px; 
     width: 100%;
   }
 
-  /* Картки на всю ширину */
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -321,7 +336,6 @@
     padding-bottom: 90px;
   }
 
-  /* Повертаємо інпут і кнопку в один ряд, бо є місце */
   .inputRow {
     flex-direction: row;
   }
@@ -331,7 +345,6 @@
     padding: 0 24px;
   }
 
-  /* Робимо 2 колонки, щоб не розтягувати картки на всю довжину */
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }

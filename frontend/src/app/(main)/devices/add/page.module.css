@@ -1,31 +1,25 @@
 /* src/app/(main)/devices/add/page.module.css */
 
 .page {
-  --bg: #efeee9;
-  --card: #fbfbfa;
-  --card-line: #d9d8d2;
-  --hint-bg: #d9d9d9;
-  --text: #2f2f2f;
-  --orange: #ff6e00;
-  --icon: #2c2c2c;
-
+  /* Прибираємо локальні змінні, оскільки ми тепер використовуємо глобальні */
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 24px;
   font-family: 'Inter', sans-serif;
-  color: var(--text);
+  color: var(--text-main); /* Використовуємо глобальну змінну */
   box-sizing: border-box; /* ГАРАНТУЄМО ПРАВИЛЬНИЙ РОЗРАХУНОК ШИРИНИ */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: color 0.3s ease; /* Плавний перехід для тексту */
 }
 
 .title {
   margin: 0 0 40px;
   text-align: center;
-  color: var(--orange);
+  color: var(--accent-orange); /* Використовуємо глобальну змінну */
   font-size: clamp(32px, 6vw, 56px);
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -45,16 +39,21 @@
   flex: 1;
   max-width: 450px;
   aspect-ratio: 1 / 0.8;
-  background: var(--card);
-  border: 1px solid var(--card-line);
+  background: var(--bg-card); /* Використовуємо глобальну змінну */
+  border: 1px solid var(--border-color); /* Використовуємо глобальну змінну */
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  color: var(--text);
-  transition: all 0.2s ease;
+  color: var(--text-main); /* Використовуємо глобальну змінну */
+  transition: all 0.2s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   box-sizing: border-box;
+}
+
+.card:hover {
+  background-color: var(--bg-card-inner); /* Додаємо ефект наведення за допомогою змінної */
+  border-color: var(--text-main);
 }
 
 .card-inner {
@@ -71,6 +70,10 @@
   text-align: center;
 }
 
+/* Колір іконок (використовуємо поточний колір тексту) */
+.icon-camera, .icon-pencil { 
+  color: currentColor; 
+}
 .icon-camera { width: 120px; height: 95px; }
 .icon-pencil { width: 95px; height: 95px; }
 
@@ -79,16 +82,19 @@
   width: 100%;
   max-width: 900px; /* ТОЧНО ТАКА Ж ШИРИНА, ЯК У .cards */
   margin: 0 auto;
-  background: var(--hint-bg);
+  background: var(--bg-card-inner); /* Використовуємо глобальну змінну (замість --hint-bg) */
+  border: 1px solid var(--border-color); /* Додаємо рамку для кращого виділення */
   border-radius: 16px;
   padding: 24px 30px;
   box-sizing: border-box; /* ОБОВ'ЯЗКОВО, ЩОБ ПАДДІНГ НЕ РОЗШИРЮВАВ БЛОК */
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .hint-title {
   margin: 0 0 8px;
   font-size: 24px;
   font-weight: 900;
+  color: var(--text-main);
 }
 
 .hint-text {
@@ -96,6 +102,7 @@
   font-size: 20px;
   line-height: 1.4;
   font-weight: 700;
+  color: var(--text-muted); /* Використовуємо приглушений текст для опису */
 }
 
 /* =========================================
@@ -132,33 +139,36 @@
   .page { padding: 10px 20px; justify-content: center; }
   
   .title { 
-    font-size: 32px; /* ЗБІЛЬШИВ ЗАГОЛОВОК */
-    margin-bottom: 25px; /* ПІДНЯВ ВИЩЕ (збільшив відступ знизу) */
+    font-size: 28px; /* Трохи зменшив заголовок */
+    margin-bottom: 20px; 
     font-weight: 950;
   }
 
   .cards {
-    gap: 20px;
-    max-width: 700px; /* ЗБЛИЗИВ КНОПКИ */
+    gap: 16px; /* Зменшив відстань між картками */
+    max-width: 600px; /* Зробив загальний блок вужчим */
     margin-bottom: 20px;
   }
 
   .card {
-    height: 130px; 
-    max-width: 320px;
+    height: 100px; /* Ще більше сплюснув картку */
+    max-width: 280px;
   }
 
-  .card-inner { gap: 8px; }
+  .card-inner { 
+    gap: 6px; /* Менша відстань між іконкою та текстом */
+  }
 
-  .icon-camera { width: 55px; height: 44px; }
-  .icon-pencil { width: 44px; height: 44px; }
+  /* СИЛЬНО ЗМЕНШУЄМО ІКОНКИ */
+  .icon-camera { width: 40px; height: 32px; }
+  .icon-pencil { width: 32px; height: 32px; }
 
-  .card-title { font-size: 18px; }
+  .card-title { font-size: 16px; } /* Трохи менший текст кнопки */
 
   .hint { 
-    max-width: 700px; /* ПІДКАЗКА ПІДЛАШТОВУЄТЬСЯ ПІД КНОПКИ */
-    padding: 12px 20px; 
+    max-width: 600px; /* Підганяємо під нову ширину кнопок */
+    padding: 10px 16px; 
   }
-  .hint-title { font-size: 18px; }
-  .hint-text { font-size: 15px; }
+  .hint-title { font-size: 16px; margin-bottom: 4px; }
+  .hint-text { font-size: 14px; }
 }

@@ -5,6 +5,8 @@
   max-width: 1440px;
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
+  /* Додамо перехід для загального контейнера, якщо потрібно */
+  transition: background-color 0.3s ease;
 }
 
 .top-section {
@@ -23,7 +25,7 @@
   margin: 0;
   font-size: 32px;
   font-weight: 800;
-  color: #FF6B00;
+  color: var(--accent-orange); /* Використовуємо змінну для акцентного кольору */
   letter-spacing: -0.02em;
 }
 
@@ -34,8 +36,8 @@
 }
 
 .filter-chip {
-  background-color: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-card); /* Фон зі змінної */
+  border: 1px solid var(--border-color); /* Рамка зі змінної */
   border-radius: 20px;
   width: 80px; 
   padding: 8px 0;
@@ -44,7 +46,7 @@
   align-items: center;
   font-size: 14px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--text-main); /* Текст зі змінної */
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -53,15 +55,15 @@
 .filter-icon { width: 22px; height: 22px; }
 
 .filter-chip.active {
-  background-color: #1A1A1A; 
-  color: #FFFFFF; 
-  border-color: #1A1A1A;
+  background-color: var(--text-main); /* Інвертуємо фон для активного стану */
+  color: var(--bg-main); /* Інвертуємо текст */
+  border-color: var(--text-main);
 }
 
 .add-btn {
   grid-area: button;
-  background-color: #2D2D2D;
-  color: #FFFFFF;
+  background-color: var(--text-main); /* Темний фон кнопки в світлій темі, світлий - в темній */
+  color: var(--bg-main); /* Контрастний текст */
   border-radius: 8px;
   padding: 12px 24px;
   font-weight: 700;
@@ -69,6 +71,11 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.add-btn:hover {
+  opacity: 0.8; /* Універсальний ховер-ефект */
 }
 
 /* --- АКОРДЕОНИ --- */
@@ -85,41 +92,48 @@
 .category-group { display: flex; flex-direction: column; gap: 8px; }
 
 .category-header {
-  background-color: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-card); /* Фон картки */
+  border: 1px solid var(--border-color); /* Рамка */
   border-radius: 12px;
   padding: 12px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .category-header-left { display: flex; align-items: center; gap: 12px; }
-.category-title { font-size: 18px; font-weight: 800; }
+.category-title { 
+  font-size: 18px; 
+  font-weight: 800; 
+  color: var(--text-main); /* Текст заголовка */
+}
 
 .device-icon {
   width: 44px; height: 44px;
-  background-color: #F9F9F9;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-main); /* Використовуємо основний фон для контрасту з карткою */
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
 }
 
-.device-svg { width: 24px; height: 24px; }
+.device-svg { width: 24px; height: 24px; color: var(--text-main); } /* Колір іконки */
 
 .arrow-icon {
   width: 16px; height: 16px;
+  color: var(--text-main);
   transition: transform 0.3s ease;
 }
 .arrow-up { transform: rotate(180deg); }
 
 /* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
 .dropdown-container {
-  background-color: #F8F8F8;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-card-inner); /* Вкладений фон */
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .dropdown-scroll {
@@ -135,15 +149,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #EFEFEF;
+  background-color: var(--bg-main); /* Або залишити --bg-card-inner, залежно від бажаного контрасту. Використовую --bg-main для виділення. */
   border-radius: 8px;
   padding: 10px 12px;
+  border: 1px solid var(--border-color); /* Додав тонку рамку для кращого розділення в темній темі */
 }
 
 .item-name {
   font-size: 16px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--text-main); /* Основний текст */
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -154,7 +169,7 @@
 .item-power {
   font-size: 14px;
   font-weight: 500;
-  color: #6B6B6B;
+  color: var(--text-muted); /* Приглушений текст */
   white-space: nowrap;
 }
 
@@ -164,19 +179,32 @@
 .action-btn {
   height: 36px;
   padding: 0 12px;
-  background: #FFF;
-  border: 1px solid #E0E0E0;
+  background: var(--bg-card); /* Фон кнопок дій */
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   display: flex; align-items: center; gap: 6px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--text-main);
   white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-.action-btn.active { background: #1A1A1A; color: #FFF; border-color: #1A1A1A; }
-.delete-btn { color: #FF6B00; padding: 0 10px; }
+.action-btn.active { 
+  background: var(--text-main); 
+  color: var(--bg-main); 
+  border-color: var(--text-main); 
+}
+
+.delete-btn { 
+  color: var(--accent-orange); /* Використовуємо акцентний колір для видалення */
+  padding: 0 10px; 
+}
+.delete-btn:hover {
+  background-color: rgba(255, 110, 0, 0.1); /* Легкий фон при наведенні на кошик */
+}
+
 .action-icon { width: 18px; height: 18px; flex-shrink: 0; }
 
 .plus-icon {
@@ -187,23 +215,28 @@
 
 /* --- ПІДСУМОК --- */
 .summary-card {
-  background: #FFF;
-  border: 1px solid #E0E0E0;
+  background: var(--bg-card); /* Фон підсумку */
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 16px 20px;
-  margin-bottom: 20px; /* ЗМІНЕНО З margin-top НА margin-bottom */
+  margin-bottom: 20px; 
   width: fit-content;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .summary-label {
   font-size: 14px;
   font-weight: 500;
-  color: #6B6B6B;
+  color: var(--text-muted); /* Приглушений текст */
   margin-bottom: 8px;
 }
 
-.summary-value { font-size: 24px; font-weight: 700; }
-.accent { color: #FF6B00; }
+.summary-value { 
+  font-size: 24px; 
+  font-weight: 700; 
+  color: var(--text-main); /* Основний текст значення */
+}
+.accent { color: var(--accent-orange); } /* Акцентний колір */
 
 /* =========================================
    АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (МОБІЛЬНІ ТА ПЛАНШЕТИ)

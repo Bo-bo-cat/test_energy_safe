@@ -3,28 +3,57 @@ import { useEffect, useState, useMemo } from 'react';
 import styles from './page.module.css';
 import { DecisionModal } from '../../../components/DecisionModal';
 
+// Плейсхолдер для користувача
+const mockUser = {
+  name: 'Користувач',
+  email: 'user@energysafe.com'
+};
+
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(mockUser);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
+  // Стейт для теми
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
+    // 1. Ініціалізація користувача
     const userId = localStorage.getItem('user_id');
     const token = localStorage.getItem('access_token');
     
-    if (!userId || !token) return;
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => {
-        if (data) setUser(data);
+    if (userId && token) {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
       })
-      .catch(err => console.error('Помилка завантаження профілю:', err));
+        .then(r => r.ok ? r.json() : Promise.reject('Помилка сервера'))
+        .then(data => {
+          if (data) setUser(data);
+        })
+        .catch(err => {
+          console.error('Не вдалося завантажити профіль:', err);
+        });
+    }
+
+    // 2. Ініціалізація теми (щоб тумблер показував правильний стан при завантаженні)
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true);
+    }
   }, []);
 
-  // Колір аватара (стабільний для імені)
+  // Функція перемикання теми
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode ? 'dark' : 'light';
+    setIsDarkMode(!isDarkMode);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  };
+
   const avatarColor = useMemo(() => {
     const colors = ['#FF6B00', '#0029FF', '#00C2FF', '#FF2D55', '#5856D6', '#34C759', '#AF52DE', '#FF9500'];
     if (!user?.name) return colors[0];
@@ -40,7 +69,6 @@ export default function ProfilePage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       
-      // Очищення даних
       localStorage.clear();
       document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/auth';
@@ -51,7 +79,11 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return <div className={styles.wrap}><h1 className={styles.title}>Профіль</h1><p>Завантаження...</p></div>;
+  const handleLogout = () => {
+    localStorage.clear();
+    document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    window.location.href = '/auth';
+  };
 
   return (
     <div className={styles.wrap}>
@@ -59,7 +91,7 @@ export default function ProfilePage() {
 
       <div className={styles.profileHeader}>
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
-          {user.name?.charAt(0).toUpperCase()}
+          {user.name?.charAt(0).toUpperCase() || 'U'}
         </div>
         <div className={styles.userInfo}>
           <div className={styles.nameRow}>
@@ -74,13 +106,12 @@ export default function ProfilePage() {
       </div>
 
       <div className={styles.controlsRow}>
-        <div className={styles.themeBox}>
-          <span className={styles.themeLabel}>Темна тема</span>
-          <div 
-            className={`${styles.toggleSwitch} ${isDarkMode ? styles.active : ''}`}
-            onClick={() => setIsDarkMode(!isDarkMode)}
-          >
-            <div className={styles.toggleKnob}></div>
+        
+        {/* Мобільний перемикач теми (видно тільки на <768px) */}
+        <div className={styles.themeToggleMobile} onClick={toggleTheme}>
+          <span>Темна тема</span>
+          <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
+            <div className={styles['toggle-knob']}></div>
           </div>
         </div>
 
@@ -90,9 +121,17 @@ export default function ProfilePage() {
         >
           Видалити аккаунт
         </button>
+
+        {/* Мобільна кнопка виходу */}
+        <button 
+          className={styles.logoutBtn} 
+          onClick={handleLogout}
+        >
+          Вийти з акаунту
+        </button>
+        
       </div>
 
-      {/* НОВА МОДАЛКА (без поля text) */}
       <DecisionModal 
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}

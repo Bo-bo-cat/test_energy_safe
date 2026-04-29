@@ -6,78 +6,85 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.6); /* Трохи затемнив фон для кращого контрасту */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   padding: 16px;
   box-sizing: border-box;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px); /* Трохи посилив блюр */
   font-family: 'Inter', sans-serif;
 }
 
 .modal {
-  background-color: #FFFFFF;
-  border-radius: 12px; /* Легке закруглення як на SVG */
-  padding: 40px 32px;
+  /* Використовуємо змінні для підтримки темної теми */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color); /* Додали рамку для темної теми */
+  border-radius: 16px; /* Трохи більше закруглення */
+  padding: 32px 24px; /* Зменшили внутрішні відступи */
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
+  max-width: 340px; /* Зменшили максимальну ширину */
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .title {
-  font-size: 40px;
-  font-weight: 900; /* Дуже жирний шрифт, як на макеті */
-  color: #2D2D2D;
-  margin: 0 0 32px 0;
-  letter-spacing: -0.02em;
+  font-size: 28px; /* Значно зменшили розмір шрифту */
+  font-weight: 800; 
+  color: var(--text-main); /* Колір тексту зі змінної */
+  margin: 0 0 24px 0;
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
 }
 
-/* Виправляємо вашу помилку: тепер блок не порожній */
 .buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px; /* Трохи зменшили відступ між кнопками */
   width: 100%;
 }
 
 .btn {
   flex: 1;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 28px;
-  font-weight: 800;
+  padding: 12px; /* Зменшили відступи в кнопках */
+  border-radius: 10px;
+  font-size: 20px; /* Зменшили текст на кнопках */
+  font-weight: 700;
   cursor: pointer;
   border: none;
   font-family: inherit;
-  background-color: #2D2D2D; /* Темний колір обох кнопок */
-  color: #FFFFFF;
-  transition: background-color 0.2s, transform 0.1s;
+  
+  /* Кольори кнопок зі змінних (темні у світлій темі, світлі у темній) */
+  background-color: var(--text-main); 
+  color: var(--bg-main); 
+  
+  transition: opacity 0.2s, transform 0.1s;
 }
 
 .btn:hover {
-  background-color: #1A1A1A;
+  opacity: 0.85; /* Використовуємо opacity для ховеру, щоб працювало в обох темах */
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
 }
 
 /* Мобільна адаптація */
 @media (max-width: 480px) {
   .modal {
-    padding: 32px 24px;
+    padding: 28px 20px;
+    max-width: 300px;
   }
   .title {
-    font-size: 32px;
-    margin-bottom: 24px;
+    font-size: 24px;
+    margin-bottom: 20px;
   }
   .btn {
-    font-size: 22px;
-    padding: 14px;
+    font-size: 18px;
+    padding: 12px;
   }
 }

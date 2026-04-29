@@ -4,23 +4,32 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #F4F4F4; /* Світлий фон для контенту */
+  /* Використовуємо змінну для основного фону */
+  background-color: var(--bg-main); 
   font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease;
 }
 
 /* Сайдбар */
+/* src/app/(main)/layout.module.css */
+
 .sidebar {
   width: 280px;
-  background-color: #E6E6E6; /* Колір фону з твого макета Sidebar.svg */
+  background-color: var(--bg-sidebar); 
   display: flex;
   flex-direction: column;
   padding: 40px 24px;
-  border-right: 1px solid #DCDCDC;
+  border-right: 1px solid var(--border-color);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   height: 100vh;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  
+  /* ДОДАЙ ЦІ ДВА РЯДКИ */
+  overflow-y: auto; 
+  overflow-x: hidden;
 }
 
 /* Логотип у сайдбарі */
@@ -33,13 +42,15 @@
 }
 
 .logo-icon {
-  color: #FF6B00;
+  /* Акцентний колір */
+  color: var(--accent-orange);
   width: 24px;
   height: 32px;
 }
 
 .logo-text {
-  color: #FF6B00;
+  /* Акцентний колір */
+  color: var(--accent-orange);
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -61,7 +72,8 @@
   padding: 16px 20px;
   border-radius: 16px;
   text-decoration: none;
-  color: #1A1A1A;
+  /* Колір основного тексту */
+  color: var(--text-main);
   font-size: 18px;
   font-weight: 700;
   transition: all 0.2s ease-in-out;
@@ -76,26 +88,33 @@
 /* Ефект при наведенні для неактивних посилань та кнопки логауту */
 .nav-link:hover:not(.nav-link-active),
 .logout-btn:hover {
-  background-color: #DCDCDC;
-  color: #2C2C2C; /* Чіткий темний колір при наведенні */
+  /* Використовуємо колір рамки або інший відповідний світлий/темний колір для ховеру */
+  background-color: var(--border-color);
+  color: var(--text-main); 
 }
 
 /* Зміна кольору іконки при наведенні */
 .nav-link:hover:not(.nav-link-active) .nav-icon,
 .logout-btn:hover .nav-icon {
-  color: #2C2C2C;
+  color: var(--text-main);
 }
 
 /* АКТИВНИЙ СТАН */
 .nav-link-active {
-  background-color: #FF6B00; /* Помаранчевий фон */
-  color: #FFFFFF; /* Білий текст */
+  /* Акцентний колір фону */
+  background-color: var(--accent-orange); 
+  /* Текст на помаранчевому фоні залишаємо білим для контрасту (можна захардкодити або використати змінну --bg-main, якщо вона світла) */
+  color: #FFFFFF; 
 }
 
 /* Секція логауту - притискає кнопку до низу */
 .logout-section {
   margin-top: auto;
   padding-top: 20px;
+  /* Додаємо ці 3 рядки: */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* Контейнер для іконки */
@@ -111,7 +130,8 @@
 .nav-icon {
   width: 100%;
   height: 100%;
-  color: #1A1A1A;
+  /* Колір іконок */
+  color: var(--text-main);
   transition: color 0.2s ease;
 }
 
@@ -126,6 +146,58 @@
   padding: 40px;
   overflow-y: auto;
   box-sizing: border-box;
+}
+/* =========================================
+   ПЕРЕМИКАЧ ТЕМИ (СЛАЙДЕР)
+   ========================================= */
+.theme-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 16px;
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.theme-toggle-row:hover {
+  background-color: var(--border-color);
+}
+
+.toggle-switch {
+  width: 51px;
+  height: 31px;
+  background-color: var(--text-muted);
+  border-radius: 16px;
+  position: relative;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background-color: var(--accent-orange);
+}
+
+.toggle-knob {
+  width: 27px;
+  height: 27px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
 }
 
 /* =========================================
@@ -158,7 +230,8 @@
     flex-direction: row;
     padding: 8px 8px;
     border-right: none;
-    border-top: 1px solid #DCDCDC;
+    /* Колір рамки */
+    border-top: 1px solid var(--border-color);
     z-index: 1000;
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
   }
@@ -170,32 +243,54 @@
   .nav-menu {
     flex-direction: row;
     width: 100%;
-    justify-content: space-between;
+    justify-content: space-around; 
     gap: 4px;
-    flex: 5; /* Займає 5 часток для пунктів меню */
   }
 
   .logout-section {
-    margin-top: 0;
-    padding-top: 0;
-    flex: 1; /* Займає 1 частку в ряду */
-    display: flex;
+    display: none; 
   }
-
-  .nav-link, .logout-btn {
+  
+  .nav-link {
     flex-direction: column;
-    gap: 6px;
-    padding: 12px 4px;
-    font-size: 11px;
+    gap: 4px;
+    padding: 8px 4px;
+    font-size: 10px; 
     flex: 1;
     justify-content: center;
-    border-radius: 16px;
+    border-radius: 12px;
     text-align: center;
     align-items: center;
   }
+  
+  /* Видалено дублюючий блок .nav-link, .logout-btn для мобільних */
 
   .main-content {
     padding: 24px 16px;
     padding-bottom: 100px;
   }
-} 
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .sidebar {
+    width: 220px;
+    padding: 20px 16px;
+  }
+
+  .logo-container {
+    margin-bottom: 24px;
+  }
+
+  .nav-link {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  /* ДОДАЄМО ЦЕ: Ховаємо блок з кнопками виходу та теми */
+  .logout-section {
+    display: none;
+  }
+}

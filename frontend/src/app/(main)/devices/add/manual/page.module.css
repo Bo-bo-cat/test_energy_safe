@@ -2,15 +2,15 @@
 
 .page-wrapper {
   width: 100%;
-  /* Прибрали max-width та margin: 0 auto, щоб форма могла розтягуватися */
-  /* padding: ВЕРХ ПРАВО НИЗ ЛІВО */
-  padding: 40px 108px 60px 108px; /* Рівно 64px від сайдбару і 90px від правого краю */
+  padding: 40px 108px 60px 108px;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
+  color: var(--text-main); /* Основний колір тексту для сторінки */
+  transition: color 0.3s ease;
 }
 
 .title {
-  color: #FF6B00;
+  color: var(--accent-orange); /* Акцентний колір */
   font-size: 36px;
   font-weight: 700;
   margin-top: 0;
@@ -33,48 +33,50 @@
 .label {
   font-size: 16px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--text-main); /* Основний текст */
 }
 
 .input {
-  background-color: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  background-color: var(--bg-card); /* Фон інпуту */
+  border: 1px solid var(--border-color); /* Рамка інпуту */
   border-radius: 10px;
   padding: 14px 16px;
   font-size: 16px; 
   font-weight: 500;
-  color: #1A1A1A;
+  color: var(--text-main); /* Текст усередині інпуту */
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
   font-family: inherit;
 }
 
 .input::placeholder {
-  color: #C0C0C0;
+  color: var(--text-muted); /* Плейсхолдер */
   font-weight: 500;
 }
 
 .input:focus {
-  border-color: #FF6B00;
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+  border-color: var(--accent-orange); /* Рамка при фокусі */
+  box-shadow: 0 0 0 3px rgba(255, 110, 0, 0.1);
 }
 
 /* Стиль для випадаючого списку */
 .select {
   appearance: none; 
   cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%231A1A1A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  /* Для кастомної стрілочки можна залишити чорну, або використати 'currentColor' в inline SVG, 
+     але для простоти поки залишаємо як є (може бути менш помітною на темному тлі, 
+     ідеально - замінити SVG на той, що бере колір з currentColor або використовувати React-компонент) */
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%238E8E93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* Змінив колір стрілочки на сірий, щоб було видно і там, і там */
   background-repeat: no-repeat;
   background-position: right 16px center; 
   padding-right: 40px;
 }
 
 .select:invalid {
-  color: #C0C0C0; 
+  color: var(--text-muted); 
 }
-
 
 .search-row {
   display: flex;
@@ -87,8 +89,8 @@
 }
 
 .search-btn {
-  background-color: #2d2d2d;
-  color: #FFFFFF;
+  background-color: var(--text-main); /* Кнопка бере колір тексту (темна у світлій темі, світла у темній) */
+  color: var(--bg-main); /* Контрастний текст */
   border: none;
   border-radius: 10px;
   padding: 14px 20px;
@@ -96,21 +98,22 @@
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s ease;
+  transition: opacity 0.2s ease; /* Використовуємо opacity для ховеру */
   font-family: inherit;
 }
 
 .search-btn:hover:not(:disabled) {
-  background-color: #1A1A1A;
+  opacity: 0.8;
 }
 
 .search-btn:disabled {
-  background-color: #A0A0A0;
+  background-color: var(--border-color); /* Колір неактивної кнопки */
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
 .error {
-  color: #e53935;
+  color: #e53935; /* Помилка завжди червона (можна винести в змінні, якщо є у дизайні) */
   font-size: 14px;
   font-weight: 500;
   margin: 4px 0 0 0;
@@ -125,31 +128,31 @@
 .checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #FF6B00;
+  accent-color: var(--accent-orange); /* Акцентний колір для чекбокса */
   cursor: pointer;
 }
 
-
 .submit-btn {
-  background-color: #2D2D2D;
-  color: #FFFFFF;
+  background-color: var(--text-main); /* Так само як і кнопка пошуку */
+  color: var(--bg-main);
   border: none;
   border-radius: 10px;
   padding: 16px;
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: opacity 0.2s ease;
   margin-top: 8px; 
   font-family: inherit;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background-color: #1A1A1A;
+  opacity: 0.8;
 }
 
 .submit-btn:disabled {
-  background-color: #A0A0A0;
+  background-color: var(--border-color);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
@@ -158,8 +161,6 @@
    ========================================= */
 @media (max-width: 950px) {
   .page-wrapper {
-    /* Повертаємо стандартні відступи на мобільних, 
-       інакше 90px справа стисне форму */
     padding: 32px 24px; 
   }
 
