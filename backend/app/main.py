@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from app.database import connect_to_mongo, close_mongo_connection, get_database
-from app.routes import users, devices, scenarios
+from app.routes import users, devices, scenarios, systems, calculator
 
 load_dotenv()
 
@@ -42,6 +42,8 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(devices.router)
 app.include_router(scenarios.router)
+app.include_router(systems.router)
+app.include_router(calculator.router)
 
 
 @app.get("/", tags=["Root"])
@@ -57,6 +59,8 @@ async def root():
             "users": "/users",
             "devices": "/devices",
             "scenarios": "/scenarios",
+            "systems": "/systems",
+            "calculator": "/calculator",
         },
     }
 

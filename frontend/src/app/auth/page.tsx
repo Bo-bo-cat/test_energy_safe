@@ -43,6 +43,7 @@ export default function AuthPage() {
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('user_id', data.user_id);
       localStorage.setItem('user_name', data.user_name);
+      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/');
     } else {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
@@ -71,6 +72,7 @@ export default function AuthPage() {
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('user_id', data.user_id);
       localStorage.setItem('user_name', data.user_name);
+      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/');
     }
   }

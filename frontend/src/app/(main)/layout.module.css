@@ -4,23 +4,32 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #F4F4F4; /* Світлий фон для контенту */
+  /* Використовуємо змінну для основного фону */
+  background-color: var(--bg-main); 
   font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease;
 }
 
 /* Сайдбар */
+/* src/app/(main)/layout.module.css */
+
 .sidebar {
   width: 280px;
-  background-color: #E6E6E6; /* Колір фону з твого макета Sidebar.svg */
+  background-color: var(--bg-sidebar); 
   display: flex;
   flex-direction: column;
   padding: 40px 24px;
-  border-right: 1px solid #DCDCDC;
+  border-right: 1px solid var(--border-color);
   flex-shrink: 0;
   position: sticky;
   top: 0;
   height: 100vh;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  
+  /* ДОДАЙ ЦІ ДВА РЯДКИ */
+  overflow-y: auto; 
+  overflow-x: hidden;
 }
 
 /* Логотип у сайдбарі */
@@ -33,13 +42,15 @@
 }
 
 .logo-icon {
-  color: #FF6B00;
+  /* Акцентний колір */
+  color: var(--accent-orange);
   width: 24px;
   height: 32px;
 }
 
 .logo-text {
-  color: #FF6B00;
+  /* Акцентний колір */
+  color: var(--accent-orange);
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -49,35 +60,64 @@
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Невеликий відступ між елементами */
+  gap: 8px;
 }
 
-/* Посилання в меню (неактивне) */
-.nav-link {
+/* Базовий стиль для посилань та кнопки логауту */
+.nav-link, 
+.logout-btn {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 16px 20px;
-  border-radius: 16px; /* Велике скруглення за макетом */
+  border-radius: 16px;
   text-decoration: none;
-  color: #1A1A1A; /* Майже чорний колір тексту */
+  /* Колір основного тексту */
+  color: var(--text-main);
   font-size: 18px;
   font-weight: 700;
   transition: all 0.2s ease-in-out;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
-/* Ефект при наведенні */
-.nav-link:hover:not(.nav-link-active) {
-  background-color: #DCDCDC;
+/* Ефект при наведенні для неактивних посилань та кнопки логауту */
+.nav-link:hover:not(.nav-link-active),
+.logout-btn:hover {
+  /* Використовуємо колір рамки або інший відповідний світлий/темний колір для ховеру */
+  background-color: var(--border-color);
+  color: var(--text-main); 
 }
 
-/* АКТИВНИЙ СТАН (коли ми на цій сторінці) */
+/* Зміна кольору іконки при наведенні */
+.nav-link:hover:not(.nav-link-active) .nav-icon,
+.logout-btn:hover .nav-icon {
+  color: var(--text-main);
+}
+
+/* АКТИВНИЙ СТАН */
 .nav-link-active {
-  background-color: #FF6B00; /* Помаранчевий фон */
-  color: #FFFFFF; /* Білий текст */
+  /* Акцентний колір фону */
+  background-color: var(--accent-orange); 
+  /* Текст на помаранчевому фоні залишаємо білим для контрасту (можна захардкодити або використати змінну --bg-main, якщо вона світла) */
+  color: #FFFFFF; 
 }
 
-/* Контейнер для іконки всередині посилання */
+/* Секція логауту - притискає кнопку до низу */
+.logout-section {
+  margin-top: auto;
+  padding-top: 20px;
+  /* Додаємо ці 3 рядки: */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Контейнер для іконки */
 .icon-wrapper {
   display: flex;
   align-items: center;
@@ -90,11 +130,12 @@
 .nav-icon {
   width: 100%;
   height: 100%;
-  color: #1A1A1A; /* Чорна іконка за замовчуванням */
+  /* Колір іконок */
+  color: var(--text-main);
   transition: color 0.2s ease;
 }
 
-/* Робимо іконку білою, якщо пункт меню активний */
+/* Біла іконка в активному стані */
 .nav-link-active .nav-icon {
   color: #FFFFFF;
 }
@@ -106,47 +147,95 @@
   overflow-y: auto;
   box-sizing: border-box;
 }
+/* =========================================
+   ПЕРЕМИКАЧ ТЕМИ (СЛАЙДЕР)
+   ========================================= */
+.theme-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 16px;
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.theme-toggle-row:hover {
+  background-color: var(--border-color);
+}
+
+.toggle-switch {
+  width: 51px;
+  height: 31px;
+  background-color: var(--text-muted);
+  border-radius: 16px;
+  position: relative;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background-color: var(--accent-orange);
+}
+
+.toggle-knob {
+  width: 27px;
+  height: 27px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
 
 /* =========================================
-   Адаптація для екранів (Планшети та Мобільні)
+   Адаптація для екранів
    ========================================= */
 
 @media (max-width: 1024px) {
-  /* Планшети: просто робимо сайдбар вужчим */
   .sidebar {
     width: 220px;
     padding: 32px 16px;
   }
-  .nav-link {
+  .nav-link, .logout-btn {
     font-size: 16px;
     padding: 14px 16px;
   }
 }
 
 @media (max-width: 768px) {
-  /* Мобільні телефони: перетворюємо на нижнє меню (Bottom Bar) */
   .layout-container {
     flex-direction: column;
   }
 
   .sidebar {
     width: 100%;
-    height: auto;          /* Скидаємо висоту на весь екран */
-    position: fixed;       /* Фіксуємо поверх усього контенту */
-    bottom: 0;             /* Притискаємо до низу */
-    top: auto;             /* Скасовуємо верхню прив'язку */
+    height: auto;
+    position: fixed;
+    bottom: 0;
+    top: auto;
     left: 0;
     flex-direction: row;
-    padding: 8px 8px;      /* Невеликі відступи для мобільного */
+    padding: 8px 8px;
     border-right: none;
-    border-top: 1px solid #DCDCDC; /* Лінія тепер зверху меню */
+    /* Колір рамки */
+    border-top: 1px solid var(--border-color);
     z-index: 1000;
-    
-    /* Додаємо padding для безпечної зони на сучасних iPhone (смужка внизу) */
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
   }
 
-  /* Ховаємо логотип у нижньому меню */
   .logo-container {
     display: none; 
   }
@@ -154,30 +243,54 @@
   .nav-menu {
     flex-direction: row;
     width: 100%;
-    justify-content: space-between;
+    justify-content: space-around; 
     gap: 4px;
   }
 
+  .logout-section {
+    display: none; 
+  }
+  
   .nav-link {
-    flex-direction: column; /* Ставимо іконку над текстом */
-    gap: 6px;
-    padding: 12px 4px;
-    font-size: 11px;        /* Зменшуємо шрифт, щоб влізло 6 пунктів */
-    flex: 1;                /* Усі пункти ділять ширину порівну */
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 4px;
+    font-size: 10px; 
+    flex: 1;
     justify-content: center;
-    border-radius: 16px;
+    border-radius: 12px;
     text-align: center;
+    align-items: center;
   }
+  
+  /* Видалено дублюючий блок .nav-link, .logout-btn для мобільних */
 
-  .icon-wrapper {
-    width: 24px;
-    height: 24px;
-  }
-
-  /* Щоб контент сторінок не ховався під фіксованим меню, 
-     додаємо відступ знизу для головного контейнера */
   .main-content {
     padding: 24px 16px;
-    padding-bottom: 100px; /* Запас місця під нижнє меню */
+    padding-bottom: 100px;
+  }
+}
+
+/* =========================================
+   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .sidebar {
+    width: 220px;
+    padding: 20px 16px;
+  }
+
+  .logo-container {
+    margin-bottom: 24px;
+  }
+
+  .nav-link {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  /* ДОДАЄМО ЦЕ: Ховаємо блок з кнопками виходу та теми */
+  .logout-section {
+    display: none;
   }
 }
