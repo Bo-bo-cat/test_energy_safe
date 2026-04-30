@@ -106,6 +106,22 @@ async def get_my_systems(user_id: str = Depends(get_current_user_id)):
     return [_serialize_system(doc) async for doc in cursor]
 
 
+@router.get(
+    "/selected",
+    response_model=List[SystemResponse],
+    summary="ДБЖ, позначені для розрахунку",
+)
+async def get_selected_systems(user_id: str = Depends(get_current_user_id)):
+    """Повертає тільки ті системи користувача, де selected_for_calculation=True."""
+    db = get_database()
+    cursor = db.systems.find({
+        "user_id": user_id,
+        "is_recommended": False,
+        "selected_for_calculation": True,
+    })
+    return [_serialize_system(doc) async for doc in cursor]
+
+
 @router.post(
     "/by-name",
     response_model=SystemResponse,

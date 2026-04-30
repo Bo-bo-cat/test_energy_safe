@@ -90,7 +90,25 @@ async def get_user(user_id: str):
 @router.delete("/me", status_code=204)
 async def delete_account(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-    oid = ObjectId(user_id)
-    await db.devices.delete_many({"user_id": user_id})
-    await db.systems.delete_many({"user_id": user_id})
-    await db.users.delete_one({"_id": oid})
+
+    try:
+        oid = ObjectId(user_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор користувача")
+
+    user = await db.users.find_one({"_id": oid})
+    if not user:
+        raise HTTPException(status_code=404, detail="Акаунт не знайдено або вже видалено")
+
+    try:
+        await db.devices.delete_many({"user_id": user_id})
+        await db.systems.delete_many({"user_id": user_id})
+        result = await db.users.delete_one({"_id": oid})
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="Помилка при видаленні акаунту. Спробуйте ще раз пізніше",
+        )
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=500, detail="Акаунт не вдалося видалити")
