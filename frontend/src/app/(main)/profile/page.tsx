@@ -3,17 +3,13 @@ import { useEffect, useState, useMemo } from 'react';
 import styles from './page.module.css';
 import { DecisionModal } from '../../../components/DecisionModal';
 
-// Плейсхолдер для користувача
-const mockUser = {
-  name: 'Користувач',
-  email: 'user@energysafe.com'
-};
-
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(mockUser);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // Початковий стейт для користувача тепер null (без фейкових даних)
+  const [user, setUser] = useState<any>(null);
+  // Додаємо стейт завантаження
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Стейт для теми
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -31,10 +27,16 @@ export default function ProfilePage() {
         })
         .catch(err => {
           console.error('Не вдалося завантажити профіль:', err);
+        })
+        .finally(() => {
+          // Вимикаємо завантаження, коли запит завершився (успішно чи з помилкою)
+          setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
 
-    // 2. Ініціалізація теми (щоб тумблер показував правильний стан при завантаженні)
+    // 2. Ініціалізація теми
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       setIsDarkMode(true);
@@ -54,9 +56,12 @@ export default function ProfilePage() {
     }
   };
 
+  // Колір аватара
   const avatarColor = useMemo(() => {
+    // Якщо йде завантаження або немає імені, показуємо нейтральний сірий фон
+    if (!user?.name) return 'var(--border-color)'; 
+    
     const colors = ['#FF6B00', '#0029FF', '#00C2FF', '#FF2D55', '#5856D6', '#34C759', '#AF52DE', '#FF9500'];
-    if (!user?.name) return colors[0];
     const charCode = user.name.charCodeAt(0);
     return colors[charCode % colors.length];
   }, [user?.name]);
@@ -90,24 +95,33 @@ export default function ProfilePage() {
       <h1 className={styles.title}>Профіль</h1>
 
       <div className={styles.profileHeader}>
+        {/* Аватарка: якщо вантажиться, показуємо порожній кружок, інакше першу літеру імені */}
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
-          {user.name?.charAt(0).toUpperCase() || 'U'}
+          {isLoading ? '' : (user?.name?.charAt(0).toUpperCase() || 'U')}
         </div>
+        
         <div className={styles.userInfo}>
           <div className={styles.nameRow}>
-            <h2 className={styles.userName}>{user.name}</h2>
-            {/* Іконка редагування */}
-            <svg className={styles.editIcon} viewBox="0 0 24 24" fill="currentColor" width="24">
-              <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" />
-            </svg>
+            {/* Текст завантаження замість фейкового імені */}
+            <h2 className={styles.userName}>
+              {isLoading ? 'Завантаження...' : (user?.name || 'Користувач')}
+            </h2>
+            {!isLoading && (
+              <svg className={styles.editIcon} viewBox="0 0 24 24" fill="currentColor" width="24">
+                <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" />
+              </svg>
+            )}
           </div>
-          <p className={styles.userEmail}>{user.email}</p>
+          {/* Текст завантаження замість фейкової пошти */}
+          <p className={styles.userEmail}>
+            {isLoading ? 'Отримання даних...' : (user?.email || '')}
+          </p>
         </div>
       </div>
 
       <div className={styles.controlsRow}>
         
-        {/* Мобільний перемикач теми (видно тільки на <768px) */}
+        {/* Мобільний перемикач теми */}
         <div className={styles.themeToggleMobile} onClick={toggleTheme}>
           <span>Темна тема</span>
           <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
@@ -118,6 +132,7 @@ export default function ProfilePage() {
         <button 
           className={styles.deleteBtn}
           onClick={() => setShowDeleteModal(true)}
+          disabled={isLoading} // Вимикаємо кнопку видалення, поки йде завантаження
         >
           Видалити аккаунт
         </button>
