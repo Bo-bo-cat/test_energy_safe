@@ -1,19 +1,19 @@
 {
   "name": "energy-safe-frontend",
   "version": "1.0.0",
- "scripts": {
+  "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "eslint ."
-},
+  },
   "dependencies": {
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.4",
     "@types/node": "25.5.0",
     "@types/react": "19.2.14",
     "eslint": "^9.39.4",

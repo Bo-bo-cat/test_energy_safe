@@ -72,7 +72,7 @@ export default function ProfilePage() {
       localStorage.clear();
       document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/auth';
-    } catch (err) {
+    } catch {
       console.error('Помилка при видаленні');
       localStorage.clear();
       window.location.href = '/auth';
