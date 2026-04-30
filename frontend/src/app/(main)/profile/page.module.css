@@ -1,0 +1,194 @@
+/* src/app/(main)/profile/page.module.css */
+
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 32px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  transition: color 0.3s ease;
+}
+
+/* Ховаємо перемикач теми та логаут на десктопі */
+.logoutBtn, .themeToggleMobile {
+  display: none; 
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin: 0 0 32px 0;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: #FFFFFF; /* Залишаємо білим, бо фон аватара кольоровий */
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userName {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.editIcon {
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.editIcon:hover {
+  color: var(--text-main);
+}
+
+.userEmail {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.controlsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px; /* Обмежуємо ширину кнопок */
+}
+
+.deleteBtn {
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.deleteBtn:hover {
+  opacity: 0.9;
+}
+
+.deleteBtn:active {
+  transform: scale(0.98);
+}
+
+/* Адаптація під мобільні (вертикальні + горизонтальні) */
+@media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
+  .profileHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .userName {
+    font-size: 28px;
+  }
+  
+  .controlsRow {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Показуємо мобільні елементи */
+  .logoutBtn {
+    display: block;
+    width: 100%;
+    background-color: var(--bg-card); /* Адаптивний фон */
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.3s;
+  }
+
+  .logoutBtn:active {
+    background-color: var(--bg-card-inner);
+  }
+
+  /* Мобільний перемикач теми */
+  .themeToggleMobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    color: var(--text-main);
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    user-select: none;
+  }
+
+  /* Сам тумблер (копія з layout.module.css) */
+  .toggle-switch {
+    width: 51px;
+    height: 31px;
+    background-color: var(--text-muted);
+    border-radius: 16px;
+    position: relative;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch.active {
+    background-color: var(--accent-orange);
+  }
+
+  .toggle-knob {
+    width: 27px;
+    height: 27px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .toggle-switch.active .toggle-knob {
+    transform: translateX(20px);
+  }
+}

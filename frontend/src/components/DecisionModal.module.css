@@ -1,78 +1,90 @@
+/* src/components/DecisionModal/DecisionModal.module.css */
+
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(26, 26, 26, 0.5);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Трохи затемнив фон для кращого контрасту */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   padding: 16px;
   box-sizing: border-box;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px); /* Трохи посилив блюр */
+  font-family: 'Inter', sans-serif;
 }
 
-.box {
-  background-color: #FFFFFF;
-  border-radius: 16px;
-  padding: 24px;
+.modal {
+  /* Використовуємо змінні для підтримки темної теми */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color); /* Додали рамку для темної теми */
+  border-radius: 16px; /* Трохи більше закруглення */
+  padding: 32px 24px; /* Зменшили внутрішні відступи */
   width: 100%;
-  max-width: 380px;
+  max-width: 340px; /* Зменшили максимальну ширину */
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.12);
-  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes popIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  align-items: center;
+  text-align: center;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-  color: #1A1A1A;
+  font-size: 28px; /* Значно зменшили розмір шрифту */
+  font-weight: 800; 
+  color: var(--text-main); /* Колір тексту зі змінної */
+  margin: 0 0 24px 0;
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
 }
 
-.text {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #707070;
-  line-height: 1.4;
-}
-
-.actions {
+.buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 12px; /* Трохи зменшили відступ між кнопками */
+  width: 100%;
 }
 
-.btnCancel {
+.btn {
   flex: 1;
-  padding: 12px;
-  background-color: #F4F4F4;
-  color: #1A1A1A;
-  border: none;
+  padding: 12px; /* Зменшили відступи в кнопках */
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 20px; /* Зменшили текст на кнопках */
   font-weight: 700;
   cursor: pointer;
+  border: none;
+  font-family: inherit;
+  
+  /* Кольори кнопок зі змінних (темні у світлій темі, світлі у темній) */
+  background-color: var(--text-main); 
+  color: var(--bg-main); 
+  
+  transition: opacity 0.2s, transform 0.1s;
 }
 
-.btnConfirm {
-  flex: 1;
-  padding: 12px;
-  background-color: #FF3B30;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+.btn:hover {
+  opacity: 0.85; /* Використовуємо opacity для ховеру, щоб працювало в обох темах */
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+/* Мобільна адаптація */
+@media (max-width: 480px) {
+  .modal {
+    padding: 28px 20px;
+    max-width: 300px;
+  }
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .btn {
+    font-size: 18px;
+    padding: 12px;
+  }
 }

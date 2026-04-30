@@ -1,20 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
+import styles from './page.module.css';
+
+import { CheckboxIcon } from '../../../components/icons/Checkbox';
+import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
+import { DeleteIcon } from '../../../components/icons/Delete'; 
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-function getToken() {
-  return typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-}
-
-export default function PickerPage() {
+export default function SystemsPage() {
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     fetchMySystems();
@@ -22,221 +20,226 @@ export default function PickerPage() {
   }, []);
 
   async function fetchMySystems() {
-    const token = getToken();
+    const token = localStorage.getItem('access_token');
     if (!token) return;
-    const res = await fetch(`${API}/systems/my`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) setSystems(await res.json());
+    
+    try {
+      const res = await fetch(`${API}/systems/my`, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSystems(data || []);
+      }
+    } catch (err) { 
+      console.error('Помилка завантаження моїх систем:', err); 
+    }
   }
 
   async function fetchRecommended() {
-    const res = await fetch(`${API}/systems/recommended`);
-    if (res.ok) setRecommended(await res.json());
+    try {
+      const res = await fetch(`${API}/systems/recommended`);
+      if (res.ok) {
+        const data = await res.json();
+        setRecommended(data || []);
+      }
+    } catch (err) { 
+      console.error('Помилка завантаження рекомендованих систем:', err); 
+    }
   }
 
-  function showNotification(msg: string) {
-    setNotification(msg);
-    setTimeout(() => setNotification(''), 3000);
-  }
-
-  async function handleAdd() {
+  const handleAddByName = async () => {
     if (!query.trim()) return;
-    if (systems.length >= 6) {
-      setError('Максимум 6 систем');
-      return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    
+    try {
+      const res = await fetch(`${API}/systems/by-name`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ model: query })
+      });
+      if (res.ok) {
+        setQuery('');
+        fetchMySystems();
+      }
+    } catch (err) { 
+      console.error('Помилка додавання системи за назвою:', err); 
     }
-    setLoading(true);
-    setError('');
-    const token = getToken();
-    const res = await fetch(`${API}/systems/by-name`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ model: query.trim() }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const data = await res.json();
-      const detail = data.detail;
-      setError(Array.isArray(detail) ? 'Помилка. Перевірте назву системи.' : (detail || 'Помилка. Перевірте назву системи.'));
-      return;
-    }
-    const system = await res.json();
-    setSystems(prev => [...prev, system]);
-    setQuery('');
-  }
+  };
 
-  async function handleDelete(id: string) {
-    const token = getToken();
-    await fetch(`${API}/systems/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  const handleAddRecommended = async (rec: any) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    
+    try {
+      const res = await fetch(`${API}/systems`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          model: rec.model, 
+          type: rec.type, 
+          power: rec.power, 
+          battery: rec.battery, 
+          autonomy: rec.autonomy, 
+          selected_for_calculation: false
+        }),
+      });
+      if (res.ok) fetchMySystems();
+    } catch (err) { 
+      console.error('Помилка додавання рекомендованої системи:', err); 
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    // Оптимістичне оновлення UI
     setSystems(prev => prev.filter(s => s.id !== id));
-  }
+    
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    
+    try {
+      await fetch(`${API}/systems/${id}`, { 
+        method: 'DELETE', 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+    } catch (err) { 
+      console.error('Помилка видалення:', err); 
+      // У разі помилки можна було б перезавантажити список, але поки залишаємо так
+    }
+  };
 
-  async function handleCheckbox(id: string, current: boolean) {
-    const token = getToken();
-    const res = await fetch(`${API}/systems/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ selected_for_calculation: !current }),
-    });
-    if (res.ok) {
-      setSystems(prev =>
-        prev.map(s => s.id === id ? { ...s, selected_for_calculation: !current } : s)
-      );
-      if (!current) showNotification('Систему додано до розрахунку');
+  const handleToggleSelect = async (id: string, currentState: boolean) => {
+    // Оптимістичне оновлення UI
+    setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: !currentState } : s));
+    
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    
+    try {
+      await fetch(`${API}/systems/${id}`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ selected_for_calculation: !currentState })
+      });
+    } catch (err) { 
+      console.error('Помилка оновлення статусу:', err); 
     }
-  }
+  };
 
-  async function handleAddRecommended(rec: any) {
-    if (systems.length >= 6) {
-      setError('Максимум 6 систем');
-      setTab('my');
-      return;
-    }
-    const token = getToken();
-    const res = await fetch(`${API}/systems`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        model: rec.model,
-        type: rec.type,
-        power: rec.power,
-        battery: rec.battery,
-        autonomy: rec.autonomy,
-        selected_for_calculation: false,
-      }),
-    });
-    if (res.ok) {
-      const system = await res.json();
-      setSystems(prev => [...prev, system]);
-      setTab('my');
-      showNotification(`${rec.model} додано до ваших систем`);
-    }
-  }
+  const displayedList = tab === 'my' ? systems : recommended;
 
   return (
-    <div>
-      <h1>Система</h1>
+    <div className={styles.wrap}>
+      <h1 className={styles.pageTitle}>
+        {tab === 'my' ? 'Система' : 'Рекомендовані системи'}
+      </h1>
 
-      {notification && (
-        <div style={{ background: '#d4edda', color: '#155724', padding: '8px 14px', marginBottom: 12, borderRadius: 6 }}>
-          {notification}
-        </div>
-      )}
-
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        <button
+      <div className={styles.tabs}>
+        <button 
+          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`}
           onClick={() => setTab('my')}
-          style={{ fontWeight: tab === 'my' ? 'bold' : 'normal', padding: '6px 16px' }}
         >
           Мої системи
         </button>
-        <button
+        <button 
+          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`}
           onClick={() => setTab('recommended')}
-          style={{ fontWeight: tab === 'recommended' ? 'bold' : 'normal', padding: '6px 16px' }}
         >
-          Рекомендації
+          Рекомендовані
         </button>
       </div>
 
       {tab === 'my' && (
-        <div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <input
+        <>
+          <h2 className={styles.sectionTitle}>Введіть вашу систему</h2>
+          <div className={styles.inputRow}>
+            <input 
+              type="text" 
+              className={styles.addInput} 
+              placeholder="Наприклад: Ecoflow" 
               value={query}
-              onChange={e => { setQuery(e.target.value); setError(''); }}
-              onKeyDown={e => e.key === 'Enter' && handleAdd()}
-              placeholder="Введіть назву ДБЖ (напр. EcoFlow RIVER 2)"
-              style={{ flex: 1, padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc' }}
-              disabled={loading}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
             />
-            <button
-              onClick={handleAdd}
-              disabled={loading || !query.trim() || systems.length >= 6}
-              style={{ padding: '8px 16px' }}
-            >
-              {loading ? 'Пошук...' : 'Додати систему'}
+            <button className={styles.addBtn} onClick={handleAddByName}>
+              Додати систему
             </button>
           </div>
-
-          {error && <p style={{ color: 'red', marginBottom: 8 }}>{error}</p>}
-
-          {systems.length === 0 && !loading && (
-            <p style={{ color: '#888' }}>У вас ще немає доданих систем. Введіть назву ДБЖ або перейдіть у "Рекомендації".</p>
-          )}
-
-          {systems.map(sys => (
-            <div
-              key={sys.id}
-              style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{sys.model}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Тип: {sys.type}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Потужність: {sys.power} Вт</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Батарея: {sys.battery}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Автономія: {sys.autonomy}</div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'flex-end' }}>
-                  <label style={{ display: 'flex', gap: 6, alignItems: 'center', cursor: 'pointer', fontSize: 14 }}>
-                    <input
-                      type="checkbox"
-                      checked={sys.selected_for_calculation}
-                      onChange={() => handleCheckbox(sys.id, sys.selected_for_calculation)}
-                    />
-                    До розрахунку
-                  </label>
-                  <button
-                    onClick={() => handleDelete(sys.id)}
-                    style={{ color: 'red', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}
-                  >
-                    Видалити
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {systems.length >= 6 && (
-            <p style={{ color: '#888', fontSize: 13 }}>Досягнуто максимум 6 систем.</p>
-          )}
-        </div>
+        </>
       )}
 
-      {tab === 'recommended' && (
-        <div>
-          {recommended.map(rec => (
-            <div
-              key={rec.id}
-              style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: '12px 16px', marginBottom: 10 }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{rec.model}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Тип: {rec.type}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Потужність: {rec.power} Вт</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Батарея: {rec.battery}</div>
-                  <div style={{ color: '#555', fontSize: 14 }}>Автономія: {rec.autonomy}</div>
+      {/* Повідомлення, якщо список порожній */}
+      {displayedList.length === 0 && (
+        <p style={{ color: '#A0A0A0', fontWeight: 500, marginBottom: '48px' }}>
+          {tab === 'my' ? 'У вас ще немає збережених систем.' : 'Рекомендовані системи завантажуються...'}
+        </p>
+      )}
+
+      <div className={styles.grid}>
+        {displayedList.map((item) => (
+          <div key={item.id} className={styles.card}>
+            
+            <div className={styles.cardHeader}>
+              <div className={styles.cardTitle}>{item.type} - {item.model}</div>
+              
+              {tab === 'my' && (
+                <div className={styles.cardActions}>
+                  <button className={styles.iconBtn} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
+                    {item.selected_for_calculation ? (
+                      <CheckboxCheckedIcon className={styles.actionIconOrange} />
+                    ) : (
+                      <CheckboxIcon className={styles.actionIconGray} />
+                    )}
+                  </button>
+                  <button className={styles.iconBtn} onClick={() => handleDelete(item.id)}>
+                    <DeleteIcon className={styles.actionIconOrange} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleAddRecommended(rec)}
-                  disabled={systems.length >= 6}
-                  style={{ fontSize: 22, padding: '0 12px', cursor: 'pointer' }}
-                  title="Додати до моїх систем"
-                >
-                  +
-                </button>
+              )}
+            </div>
+
+            <div className={styles.specs}>
+              <div className={styles.specRow}>
+                <span className={styles.specLabel}>Тип</span>
+                <span className={styles.specValue}>{item.type}</span>
+              </div>
+              <div className={styles.specRow}>
+                <span className={styles.specLabel}>Потужність</span>
+                <span className={styles.specValue}>{item.power} Вт</span>
+              </div>
+              <div className={styles.specRow}>
+                <span className={styles.specLabel}>Батарея</span>
+                <span className={styles.specValue}>{item.battery}</span>
+              </div>
+              <div className={styles.specRow}>
+                <span className={styles.specLabel}>Автономія</span>
+                <span className={styles.specValue}>{item.autonomy}</span>
               </div>
             </div>
-          ))}
 
-          <p style={{ color: '#888', fontSize: 13, marginTop: 16 }}>
-            Додайте рекомендовану систему до свого профілю, щоб протестувати розрахунок автономії.
-          </p>
+            {tab === 'recommended' && (
+              <div className={styles.plusBtnContainer}>
+                <button className={styles.plusIcon} onClick={() => handleAddRecommended(item)}>+</button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {tab === 'recommended' && (
+        <div className={styles.hintBox}>
+          <div className={styles.hintTitle}>Підказка</div>
+          <div className={styles.hintText}>Додайте одну з рекомендованих систем, щоб подивитись як це працює</div>
         </div>
       )}
     </div>
