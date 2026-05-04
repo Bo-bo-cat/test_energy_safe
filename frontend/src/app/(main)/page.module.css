@@ -31,18 +31,22 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
 }
 
+/* НОВИЙ СТИЛЬ ЗАГОЛОВКІВ (як на скріншоті) */
 .cardTitle {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 32px;
 }
 
 /* Статус системи */
 .statusContent {
   display: flex;
+  flex-direction: column; /* Графік зверху, плашки знизу */
   align-items: center;
-  gap: 40px;
+  gap: 32px;
 }
 
 .donutWrapper {
@@ -71,42 +75,43 @@
 }
 
 .donutLabel {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-muted);
   margin-top: 6px;
 }
 
 .statusStats {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  flex: 1;
+  width: 100%;
 }
 
+/* 3 плашки під графіком */
 .statBoxOutline {
-  flex: 1;
+  background-color: var(--bg-main); /* Внутрішній фон як на скріншоті */
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 24px 12px;
-  text-align: center;
+  border-radius: 16px;
+  padding: 16px 20px; 
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Вирівнювання по лівому краю */
 }
 
 .statBoxOutlineValue {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   color: var(--accent-orange);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1;
 }
 
 .statBoxOutlineLabel {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 /* Картка ДБЖ */
@@ -118,47 +123,46 @@
 .upsRow {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--border-color);
 }
 
 .upsRow:last-child {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
 .upsLabel {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
 .upsValue {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
 }
 
 /* --- СЕРЕДНІЙ РЯД (Дії + Статистика) --- */
 .middleFlex {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 16px;
   margin-bottom: 32px;
 }
 
-/* Кнопки швидких дій */
+/* Кнопки швидких дій (Новий дизайн 2x2) */
 .actionBtn {
-  flex: 1;
-  min-width: 140px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 20px 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  align-items: flex-start; /* Іконка зліва */
+  justify-content: space-between; /* Розносить іконку і текст */
+  min-height: 120px;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -171,54 +175,61 @@
 }
 
 .actionIcon {
-  color: var(--text-main);
-  width: 32px;
-  height: 32px;
+  color: var(--text-muted); /* Робимо іконку сірою за замовчуванням */
+  width: 28px;
+  height: 28px;
+  margin-bottom: 16px;
+  transition: color 0.2s ease;
+}
+
+.actionBtn:hover .actionIcon {
+  color: var(--accent-orange); /* Підсвічуємо при наведенні */
 }
 
 .actionText {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
-  text-align: center;
+  text-align: left;
 }
 
 /* Маленькі плашки статистики */
 .smallStatBox {
-  flex: 1;
-  min-width: 120px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 120px;
 }
 
 .smallStatValue {
   font-size: 32px;
   font-weight: 800;
-  color: var(--accent-orange);
+  color: var(--text-main); /* Відрізняємо від акцентних кнопок */
   line-height: 1;
   margin-bottom: 8px;
 }
 
 .smallStatLabel {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
   line-height: 1.3;
+  text-align: left;
 }
 
 /* --- НИЖНІЙ РЯД (Сценарії) --- */
 .sectionTitle {
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 20px;
-  color: var(--text-main);
+  color: var(--text-muted);
 }
 
 .scenariosFlex {
@@ -231,16 +242,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 24px; /* Збільшені відступи */
-  border-radius: 14px; 
+  padding: 16px 24px;
+  border-radius: 14px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  font-size: 16px; /* Більший шрифт */
+  font-size: 16px;
   font-weight: 800;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 160px; /* Мінімальна ширина для солідності */
+  min-width: 160px;
   justify-content: center;
 }
 
@@ -256,7 +267,7 @@
 }
 
 .checkIcon {
-  width: 20px; /* Збільшена іконка */
+  width: 20px;
   height: 20px;
   flex-shrink: 0;
 }
@@ -273,21 +284,31 @@
 
 @media (max-width: 768px) {
   .wrap {
-    padding: 16px 16px 100px 16px; 
+    padding: 16px 16px 100px 16px;
   }
 
   .statusContent {
-    flex-direction: column;
     gap: 24px;
   }
 
   .statusStats {
-    width: 100%;
-    flex-direction: column;
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки зберігаються на мобільному */
+    gap: 8px;
+  }
+
+  .statBoxOutline {
+    padding: 12px;
+  }
+
+  .statBoxOutlineValue {
+    font-size: 18px; /* Менший шрифт для компактності */
+  }
+
+  .statBoxOutlineLabel {
+    font-size: 10px;
   }
 
   .middleFlex {
-    grid-template-columns: repeat(2, 1fr);
-    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Сітка 2x2 для кнопок на мобілках */
   }
 }
