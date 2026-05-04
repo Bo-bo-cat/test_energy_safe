@@ -159,11 +159,11 @@ export default function CalculatorPage() {
     const token = localStorage.getItem('access_token');
     
     try {
-      // Формуємо об'єкт ТОЧНО так, як вимагає Pydantic на бекенді
+      // Додаємо selectedSystemId у payload
       const payload = {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
-        systemId: selectedSystemId, // <--- ДОДАЛИ ОСЬ ЦЕЙ РЯДОК!
+        selectedSystemId: selectedSystemId, // <--- ДОДАЙ ЛИШЕ ЦЕЙ РЯДОК
         totalPowerWatts: calcResult?.totalPowerWatts || 0,
         loadPercent: calcResult?.loadPercent || 0,
         autonomyHours: calcResult?.autonomyHours || 0
