@@ -84,23 +84,29 @@
 }
 
 /* Статистика (Текст над прогрес-баром) */
+/* Рядок статистики */
 .statsRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  font-size: 18px; /* Збільшили з 13px до 16px */
-  font-weight: 700;
+  font-size: 13px; /* Повертаємо менший розмір для пояснювального тексту */
+  font-weight: 600;
   color: var(--text-main);
 }
 
+/* Окремий блок кожної характеристики */
 .statItem {
   display: flex;
-  align-items: center;
+  align-items: baseline; /* Вирівнюємо великі цифри і малий текст по одній лінії */
   gap: 4px;
+  white-space: nowrap; /* ВАЖЛИВО: Забороняємо тексту переноситись на новий рядок! */
 }
 
+/* Самі цифри (вони у нас загорнуті в span з цим класом) */
 .statValue {
+  font-size: 18px; /* Робимо великими ТІЛЬКИ цифри */
+  font-weight: 800;
   color: var(--accent-orange);
 }
 
