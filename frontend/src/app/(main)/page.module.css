@@ -1,0 +1,289 @@
+/* src/app/(main)/page.module.css */
+
+.wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+.wrap * {
+  box-sizing: border-box;
+}
+
+/* --- ВЕРХНІЙ РЯД (Статус + ДБЖ) --- */
+.topGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-main);
+}
+
+/* Статус системи */
+.statusContent {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.donutWrapper {
+  position: relative;
+  width: 200px;
+  height: 100px; /* Половина висоти для напівкола */
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donutText {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donutPercent {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.donutLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.statusStats {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.statBoxOutline {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.statBoxOutlineValue {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.statBoxOutlineLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Картка ДБЖ */
+.upsSpecs {
+  display: flex;
+  flex-direction: column;
+}
+
+.upsRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.upsRow:last-child {
+  border-bottom: none;
+}
+
+.upsLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.upsValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* --- СЕРЕДНІЙ РЯД (Дії + Статистика) --- */
+.middleFlex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* Кнопки швидких дій */
+.actionBtn {
+  flex: 1;
+  min-width: 140px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.actionBtn:hover {
+  border-color: var(--accent-orange);
+  transform: translateY(-2px);
+}
+
+.actionIcon {
+  color: var(--text-main);
+  width: 32px;
+  height: 32px;
+}
+
+.actionText {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+}
+
+/* Маленькі плашки статистики */
+.smallStatBox {
+  flex: 1;
+  min-width: 120px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.smallStatValue {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.smallStatLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+/* --- НИЖНІЙ РЯД (Сценарії) --- */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+
+.scenariosFlex {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.scenarioChip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scenarioChip.active {
+  background-color: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #FFFFFF;
+}
+
+.scenarioChip:hover {
+  opacity: 0.9;
+}
+
+.checkIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================
+   АДАПТАЦІЯ
+   ========================================= */
+
+@media (max-width: 1100px) {
+  .topGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrap {
+    padding: 16px 16px 100px 16px; /* Запас для меню */
+  }
+
+  .statusContent {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .statusStats {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .middleFlex {
+    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+  }
+}
