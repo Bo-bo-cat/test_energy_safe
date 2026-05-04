@@ -31,20 +31,17 @@
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
 }
 
-/* НОВИЙ СТИЛЬ ЗАГОЛОВКІВ (як на скріншоті) */
 .cardTitle {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 32px;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-main);
 }
 
 /* Статус системи */
 .statusContent {
   display: flex;
-  flex-direction: column; /* Графік зверху, плашки знизу */
+  flex-direction: column; 
   align-items: center;
   gap: 32px;
 }
@@ -52,7 +49,7 @@
 .donutWrapper {
   position: relative;
   width: 200px;
-  height: 100px; /* Половина висоти для напівкола */
+  height: 100px; 
   display: flex;
   justify-content: center;
   flex-shrink: 0;
@@ -88,16 +85,15 @@
   width: 100%;
 }
 
-/* 3 плашки під графіком */
 .statBoxOutline {
-  background-color: var(--bg-main); /* Внутрішній фон як на скріншоті */
+  background-color: var(--bg-main); 
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 16px 20px; 
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start; /* Вирівнювання по лівому краю */
+  align-items: flex-start; 
 }
 
 .statBoxOutlineValue {
@@ -144,25 +140,27 @@
   color: var(--text-main);
 }
 
-/* --- СЕРЕДНІЙ РЯД (Дії + Статистика) --- */
+/* --- СЕРЕДНІЙ РЯД (Дії + Статистика) - ВІДНОВЛЕНО --- */
 .middleFlex {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  display: flex; /* Знову flex для вирівнювання в один рядок */
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 32px;
 }
 
-/* Кнопки швидких дій (Новий дизайн 2x2) */
+/* Кнопки швидких дій */
 .actionBtn {
+  flex: 1; /* Рівномірно розподіляємо ширину */
+  min-width: 140px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 20px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Іконка зліва */
-  justify-content: space-between; /* Розносить іконку і текст */
-  min-height: 120px;
+  align-items: center; /* Центруємо по горизонталі */
+  justify-content: center; /* Центруємо по вертикалі */
+  gap: 12px; /* Відстань між іконкою і текстом */
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
@@ -175,61 +173,54 @@
 }
 
 .actionIcon {
-  color: var(--text-muted); /* Робимо іконку сірою за замовчуванням */
-  width: 28px;
-  height: 28px;
-  margin-bottom: 16px;
-  transition: color 0.2s ease;
-}
-
-.actionBtn:hover .actionIcon {
-  color: var(--accent-orange); /* Підсвічуємо при наведенні */
+  color: var(--text-main); /* Іконка основного кольору тексту */
+  width: 32px;
+  height: 32px;
 }
 
 .actionText {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
-  text-align: left;
+  text-align: center;
 }
 
 /* Маленькі плашки статистики */
 .smallStatBox {
+  flex: 1; /* Рівномірно розподіляємо ширину */
+  min-width: 120px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  min-height: 120px;
+  align-items: center; /* Центруємо по горизонталі */
+  justify-content: center; /* Центруємо по вертикалі */
+  text-align: center;
 }
 
 .smallStatValue {
   font-size: 32px;
   font-weight: 800;
-  color: var(--text-main); /* Відрізняємо від акцентних кнопок */
+  color: var(--accent-orange); /* Цифри акцентного кольору */
   line-height: 1;
   margin-bottom: 8px;
 }
 
 .smallStatLabel {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-main);
   line-height: 1.3;
-  text-align: left;
 }
 
 /* --- НИЖНІЙ РЯД (Сценарії) --- */
 .sectionTitle {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 20px;
+  font-weight: 800;
   margin-bottom: 20px;
-  color: var(--text-muted);
+  color: var(--text-main);
 }
 
 .scenariosFlex {
@@ -292,7 +283,7 @@
   }
 
   .statusStats {
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки зберігаються на мобільному */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 8px;
   }
 
@@ -301,7 +292,7 @@
   }
 
   .statBoxOutlineValue {
-    font-size: 18px; /* Менший шрифт для компактності */
+    font-size: 18px; 
   }
 
   .statBoxOutlineLabel {
@@ -309,6 +300,7 @@
   }
 
   .middleFlex {
-    grid-template-columns: repeat(2, 1fr); /* Сітка 2x2 для кнопок на мобілках */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* На мобілках знову 2x2 */
   }
 }
