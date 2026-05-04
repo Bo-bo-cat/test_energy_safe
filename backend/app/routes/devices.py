@@ -231,4 +231,6 @@ async def delete_device(
     if doc["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
-    await db.devices.delete_one({"_id": oid})
+    result = await db.devices.delete_one({"_id": oid})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=500, detail="Не вдалося видалити пристрій")
