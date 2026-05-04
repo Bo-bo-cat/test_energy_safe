@@ -36,7 +36,7 @@ export default function CalculatorPage() {
 
   // Стан фільтрів
   const [activeLocation, setActiveLocation] = useState('Усі');
-  const [activeCategory, setActiveCategory] = useState<string | null>(null); // За замовчуванням нічого не обрано
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Стан вибору
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
@@ -56,7 +56,6 @@ export default function CalculatorPage() {
 
     Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
-      // ВАЖЛИВО: Змінили на /systems/my, як у твоєму файлі picker
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/my`, { headers: { Authorization: `Bearer ${token}` } })
     ])
       .then(async ([resDevices, resSystems]) => {
@@ -112,7 +111,7 @@ export default function CalculatorPage() {
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
-  // ВАЖЛИВО: Фільтрація приладів (показуємо ТІЛЬКИ якщо обрана категорія)
+  // Фільтрація приладів (показуємо ТІЛЬКИ якщо обрана категорія)
   const filteredDevices = activeCategory ? devices.filter(d => {
     const passLocation = activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
     const passCategory = categoryToIcon[d.category] === activeCategory;
@@ -126,24 +125,28 @@ export default function CalculatorPage() {
   };
 
   const toggleCategory = (cat: string) => {
-    // Якщо клікаємо на вже активну категорію - знімаємо виділення
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
   // Знаходимо обрану систему для правої панелі
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
-  // Витягуємо назву з поля model (як у твоєму picker)
+  // Витягуємо назву з поля model (як у твоєму picker). Без приставки ДБЖ і дужок.
   const systemDisplayName = selectedSystem 
     ? (selectedSystem.model || selectedSystem.type || 'Модель')
-    : 'Оберіть';
+    : 'Оберіть систему';
 
-  // Кольори для прогрес-бару
+  // Логіка для прогрес-бару навантаження
   const loadPercentage = calcResult?.loadPercent || 0;
   const progressWidth = Math.min(loadPercentage, 100);
-  let progressColor = '#34C759'; 
-  if (loadPercentage > 80) progressColor = '#FF9500'; 
-  if (loadPercentage > 100) progressColor = '#FF2D55'; 
+  
+  // Встановлюємо колір за вашими умовами
+  let progressColor = '#34C759'; // 1% - 33% (Зелений)
+  if (loadPercentage > 33 && loadPercentage <= 66) {
+    progressColor = '#FF9500'; // 34% - 66% (Помаранчевий)
+  } else if (loadPercentage > 66) {
+    progressColor = '#FF2D55'; // 67% - 100%+ (Червоний)
+  }
 
   return (
     <div className={styles.wrap}>
@@ -220,7 +223,6 @@ export default function CalculatorPage() {
             {systems.map(sys => {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
-              // Використовуємо sys.model як у твоєму бекенді
               const sysName = sys.model || 'Модель';
               
               return (
@@ -251,8 +253,9 @@ export default function CalculatorPage() {
 
         {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
+          {/* Змінено заголовок: тепер він показує лише назву системи */}
           <div className={styles['summary-title']}>
-            ДБЖ - [{systemDisplayName}]
+            {systemDisplayName}
           </div>
 
           <div className={styles['stats-grid']}>
