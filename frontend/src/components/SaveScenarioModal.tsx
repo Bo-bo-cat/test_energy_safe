@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './SaveScenarioModal.module.css';
 
 interface Props {
@@ -6,10 +6,26 @@ interface Props {
   onClose: () => void;
   onSave: (name: string) => void;
   isLoading?: boolean;
+  title?: string;        // Додали можливість змінити заголовок
+  initialName?: string;  // Додали початкове значення для редагування
 }
 
-export const SaveScenarioModal: React.FC<Props> = ({ isOpen, onClose, onSave, isLoading }) => {
+export const SaveScenarioModal: React.FC<Props> = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  isLoading, 
+  title = 'Додайте назву Сценарію', // Заголовок за замовчуванням
+  initialName = '' 
+}) => {
   const [name, setName] = useState('');
+
+  // Коли модалка відкривається, підставляємо стару назву (якщо вона є)
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialName);
+    }
+  }, [isOpen, initialName]);
 
   if (!isOpen) return null;
 
@@ -21,11 +37,10 @@ export const SaveScenarioModal: React.FC<Props> = ({ isOpen, onClose, onSave, is
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      {/* e.stopPropagation() не дає модалці закритись, якщо клікнути всередині неї */}
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         
         <div className={styles.header}>
-          <h2 className={styles.title}>Додайте назву Сценарію</h2>
+          <h2 className={styles.title}>{title}</h2>
           <button className={styles.closeBtn} onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -49,7 +64,7 @@ export const SaveScenarioModal: React.FC<Props> = ({ isOpen, onClose, onSave, is
           onClick={handleSave}
           disabled={!name.trim() || isLoading}
         >
-          {isLoading ? 'Збереження...' : 'Зберегти сценарій'}
+          {isLoading ? 'Збереження...' : 'Зберегти'}
         </button>
 
       </div>

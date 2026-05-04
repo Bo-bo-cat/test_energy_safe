@@ -3,31 +3,32 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Іконки
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
-
-// Модалка
 import { DecisionModal } from '../../../components/DecisionModal';
+
+// НОВЕ: Імпортуємо нашу модалку
+import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
 
 export default function ScenariosPage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Стан для обраного сценарію (підсвічування)
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
-
-  // Стан для модалки видалення
   const [scenarioToDelete, setScenarioToDelete] = useState<string | null>(null);
+
+  // НОВЕ: Стан для редагування назви
+  const [editingScenario, setEditingScenario] = useState<{ id: string, name: string } | null>(null);
+  const [isRenaming, setIsRenaming] = useState(false);
 
   useEffect(() => {
     fetchScenarios();
   }, []);
 
   const fetchScenarios = async () => {
+    // ... (старий код завантаження без змін)
     const token = localStorage.getItem('access_token');
     if (!token) return;
-
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -37,50 +38,69 @@ export default function ScenariosPage() {
         setScenarios(Array.isArray(data) ? data : []);
       }
     } catch (err) {
-      console.error('Помилка завантаження сценаріїв:', err);
+      console.error('Помилка завантаження:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Ця функція лише відкриває модалку
   const handleDeleteClick = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Щоб клік на іконку не виділяв картку
+    e.stopPropagation(); 
     setScenarioToDelete(id);
   };
 
-  // А ця функція викликається, коли юзер тисне "Так" у модалці
   const confirmDelete = async () => {
+    // ... (старий код видалення без змін)
     if (!scenarioToDelete) return;
     const id = scenarioToDelete;
-    
-    // Закриваємо модалку
     setScenarioToDelete(null);
-
-    // Якщо ми видаляємо той, що зараз обраний — знімаємо виділення
-    if (selectedScenarioId === id) {
-      setSelectedScenarioId(null);
-    }
-
+    if (selectedScenarioId === id) setSelectedScenarioId(null);
     const token = localStorage.getItem('access_token');
     if (!token) return;
-
-    // Оптимістичне оновлення
     setScenarios(prev => prev.filter(s => s.id !== id));
-
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (err) {
-      console.error('Помилка видалення:', err);
-      fetchScenarios(); // Відкочуємо назад у разі помилки
+      fetchScenarios(); 
+    }
+  };
+
+  // НОВЕ: Функція для збереження нової назви
+  const handleRename = async (newName: string) => {
+    if (!editingScenario) return;
+    setIsRenaming(true);
+    const token = localStorage.getItem('access_token');
+
+    try {
+      // Оновлюємо назву локально, щоб UI змінився миттєво
+      setScenarios(prev => prev.map(s => s.id === editingScenario.id ? { ...s, name: newName } : s));
+      
+      // Закриваємо модалку
+      const currentId = editingScenario.id;
+      setEditingScenario(null);
+
+      // Відправляємо PATCH запит на сервер
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${currentId}`, {
+        method: 'PATCH', // або PUT, залежно від того, як налаштовано ваш бекенд
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ name: newName })
+      });
+
+    } catch (err) {
+      console.error('Помилка перейменування:', err);
+      fetchScenarios(); // Якщо помилка - повертаємо старі дані
+    } finally {
+      setIsRenaming(false);
     }
   };
 
   const handleCardClick = (id: string) => {
-    // Якщо клікаємо на вже обраний - знімаємо виділення
     setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
@@ -94,6 +114,7 @@ export default function ScenariosPage() {
         <div className={styles.grid}>
           
           {scenarios.map(scenario => {
+            // ... (старий код розрахунку змінних без змін)
             const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
             const autonomyHours = scenario.autonomyHours || scenario.autonomy_hours || scenario.duration_hours || 0;
             const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
@@ -117,11 +138,12 @@ export default function ScenariosPage() {
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>{scenario.name}</div>
                   <div className={styles.actions}>
+                    {/* НОВЕ: Викликаємо модалку при кліку на олівець */}
                     <button 
                       className={styles.iconBtn} 
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert('Функція редагування в розробці!');
+                        setEditingScenario({ id: scenario.id, name: scenario.name });
                       }}
                     >
                       <PenIcon/>
@@ -135,6 +157,7 @@ export default function ScenariosPage() {
                   </div>
                 </div>
 
+                {/* ... (старий код статистики і прогрес-бару) */}
                 <div>
                   <div className={styles.statsRow}>
                     <div className={styles.statItem}>
@@ -147,17 +170,14 @@ export default function ScenariosPage() {
                       <span className={styles.statValue}>{displayLoad}%</span> інвертора
                     </div>
                   </div>
-                  
                   <div className={styles.progressContainer}>
                     <div 
                       className={styles.progressFill} 
-                      style={{ 
-                        width: `${Math.min(loadPercent || 0, 100)}%`, 
-                        backgroundColor: progressColor 
-                      }} 
+                      style={{ width: `${Math.min(loadPercent || 0, 100)}%`, backgroundColor: progressColor }} 
                     />
                   </div>
                 </div>
+
               </div>
             );
           })}
@@ -170,12 +190,21 @@ export default function ScenariosPage() {
         </div>
       )}
 
-      {/* Підключаємо DecisionModal */}
       <DecisionModal 
         isOpen={scenarioToDelete !== null}
         onClose={() => setScenarioToDelete(null)}
         onConfirm={confirmDelete}
         title="Видалити сценарій?"
+      />
+
+      {/* НОВЕ: Додаємо модалку перейменування в кінець */}
+      <SaveScenarioModal 
+        isOpen={editingScenario !== null}
+        onClose={() => setEditingScenario(null)}
+        onSave={handleRename}
+        isLoading={isRenaming}
+        title="Змінити назву"
+        initialName={editingScenario?.name || ''}
       />
     </div>
   );

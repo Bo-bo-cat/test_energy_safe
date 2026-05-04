@@ -345,6 +345,8 @@
 }
 
 /* --- АДАПТАЦІЯ --- */
+
+/* Планшети (і великі телефони в горизонтальному режимі) */
 @media (max-width: 1100px) {
   .layout {
     flex-direction: column;
@@ -352,27 +354,106 @@
   
   .summary-panel {
     width: 100%;
-    position: static;
+    position: static; /* Відключаємо прилипання (sticky) для мобілок */
+    margin-top: 24px;
+    box-sizing: border-box; /* Гарантуємо, що padding не розширить блок за межі екрана */
+  }
+
+  .systems-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 }
 
+/* Мобільні телефони (Вертикальний режим - Portrait) */
 @media (max-width: 768px) {
   .wrap {
     padding-top: 16px;
-    padding-bottom: 120px;
+    padding-bottom: 120px; /* Великий відступ знизу для мобільного навігаційного меню */
+    padding-left: 16px;    /* Додаємо відступи від країв екрана */
+    padding-right: 16px;
+    box-sizing: border-box;
   }
 
+  .title {
+    font-size: 32px; /* Трохи зменшуємо заголовок */
+    margin-bottom: 16px;
+  }
+
+  .main-content {
+    gap: 24px;
+  }
+
+  /* Робимо список приладів компактнішим */
   .device-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    padding: 12px 16px;
   }
 
   .device-power {
-    margin-left: 40px; /* Вирівнюємо під текст */
+    margin-left: 40px; /* Вирівнюємо текст потужності під назвою приладу, враховуючи чекбокс */
   }
 
+  /* Сітка систем: одна під одною */
   .systems-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Адаптація блоку результатів (summary-panel) */
+  .summary-panel {
+    padding: 20px 16px;
+  }
+
+  .stats-grid {
+    gap: 8px; /* Зменшуємо відстань між блоками статистики */
+  }
+
+  .stat-box {
+    padding: 12px 4px;
+  }
+
+  .stat-value {
+    font-size: 20px; /* Трохи менші цифри для вузького екрана */
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+}
+
+/* Мобільні телефони (Горизонтальний режим - Landscape) */
+@media (max-width: 900px) and (orientation: landscape) {
+  .wrap {
+    padding-top: 12px;
+    padding-bottom: 90px;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+  }
+
+  .title {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  /* Зменшуємо загальні відступи для економії вертикального простору */
+  .main-content {
+    gap: 16px;
+  }
+
+  /* Вибудовуємо системи у два стовпці, якщо є місце */
+  .systems-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Робимо панель результатів компактнішою */
+  .summary-panel {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .stats-grid {
+    margin-bottom: 20px;
   }
 }
