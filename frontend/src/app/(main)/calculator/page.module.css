@@ -361,93 +361,13 @@
 }
 
 /* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (МОБІЛЬНІ ТА ПЛАНШЕТИ)
+   СУЧАСНИЙ МОБІЛЬНИЙ UX (Дизайн від ШІ)
    ========================================= */
 
-/* Планшети (і великі телефони) */
-@media (max-width: 1100px) {
-  .layout {
-    flex-direction: column;
-  }
-  
-  .summary-panel {
-    width: 100%; /* Розтягуємо на всю ширину */
-    position: static; /* Відключаємо прилипання */
-    margin-top: 0; 
-  }
-
-  .systems-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-}
-
-/* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) {
   .wrap {
-    padding: 24px 16px 120px 16px; /* Зменшені бокові відступи, великий відступ знизу для меню */
-  }
-
-  .title {
-    font-size: 32px;
-    margin-bottom: 16px;
-  }
-
-  .main-content {
-    gap: 24px;
-  }
-
-  /* Перебудова списку приладів для вузьких екранів */
-  .device-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 14px 16px;
-  }
-
-  .device-left {
-    width: 100%;
-  }
-
-  .device-name {
-    font-size: 16px;
-  }
-
-  .device-power {
-    margin-left: 40px; /* Вирівнюємо текст під чекбокс */
-    font-size: 13px;
-  }
-
-  /* Сітка систем: одна під одною */
-  .systems-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Адаптація блоку результатів */
-  .summary-panel {
-    padding: 20px 16px;
-  }
-
-  .stats-grid {
-    gap: 8px; 
-  }
-
-  .stat-box {
-    padding: 12px 4px;
-  }
-
-  .stat-value {
-    font-size: 20px; 
-  }
-
-  .stat-label {
-    font-size: 10px;
-  }
-}
-
-/* Мобільні телефони (Горизонтально / Landscape) */
-@media (max-width: 900px) and (orientation: landscape) {
-  .wrap {
-    padding: 16px 16px 90px 16px;
+    /* Робимо ВЕЛИЧЕЗНИЙ відступ знизу, щоб контент не ховався за фіксовану панель результатів */
+    padding: 16px 16px 280px 16px; 
   }
 
   .title {
@@ -456,19 +376,104 @@
   }
 
   .main-content {
-    gap: 16px;
+    gap: 24px;
   }
 
-  /* Системи в два стовпці */
+  /* 1. ГОРИЗОНТАЛЬНА КАРУСЕЛЬ ДЛЯ ІКОНОК (Свайп вбік) */
+  .icon-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px; /* Місце для скролбару */
+    -webkit-overflow-scrolling: touch;
+    /* Ховаємо скролбар для краси */
+    scrollbar-width: none; 
+  }
+  .icon-filters::-webkit-scrollbar { display: none; }
+  
+  .icon-chip {
+    flex-shrink: 0; /* Щоб іконки не стискалися */
+  }
+
+  /* 2. КОМПАКТНИЙ СПИСОК ПРИЛАДІВ */
+  .device-item {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .device-name {
+    font-size: 15px;
+  }
+  .device-power {
+    font-size: 13px;
+    margin-left: 40px; /* Вирівнюємо під текстом, минаючи чекбокс */
+  }
+
+  /* 3. ГОРИЗОНТАЛЬНА КАРУСЕЛЬ ДЛЯ ДБЖ (Свайп вбік) */
   .systems-grid {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory; /* Додаємо ефект "примагнічування" карток */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .systems-grid::-webkit-scrollbar { display: none; }
+
+  .system-card, .add-system-card {
+    flex: 0 0 240px; /* Жорстка ширина карток, щоб вони свайпались */
+    scroll-snap-align: center; /* Магнітимо по центру */
   }
 
+  /* 4. "STICKY BOTTOM SHEET" - ФІКСОВАНА ПАНЕЛЬ РЕЗУЛЬТАТІВ ЗНИЗУ */
   .summary-panel {
-    padding: 16px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border-radius: 24px 24px 0 0; /* Закруглені тільки верхні кути */
+    box-shadow: 0px -8px 30px rgba(0, 0, 0, 0.15); /* Тінь падає вгору! */
+    padding: 16px 20px 32px 20px; /* Запас знизу для "смужки" iPhone */
+    z-index: 100;
+    background-color: var(--bg-card); /* Беремо фон з теми */
+    border: none;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .summary-title {
+    font-size: 16px; /* Робимо заголовок станції меншим */
+    margin-bottom: 12px;
   }
 
   .stats-grid {
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    padding: 8px 4px;
+    border-radius: 8px;
+    background-color: var(--bg-main); /* Виділяємо цифри іншим фоном */
+  }
+
+  .stat-value {
+    font-size: 18px; /* Цифри трохи менші, щоб все влізло */
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .progress-container {
+    height: 8px; /* Робимо лінію тоншою і елегантнішою */
+    margin-bottom: 16px;
+  }
+
+  .save-btn {
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 12px;
   }
 }
