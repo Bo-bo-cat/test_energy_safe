@@ -300,6 +300,7 @@
     flex-direction: row; /* 3 плашки в ряд */
     gap: 8px;
   }
+  
 
   .statBoxOutline {
     padding: 16px 8px;
