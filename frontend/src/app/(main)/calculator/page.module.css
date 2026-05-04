@@ -441,7 +441,7 @@
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0 160px; /* Вузькі картки */
+    flex: 0 0; /* Вузькі картки */
     padding: 16px 14px; 
     scroll-snap-align: center;
     /* Даємо карткам вільно розтягуватись по висоті контенту */
