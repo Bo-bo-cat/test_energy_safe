@@ -360,11 +360,8 @@
   }
 }
 
-/* 📱 СУЧАСНИЙ МОБІЛЬНИЙ UX 
-   (Телефони вертикально та горизонтально) */
 @media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    /* Прибрали гнучку висоту, тепер контейнер вільно скролиться */
     display: block; 
     padding: 16px 0 24px 0; 
     overflow-x: clip; 
@@ -383,12 +380,11 @@
   }
 
   .main-content {
-    /* Прибрали flex: 1, який "плющив" контент */
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    margin-bottom: 24px; /* Відступ між станціями і плаваючою панеллю */
+    margin-bottom: 24px;
   }
 
   /* 1. КАРУСЕЛЬ ІКОНОК */
@@ -427,7 +423,7 @@
     height: 20px;
   }
 
-  /* 3. КАРУСЕЛЬ ДБЖ (НОРМАЛЬНА ВИСОТА) */
+  /* 3. КАРУСЕЛЬ ДБЖ (КВАДРАТНІ КАРТКИ!) */
   .systems-grid {
     display: flex;
     flex-wrap: nowrap;
@@ -441,18 +437,24 @@
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0; /* Вузькі картки */
-    padding: 16px 14px; 
+    flex: 0 0 160px; /* Ширина 160px */
+    height: 160px; /* Жорстка висота 160px = ідеальний квадрат */
+    padding: 14px; 
     scroll-snap-align: center;
-    /* Даємо карткам вільно розтягуватись по висоті контенту */
-    height: auto; 
-    min-height: 150px; 
+    justify-content: flex-start; /* Вирівнюємо по верхньому краю */
   }
 
   .system-title {
     font-size: 15px;
-    margin-bottom: 8px;
-    white-space: normal; /* Дозволяє перенос тексту */
+    margin-bottom: 6px;
+    white-space: nowrap; /* Не даємо заголовку падати на 2 рядки */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Зменшуємо відступи між характеристиками в 2 рази */
+  .system-spec {
+    padding: 3px 0; 
   }
 
   .spec-label {
@@ -461,18 +463,26 @@
 
   .spec-value {
     font-size: 12px;
+    white-space: nowrap; /* Забороняємо перенос довгого тексту */
+    overflow: hidden; /* Обрізаємо все, що не влізло */
+    text-overflow: ellipsis; /* Ставимо три крапки (...) */
+  }
+
+  /* Центруємо контент у картці "Додати" */
+  .add-system-card {
+    justify-content: center;
   }
 
   .add-icon {
-    font-size: 32px !important;
+    font-size: 36px !important;
     margin-bottom: 4px;
   }
   .add-system-card span:last-child {
-    font-size: 13px !important;
+    font-size: 14px !important;
     text-align: center;
   }
 
-  /* 4. "STICKY BOTTOM SHEET" (Плаває знизу) */
+  /* 4. "STICKY BOTTOM SHEET" */
   .summary-panel {
     width: 100%;
     position: sticky;
