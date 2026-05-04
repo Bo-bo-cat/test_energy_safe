@@ -159,27 +159,37 @@ export default function CalculatorPage() {
     const token = localStorage.getItem('access_token');
     
     try {
+      const payload = {
+        name: scenarioName,
+        duration_hours: calcResult?.autonomyHours || 0,
+        devices_included: selectedDeviceIds
+      };
+      
+      console.log("Відправляємо на бекенд:", payload);
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-          name: scenarioName,
-          duration_hours: calcResult?.autonomyHours || 0,
-          devices_included: selectedDeviceIds
-        })
+        body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error('Помилка збереження');
+      if (!res.ok) {
+        // Читаємо реальну помилку від бекенду!
+        const errorData = await res.json();
+        console.error("Помилка від бекенду:", errorData);
+        alert(`Помилка бекенду: ${JSON.stringify(errorData.detail || errorData)}`);
+        throw new Error('Помилка збереження');
+      }
       
       setIsModalOpen(false);
       window.location.href = '/scenarios'; 
       
     } catch (err) {
       console.error('Помилка при збереженні сценарію:', err);
-      alert('Не вдалося зберегти сценарій.');
+      // alert('Не вдалося зберегти сценарій.'); // Закоментували старий алерт
     } finally {
       setIsSaving(false);
     }
