@@ -1,31 +1,285 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import styles from './page.module.css';
+import Link from 'next/link';
+
+// Іконки
+import { FridgeIcon } from '../../../components/icons/Fridge';
+import { LaptopIcon } from '../../../components/icons/Laptop';
+import { RouterIcon } from '../../../components/icons/Router';
+import { LightIcon } from '../../../components/icons/Light';
+import { TvIcon } from '../../../components/icons/Tv';
+
+const categoryToIcon: Record<string, string> = {
+  'Холодильник': 'fridge', 
+  'Ноутбук': 'laptop', 
+  'Роутер': 'router',
+  'Освітлення': 'light', 
+  'Телевізор': 'tv',
+};
+
+const renderDeviceIcon = (iconName?: string) => {
+  switch (iconName) {
+    case 'fridge': return <FridgeIcon className={styles['device-svg']} />;
+    case 'laptop': return <LaptopIcon className={styles['device-svg']} />;
+    case 'router': return <RouterIcon className={styles['device-svg']} />;
+    case 'light': return <LightIcon className={styles['device-svg']} />;
+    case 'tv': return <TvIcon className={styles['device-svg']} />;
+    default: return <div className={styles['device-svg']} style={{ backgroundColor: 'var(--border-color)', borderRadius: '4px' }} />;
+  }
+};
 
 export default function CalculatorPage() {
   const [devices, setDevices] = useState<any[]>([]);
+  const [systems, setSystems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Стан фільтрів
+  const [activeLocation, setActiveLocation] = useState('Усі');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  // Стан вибору
+  const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
+  const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
+
+  // Результати калькуляції
+  const [calcResult, setCalcResult] = useState<{
+    totalPowerWatts: number;
+    loadPercent: number;
+    autonomyHours: number;
+  } | null>(null);
+
+  // 1. Завантаження даних приладів та систем
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(r => r.json())
-      .then(data => { if (Array.isArray(data)) setDevices(data); });
+    Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems`, { headers: { Authorization: `Bearer ${token}` } })
+    ])
+      .then(async ([resDevices, resSystems]) => {
+        const dataDevices = await resDevices.json();
+        const dataSystems = await resSystems.json();
+        
+        if (Array.isArray(dataDevices)) setDevices(dataDevices);
+        if (Array.isArray(dataSystems)) setSystems(dataSystems);
+      })
+      .catch(err => console.error("Помилка завантаження даних:", err))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const totalWh = devices.reduce((sum, d) => sum + d.power_watts * (d.daily_usage_hours ?? 1), 0);
+  // 2. Виклик бекенд-калькулятора при зміні вибору
+  useEffect(() => {
+    if (selectedDeviceIds.length === 0 || !selectedSystemId) {
+      setCalcResult(null);
+      return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/calculator/calculate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        selectedDeviceIds: selectedDeviceIds,
+        selectedSystemId: selectedSystemId
+      })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Помилка калькуляції');
+        return res.json();
+      })
+      .then(data => {
+        setCalcResult(data);
+      })
+      .catch(err => {
+        console.error(err);
+        setCalcResult(null);
+      });
+  }, [selectedDeviceIds, selectedSystemId]);
+
+  // Фільтрація приладів
+  const filteredDevices = devices.filter(d => {
+    const passLocation = activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
+    const passCategory = !activeCategory || categoryToIcon[d.category] === activeCategory;
+    return passLocation && passCategory;
+  });
+
+  // Обробники кліків
+  const toggleDevice = (id: string) => {
+    setSelectedDeviceIds(prev => 
+      prev.includes(id) ? prev.filter(did => did !== id) : [...prev, id]
+    );
+  };
+
+  const toggleCategory = (cat: string) => {
+    setActiveCategory(prev => prev === cat ? null : cat);
+  };
+
+  // Логіка для прогрес-бару навантаження
+  const loadPercentage = calcResult?.loadPercent || 0;
+  const progressWidth = Math.min(loadPercentage, 100);
+  let progressColor = '#34C759'; // Зелений
+  if (loadPercentage > 80) progressColor = '#FF9500'; // Помаранчевий
+  if (loadPercentage > 100) progressColor = '#FF2D55'; // Червоний (Перевантаження)
+
+  // Знаходимо обрану систему для відображення в заголовку
+  const selectedSystem = systems.find(s => (s.id || s._id) === selectedSystemId);
 
   return (
-    <div>
-      <h2>Розрахунок</h2>
-      {devices.map(d => (
-        <div key={d.id ?? d._id}>
-          {d.model_name}: {d.power_watts * (d.daily_usage_hours ?? 1)} Вт·год/день
+    <div className={styles.wrap}>
+      <h1 className={styles.title}>Розрахунок</h1>
+
+      <div className={styles.layout}>
+        {/* ЛІВА ЧАСТИНА (Контент) */}
+        <div className={styles['main-content']}>
+          
+          {/* Фільтри локації */}
+          <div className={styles['filters-row']}>
+            {['Усі', 'Дім', 'Офіс'].map(loc => (
+              <div 
+                key={loc}
+                className={`${styles['filter-chip']} ${activeLocation === loc ? styles.active : ''}`}
+                onClick={() => setActiveLocation(loc)}
+              >
+                {loc}
+              </div>
+            ))}
+          </div>
+
+          {/* Фільтри категорій (Іконки) */}
+          <div className={styles['icon-filters']}>
+            {['fridge', 'laptop', 'router', 'light', 'tv'].map(icon => (
+              <div 
+                key={icon}
+                className={`${styles['icon-chip']} ${activeCategory === icon ? styles.active : ''}`}
+                onClick={() => toggleCategory(icon)}
+              >
+                {renderDeviceIcon(icon)}
+              </div>
+            ))}
+          </div>
+
+          {/* Список приладів */}
+          <div className={styles['device-list']}>
+            {filteredDevices.length > 0 ? filteredDevices.map(device => {
+              const id = device.id || device._id; // Підтримка різних форматів ID
+              const isSelected = selectedDeviceIds.includes(id);
+              return (
+                <div 
+                  key={id} 
+                  className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
+                  onClick={() => toggleDevice(id)}
+                >
+                  <div className={styles['device-left']}>
+                    <div className={styles.checkbox}>
+                      <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                    <span className={styles['device-name']}>{device.model_name || device.name}</span>
+                  </div>
+                  <div className={styles['device-power']}>
+                    {device.power_watts || device.power_watt} Вт {device.startup_current_watts ? `- пуск ${device.startup_current_watts} Вт` : ''}
+                  </div>
+                </div>
+              )
+            }) : (
+              <p style={{ color: 'var(--text-muted)' }}>Приладів не знайдено.</p>
+            )}
+          </div>
+
+          {/* Сітка Систем */}
+          <div className={styles['systems-grid']}>
+            <Link href="/systems" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
+              <span className={styles['add-icon']}>+</span>
+              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>Додати мою ДБЖ</span>
+            </Link>
+
+            {systems.map(sys => {
+              const id = sys.id || sys._id;
+              const isSelected = selectedSystemId === id;
+              return (
+                <div 
+                  key={id} 
+                  className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
+                  onClick={() => setSelectedSystemId(id)}
+                >
+                  <div className={styles['system-title']}>ДБЖ - {sys.name}</div>
+                  
+                  <div className={styles['system-spec']}>
+                    <span className={styles['spec-label']}>Тип</span>
+                    <span className={styles['spec-value']}>{sys.type}</span>
+                  </div>
+                  <div className={styles['system-spec']}>
+                    <span className={styles['spec-label']}>Потужність</span>
+                    <span className={styles['spec-value']}>{sys.power} Вт</span>
+                  </div>
+                  <div className={styles['system-spec']}>
+                    <span className={styles['spec-label']}>Батарея</span>
+                    <span className={styles['spec-value']}>{sys.battery}</span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
-      ))}
-      <div>Всього: {totalWh} Вт·год/день</div>
+
+        {/* ПРАВА ЧАСТИНА (Результати) */}
+        <div className={styles['summary-panel']}>
+          <div className={styles['summary-title']}>
+            ДБЖ - [{selectedSystem ? selectedSystem.name : 'Оберіть'}]
+          </div>
+
+          <div className={styles['stats-grid']}>
+            <div className={styles['stat-box']}>
+              <div className={styles['stat-value']}>
+                {calcResult ? calcResult.totalPowerWatts : '0'}
+              </div>
+              <div className={styles['stat-label']}>Вт сумарно</div>
+            </div>
+
+            <div className={styles['stat-box']}>
+              <div className={`${styles['stat-value']} ${loadPercentage > 100 ? styles.error : ''}`}>
+                {calcResult ? calcResult.loadPercent : '0'}%
+              </div>
+              <div className={styles['stat-label']}>Від інвертора</div>
+            </div>
+
+            <div className={styles['stat-box']}>
+              <div className={styles['stat-value']}>
+                {calcResult ? calcResult.autonomyHours : '0'}
+              </div>
+              <div className={styles['stat-label']}>Автономія, Год</div>
+            </div>
+          </div>
+
+          {/* Смуга навантаження */}
+          <div className={styles['progress-container']}>
+            <div 
+              className={styles['progress-fill']} 
+              style={{ 
+                width: `${progressWidth}%`, 
+                backgroundColor: progressColor 
+              }} 
+            />
+          </div>
+
+          <button 
+            className={styles['save-btn']}
+            disabled={!calcResult || loadPercentage > 100}
+            onClick={() => alert("Функція збереження сценарію буде додана пізніше!")}
+          >
+            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценарій'}
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 }
