@@ -13,16 +13,34 @@ import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
 import { HomeIcon } from '../../../components/icons/Home';
 import { OfficeIcon } from '../../../components/icons/Office';
+import {CoffeeMachineIcon} from '../../../components/icons/Coffee_Machine';
+import { ChargerIcon } from '../../../components/icons/Charger';
+import { ConditionerIcon } from '../../../components/icons/Conditioner';
+import { DishWasherIcon } from '../../../components/icons/Dishwasher';
+import { WashingMachineIcon } from '../../../components/icons/WashingMachine';
+import { OtherIcon } from '../../../components/icons/Other';
+import { KettleIcon } from '../../../components/icons/Kettle';
+import { MicrowaweIcon } from '../../../components/icons/Microwawe';
+
 
 // Компонент модалки
 import { DecisionModal } from '../../../components/DecisionModal';
+import { imageOptimizer } from 'next/dist/server/image-optimizer';
 
 const categoryToIcon: Record<string, string> = {
-  'Холодильник': 'fridge', 
-  'Ноутбук': 'laptop', 
-  'Роутер': 'router',
-  'Освітлення': 'light', 
+  'Холодильник': 'fridge',
   'Телевізор': 'tv',
+  'Пральна машина': 'washing_machine',
+  'Мікрохвильовка': 'microwave',
+  'Кондиціонер': 'ac',
+  'Ноутбук': 'laptop',
+  'Роутер': 'router',
+  'Освітлення': 'light',
+  'Зарядний пристрій': 'charger',
+  'Посудомийна машина': 'dishwasher',
+  'Електрочайник': 'kettle',
+  'Кавоварка': 'coffee',
+  'Інше': 'other',
 };
 
 const renderDeviceIcon = (iconName?: string) => {
@@ -32,10 +50,18 @@ const renderDeviceIcon = (iconName?: string) => {
     case 'router': return <RouterIcon className={styles['device-svg']} />;
     case 'light': return <LightIcon className={styles['device-svg']} />;
     case 'tv': return <TvIcon className={styles['device-svg']} />;
+    case 'washing_machine': return <WashingMachineIcon className={styles['device-svg']} />;
+    case 'microwave': return <MicrowaweIcon className={styles['device-svg']} />;
+    case 'ac': return <ConditionerIcon className={styles['device-svg']} />;
+    case 'charger': return <ChargerIcon className={styles['device-svg']} />;
+    case 'dishwasher': return <DishWasherIcon className={styles['device-svg']} />;
+    case 'kettle': return <KettleIcon className={styles['device-svg']} />;
+    case 'coffee': return <CoffeeMachineIcon className={styles['device-svg']} />;
+    case 'other': return <OtherIcon className={styles['device-svg']} />;
+
     default: return <div className={styles['device-svg']} style={{ backgroundColor: 'var(--border-color)', borderRadius: '4px' }} />;
   }
 };
-
 export default function DevicesPage() {
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
