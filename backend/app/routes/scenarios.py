@@ -14,13 +14,14 @@ router = APIRouter(prefix="/scenarios", tags=["Scenarios"])
 def _serialize_scenario(doc: dict) -> ScenarioResponse:
     return ScenarioResponse(
         id=str(doc["_id"]),
-        user_id=doc["user_id"],
+        userId=doc["userId"],
         name=doc["name"],
-        duration_hours=doc["duration_hours"],
-        devices_included=doc["devices_included"],
-        total_consumption_wh=doc["total_consumption_wh"],
-        battery_sufficient=doc.get("battery_sufficient"),
-        created_at=doc["created_at"],
+        selectedDeviceIds=doc["selectedDeviceIds"],
+        selectedSystemId=doc.get("selectedSystemId"),
+        totalPowerWatts=doc["totalPowerWatts"],
+        loadPercent=doc["loadPercent"],
+        autonomyHours=doc["autonomyHours"],
+        createdAt=doc["createdAt"],
     )
 
 
@@ -31,46 +32,47 @@ async def create_scenario(
 ):
     db = get_database()
 
-    user = await db.users.find_one({"_id": ObjectId(user_id)})
-    if not user:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
-
     device_oids = []
-    for did in payload.devices_included:
+    for did in payload.selectedDeviceIds:
         try:
             device_oids.append(ObjectId(did))
         except InvalidId:
             raise HTTPException(status_code=400, detail=f"Невалідний device_id: {did}")
 
-    cursor = db.devices.find({"_id": {"$in": device_oids}})
+    cursor = db.devices.find({"_id": {"$in": device_oids}, "user_id": user_id})
     devices = []
     async for doc in cursor:
         devices.append(doc)
 
     if len(devices) != len(device_oids):
         found_ids = {str(d["_id"]) for d in devices}
-        missing = [did for did in payload.devices_included if did not in found_ids]
+        missing = [did for did in payload.selectedDeviceIds if did not in found_ids]
         raise HTTPException(
             status_code=404,
-            detail=f"Пристрої не знайдено: {', '.join(missing)}"
+            detail=f"Пристрої не знайдено або не належать вам: {', '.join(missing)}"
         )
 
-    total_consumption_wh = sum(
-        d["power_watts"] * payload.duration_hours for d in devices
-    )
+    selected_system_id: Optional[str] = None
+    if payload.selectedSystemId is not None:
+        try:
+            system_oid = ObjectId(payload.selectedSystemId)
+        except InvalidId:
+            raise HTTPException(status_code=400, detail="Невалідний selectedSystemId")
 
-    battery_sufficient: Optional[bool] = None
-    if user.get("has_inverter") and user.get("inverter_capacity_wh") is not None:
-        battery_sufficient = total_consumption_wh <= user["inverter_capacity_wh"]
+        system = await db.systems.find_one({"_id": system_oid, "user_id": user_id})
+        if not system:
+            raise HTTPException(status_code=404, detail="Систему не знайдено або вона належить іншому користувачу")
+        selected_system_id = payload.selectedSystemId
 
     doc = {
-        "user_id": user_id,
+        "userId": user_id,
         "name": payload.name,
-        "duration_hours": payload.duration_hours,
-        "devices_included": payload.devices_included,
-        "total_consumption_wh": total_consumption_wh,
-        "battery_sufficient": battery_sufficient,
-        "created_at": datetime.now(timezone.utc),
+        "selectedDeviceIds": payload.selectedDeviceIds,
+        "selectedSystemId": selected_system_id,
+        "totalPowerWatts": payload.totalPowerWatts,
+        "loadPercent": payload.loadPercent,
+        "autonomyHours": payload.autonomyHours,
+        "createdAt": datetime.now(timezone.utc),
     }
     result = await db.scenarios.insert_one(doc)
     doc["_id"] = result.inserted_id
@@ -80,7 +82,7 @@ async def create_scenario(
 @router.get("", response_model=List[ScenarioResponse])
 async def list_scenarios(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-    cursor = db.scenarios.find({"user_id": user_id})
+    cursor = db.scenarios.find({"userId": user_id})
     scenarios = []
     async for doc in cursor:
         scenarios.append(_serialize_scenario(doc))
@@ -102,7 +104,7 @@ async def get_scenario(
     doc = await db.scenarios.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
-    if doc["user_id"] != user_id:
+    if doc["userId"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
     return _serialize_scenario(doc)
@@ -123,7 +125,7 @@ async def delete_scenario(
     doc = await db.scenarios.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
-    if doc["user_id"] != user_id:
+    if doc["userId"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
     await db.scenarios.delete_one({"_id": oid})
