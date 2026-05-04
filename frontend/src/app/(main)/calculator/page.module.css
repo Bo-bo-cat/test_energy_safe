@@ -33,7 +33,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  min-width: 0; /* Дозволяє flex-елементам стискатися */
+  min-width: 0;
 }
 
 /* --- ФІЛЬТРИ --- */
@@ -123,7 +123,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 0; /* Для обрізки довгого тексту */
+  min-width: 0;
 }
 
 .checkbox {
@@ -259,7 +259,7 @@
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
-  position: sticky; /* Липка панель на десктопі */
+  position: sticky;
   top: 32px;
   flex-shrink: 0;
   box-sizing: border-box;
@@ -342,89 +342,118 @@
 }
 
 /* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (ПЛАНШЕТИ І ТЕЛЕФОНИ)
+   СУЧАСНИЙ МОБІЛЬНИЙ UX
    ========================================= */
 
-/* Планшети (До 1100px) - Скидаємо 2 колонки в одну */
 @media (max-width: 1100px) {
   .layout {
     flex-direction: column;
   }
-  
-  .summary-panel {
-    width: 100%;
-    position: relative; /* Вимикаємо sticky */
-    top: 0;
-  }
 }
 
-/* Мобільні телефони (До 768px) - Класична надійна верстка */
 @media (max-width: 768px) {
   .wrap {
-    padding: 20px 16px 120px 16px; /* Запас знизу під навігацію */
+    /* Робимо висоту контейнера 100% і використовуємо flex, 
+       щоб нижня панель прилипала до низу */
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 80px); /* Враховуємо висоту твого меню знизу */
+    padding: 16px 0 0 0; /* Прибираємо бокові відступи для каруселей */
+  }
+
+  /* Внутрішній відступ для елементів, які не є каруселями */
+  .title, .filters-row, .device-list {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .title {
     font-size: 28px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .main-content {
-    gap: 24px;
+    gap: 20px;
+    flex: 1; /* Контент займає весь доступний простір зверху */
   }
 
-  /* Дозволяємо іконкам скролитись, якщо їх багато */
+  /* 1. КАРУСЕЛЬ ІКОНОК */
   .icon-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+    padding: 0 16px 8px 16px; /* Відступи по краях і знизу */
+    margin-top: -12px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
   }
+  .icon-filters::-webkit-scrollbar { display: none; }
 
   .icon-chip {
     flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
-  /* Компактний вигляд приладів */
+  /* 2. СПИСОК ПРИЛАДІВ */
   .device-item {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 12px 16px;
     gap: 12px;
-    padding: 16px;
   }
-
-  .device-left {
-    width: 100%;
-  }
-
   .device-name {
-    font-size: 16px;
+    font-size: 15px;
   }
-
   .device-power {
-    font-size: 14px;
-    margin-left: 40px; /* Вирівнюємо під назвою */
+    font-size: 13px;
+    margin-left: 40px;
   }
 
-  /* Системи: 1 колонка */
+  /* 3. КАРУСЕЛЬ ДБЖ */
   .systems-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 12px;
+    padding: 4px 16px 16px 16px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .systems-grid::-webkit-scrollbar { display: none; }
+
+  .system-card, .add-system-card {
+    flex: 0 0 240px; /* Ширина картки в каруселі */
+    scroll-snap-align: center;
   }
 
-  /* Блок результатів (Панель просто йде під усім контентом) */
+  /* 4. "STICKY BOTTOM SHEET" (БЕЗПЕЧНИЙ ВАРІАНТ) */
   .summary-panel {
-    margin-top: 16px;
-    padding: 20px 16px;
+    width: 100%;
+    margin-top: auto; /* Притискає панель до самого низу */
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0px -4px 20px rgba(0, 0, 0, 0.08);
+    padding: 20px 20px 24px 20px;
+    background-color: var(--bg-card);
+    border: none;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .summary-title {
+    font-size: 16px;
+    margin-bottom: 12px;
   }
 
   .stats-grid {
     gap: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .stat-box {
-    padding: 12px 4px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    background-color: var(--bg-main); /* Легкий акцентний фон для цифр */
+    border: none;
   }
 
   .stat-value {
@@ -433,10 +462,17 @@
 
   .stat-label {
     font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .progress-container {
+    height: 6px; /* Тонка елегантна лінія */
+    margin-bottom: 16px;
   }
 
   .save-btn {
     padding: 14px;
     font-size: 16px;
+    border-radius: 12px;
   }
 }
