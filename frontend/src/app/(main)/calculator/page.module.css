@@ -7,8 +7,7 @@
   padding: 32px 24px;
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
-  transition: color 0.3s ease;
-  box-sizing: border-box; /* Гарантуємо, що padding не розширює блок */
+  box-sizing: border-box;
 }
 
 .title {
@@ -19,7 +18,9 @@
   letter-spacing: -0.02em;
 }
 
-/* Макет: ліва колонка (контент) + права колонка (результати) */
+/* =========================================
+   МАКЕТ: ДЕСКТОП (2 колонки)
+   ========================================= */
 .layout {
   display: flex;
   gap: 32px;
@@ -32,7 +33,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  min-width: 0; /* Дозволяє контенту стискатися всередині flex */
+  min-width: 0; /* Дозволяє flex-елементам стискатися */
 }
 
 /* --- ФІЛЬТРИ --- */
@@ -109,13 +110,9 @@
   border-radius: 12px;
   padding: 16px 20px;
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition: all 0.2s ease;
   width: 100%;
   box-sizing: border-box;
-}
-
-.device-item:hover {
-  border-color: var(--accent-orange);
 }
 
 .device-item.selected {
@@ -126,10 +123,9 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 0; /* Щоб довгі назви коректно обрізались */
+  min-width: 0; /* Для обрізки довгого тексту */
 }
 
-/* Кастомний чекбокс */
 .checkbox {
   width: 24px;
   height: 24px;
@@ -138,7 +134,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-shrink: 0; /* Чекбокс не повинен стискатися */
+  flex-shrink: 0;
   transition: all 0.2s ease;
   background-color: var(--bg-main);
 }
@@ -166,7 +162,7 @@
   color: var(--text-main);
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Три крапки для довгого тексту */
+  text-overflow: ellipsis;
 }
 
 .device-power {
@@ -195,10 +191,6 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
-
-.system-card:hover {
-  border-color: var(--text-muted);
 }
 
 .system-card.selected {
@@ -243,7 +235,6 @@
   color: var(--text-main);
 }
 
-/* Картка "Додати" */
 .add-system-card {
   background-color: var(--bg-card-inner);
   border: 2px dashed var(--border-color);
@@ -252,11 +243,6 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-
-.add-system-card:hover {
-  border-color: var(--accent-orange);
-  background-color: var(--bg-card);
 }
 
 .add-icon {
@@ -273,10 +259,10 @@
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
-  position: sticky;
+  position: sticky; /* Липка панель на десктопі */
   top: 32px;
   flex-shrink: 0;
-  box-sizing: border-box; /* Важливо для мобілки */
+  box-sizing: border-box;
 }
 
 .summary-title {
@@ -321,7 +307,6 @@
   color: var(--text-main);
 }
 
-/* Прогрес-бар навантаження */
 .progress-container {
   width: 100%;
   height: 12px;
@@ -350,10 +335,6 @@
   transition: opacity 0.2s ease;
 }
 
-.save-btn:hover {
-  opacity: 0.85;
-}
-
 .save-btn:disabled {
   background-color: var(--border-color);
   color: var(--text-muted);
@@ -361,119 +342,101 @@
 }
 
 /* =========================================
-   СУЧАСНИЙ МОБІЛЬНИЙ UX (Дизайн від ШІ)
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (ПЛАНШЕТИ І ТЕЛЕФОНИ)
    ========================================= */
 
+/* Планшети (До 1100px) - Скидаємо 2 колонки в одну */
+@media (max-width: 1100px) {
+  .layout {
+    flex-direction: column;
+  }
+  
+  .summary-panel {
+    width: 100%;
+    position: relative; /* Вимикаємо sticky */
+    top: 0;
+  }
+}
+
+/* Мобільні телефони (До 768px) - Класична надійна верстка */
 @media (max-width: 768px) {
   .wrap {
-    /* Робимо ВЕЛИЧЕЗНИЙ відступ знизу, щоб контент не ховався за фіксовану панель результатів */
-    padding: 16px 16px 280px 16px; 
+    padding: 20px 16px 120px 16px; /* Запас знизу під навігацію */
   }
 
   .title {
     font-size: 28px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .main-content {
     gap: 24px;
   }
 
-  /* 1. ГОРИЗОНТАЛЬНА КАРУСЕЛЬ ДЛЯ ІКОНОК (Свайп вбік) */
+  /* Дозволяємо іконкам скролитись, якщо їх багато */
   .icon-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 8px; /* Місце для скролбару */
+    padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
-    /* Ховаємо скролбар для краси */
-    scrollbar-width: none; 
   }
-  .icon-filters::-webkit-scrollbar { display: none; }
-  
+
   .icon-chip {
-    flex-shrink: 0; /* Щоб іконки не стискалися */
+    flex-shrink: 0;
   }
 
-  /* 2. КОМПАКТНИЙ СПИСОК ПРИЛАДІВ */
+  /* Компактний вигляд приладів */
   .device-item {
-    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 12px;
-  }
-  .device-name {
-    font-size: 15px;
-  }
-  .device-power {
-    font-size: 13px;
-    margin-left: 40px; /* Вирівнюємо під текстом, минаючи чекбокс */
+    padding: 16px;
   }
 
-  /* 3. ГОРИЗОНТАЛЬНА КАРУСЕЛЬ ДЛЯ ДБЖ (Свайп вбік) */
-  .systems-grid {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 12px;
-    scroll-snap-type: x mandatory; /* Додаємо ефект "примагнічування" карток */
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .systems-grid::-webkit-scrollbar { display: none; }
-
-  .system-card, .add-system-card {
-    flex: 0 0 240px; /* Жорстка ширина карток, щоб вони свайпались */
-    scroll-snap-align: center; /* Магнітимо по центру */
-  }
-
-  /* 4. "STICKY BOTTOM SHEET" - ФІКСОВАНА ПАНЕЛЬ РЕЗУЛЬТАТІВ ЗНИЗУ */
-  .summary-panel {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+  .device-left {
     width: 100%;
-    margin: 0;
-    border-radius: 24px 24px 0 0; /* Закруглені тільки верхні кути */
-    box-shadow: 0px -8px 30px rgba(0, 0, 0, 0.15); /* Тінь падає вгору! */
-    padding: 16px 20px 32px 20px; /* Запас знизу для "смужки" iPhone */
-    z-index: 100;
-    background-color: var(--bg-card); /* Беремо фон з теми */
-    border: none;
-    border-top: 1px solid var(--border-color);
   }
 
-  .summary-title {
-    font-size: 16px; /* Робимо заголовок станції меншим */
-    margin-bottom: 12px;
+  .device-name {
+    font-size: 16px;
+  }
+
+  .device-power {
+    font-size: 14px;
+    margin-left: 40px; /* Вирівнюємо під назвою */
+  }
+
+  /* Системи: 1 колонка */
+  .systems-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Блок результатів (Панель просто йде під усім контентом) */
+  .summary-panel {
+    margin-top: 16px;
+    padding: 20px 16px;
   }
 
   .stats-grid {
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .stat-box {
-    padding: 8px 4px;
-    border-radius: 8px;
-    background-color: var(--bg-main); /* Виділяємо цифри іншим фоном */
+    padding: 12px 4px;
   }
 
   .stat-value {
-    font-size: 18px; /* Цифри трохи менші, щоб все влізло */
+    font-size: 18px;
   }
 
   .stat-label {
     font-size: 10px;
-    color: var(--text-muted);
-  }
-
-  .progress-container {
-    height: 8px; /* Робимо лінію тоншою і елегантнішою */
-    margin-bottom: 16px;
   }
 
   .save-btn {
     padding: 14px;
     font-size: 16px;
-    border-radius: 12px;
   }
 }
