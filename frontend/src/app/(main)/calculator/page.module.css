@@ -423,10 +423,11 @@
     height: 20px;
   }
 
-  /* 3. КАРУСЕЛЬ ДБЖ (КВАДРАТНІ КАРТКИ!) */
+  /* 3. КАРУСЕЛЬ ДБЖ (ІДЕАЛЬНІ КВАДРАТИ ЧЕРЕЗ GRID) */
   .systems-grid {
-    display: flex;
-    flex-wrap: nowrap;
+    display: grid; /* ВАЖЛИВО: Використовуємо GRID замість flex */
+    grid-auto-flow: column; /* Змушує картки ставати в один рядок */
+    grid-auto-columns: 150px; /* ЖОРСТКА ШИРИНА 150px */
     overflow-x: auto;
     gap: 12px;
     padding: 4px 16px 16px 16px;
@@ -437,48 +438,59 @@
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0 160px; /* Ширина 160px */
-    height: 160px; /* Жорстка висота 160px = ідеальний квадрат */
+    width: 100%;
+    height: 150px; /* ЖОРСТКА ВИСОТА 150px = Квадрат 150x150 */
     padding: 14px; 
     scroll-snap-align: center;
-    justify-content: flex-start; /* Вирівнюємо по верхньому краю */
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
   }
 
+  /* Заголовок ДБЖ */
   .system-title {
     font-size: 15px;
-    margin-bottom: 6px;
-    white-space: nowrap; /* Не даємо заголовку падати на 2 рядки */
+    margin-bottom: auto; /* Відштовхує характеристики в самий низ картки */
+    line-height: 1.2;
+    /* Обрізаємо текст на 2-х рядках, якщо він задовгий */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: normal;
   }
 
-  /* Зменшуємо відступи між характеристиками в 2 рази */
+  /* Характеристики: робимо в 1 рядок! */
   .system-spec {
-    padding: 3px 0; 
+    display: flex;
+    flex-direction: row; /* Текст і значення тепер на одному рядку */
+    justify-content: space-between; /* Текст зліва, значення справа */
+    align-items: center;
+    border-bottom: none; /* Прибираємо лінії між ними */
+    padding: 2px 0;
   }
 
   .spec-label {
     font-size: 10px;
+    color: var(--text-muted);
   }
 
   .spec-value {
-    font-size: 12px;
-    white-space: nowrap; /* Забороняємо перенос довгого тексту */
-    overflow: hidden; /* Обрізаємо все, що не влізло */
-    text-overflow: ellipsis; /* Ставимо три крапки (...) */
+    font-size: 11px;
+    font-weight: 700;
   }
 
-  /* Центруємо контент у картці "Додати" */
+  /* Картка "Додати" */
   .add-system-card {
     justify-content: center;
   }
-
   .add-icon {
     font-size: 36px !important;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
   }
   .add-system-card span:last-child {
-    font-size: 14px !important;
+    font-size: 13px !important;
     text-align: center;
   }
 
