@@ -396,7 +396,7 @@ export default function CalculatorPage() {
             disabled={!calcResult || loadPercentage > 100 || selectedDeviceIds.length === 0}
             onClick={() => setIsModalOpen(true)}
           >
-            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценаріо'}
+            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценарій'}
           </button>
         </div>
       </div>
