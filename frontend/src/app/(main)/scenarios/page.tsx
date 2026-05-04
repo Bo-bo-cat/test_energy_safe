@@ -67,18 +67,18 @@ export default function ScenariosPage() {
           
           {/* Рендер списку сценаріїв */}
           {scenarios.map(scenario => {
-            // Математика для відображення
-            // Потужність = Загальне споживання (Вт·год) / Тривалість (год)
-            const powerWatts = scenario.duration_hours > 0 
-              ? Math.round(scenario.total_consumption_wh / scenario.duration_hours) 
-              : 0;
+            // Підтягуємо нові поля. 
+            // Використовуємо || (або), щоб підтримати і camelCase, і snake_case, 
+            // залежно від того, як саме ваш Python-бекенд їх повертає.
             
-            const autonomyHours = scenario.duration_hours;
+            const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
+            const autonomyHours = scenario.autonomyHours || scenario.autonomy_hours || scenario.duration_hours || 0;
+            const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
             
-            // Оскільки відсоток інвертора не приходить з бекенду сценаріїв, 
-            // тимчасово ставимо розрахункове значення або 0.
-            const loadPercent = scenario.inverter_load_percent || 0; 
-            
+            // Округлюємо значення для красивого відображення (напр. 1.08 год -> 1.1)
+            const displayAutonomy = typeof autonomyHours === 'number' ? autonomyHours.toFixed(1) : autonomyHours;
+            const displayLoad = typeof loadPercent === 'number' ? Math.round(loadPercent) : loadPercent;
+
             // Кольори прогрес-бару
             let progressColor = '#34C759'; 
             if (loadPercent > 33 && loadPercent <= 66) progressColor = '#FF9500'; 
@@ -93,13 +93,13 @@ export default function ScenariosPage() {
                       className={styles.iconBtn} 
                       onClick={() => alert('Функція редагування в розробці!')}
                     >
-                      <PenIcon />
+                      <PenIcon/>
                     </button>
                     <button 
                       className={styles.iconBtn} 
                       onClick={() => handleDelete(scenario.id)}
                     >
-                      <DeleteIcon/>
+                      <DeleteIcon />
                     </button>
                   </div>
                 </div>
@@ -110,10 +110,10 @@ export default function ScenariosPage() {
                       <span className={styles.statValue}>{powerWatts}</span> Вт
                     </div>
                     <div className={styles.statItem}>
-                      ~<span className={styles.statValue}>{autonomyHours} год</span> автономії
+                      ~<span className={styles.statValue}>{displayAutonomy} год</span> автономії
                     </div>
                     <div className={styles.statItem}>
-                      <span className={styles.statValue}>{loadPercent}%</span> інвертора
+                      <span className={styles.statValue}>{displayLoad}%</span> інвертора
                     </div>
                   </div>
                   
@@ -121,7 +121,7 @@ export default function ScenariosPage() {
                     <div 
                       className={styles.progressFill} 
                       style={{ 
-                        width: `${Math.min(loadPercent || 21, 100)}%`, // Тимчасово 21% для візуалу, якщо 0
+                        width: `${Math.min(loadPercent || 0, 100)}%`, 
                         backgroundColor: progressColor 
                       }} 
                     />
