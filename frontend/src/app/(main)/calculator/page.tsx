@@ -36,7 +36,7 @@ export default function CalculatorPage() {
 
   // Стан фільтрів
   const [activeLocation, setActiveLocation] = useState('Усі');
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null); // За замовчуванням нічого не обрано
 
   // Стан вибору
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
@@ -56,20 +56,20 @@ export default function CalculatorPage() {
 
     Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/picker`, { headers: { Authorization: `Bearer ${token}` } })
+      // ВАЖЛИВО: Змінили на /systems/my, як у твоєму файлі picker
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/my`, { headers: { Authorization: `Bearer ${token}` } })
     ])
       .then(async ([resDevices, resSystems]) => {
         const dataDevices = await resDevices.json();
         const dataSystems = await resSystems.json();
         
-        // Перевіряємо чи дані прийшли масивом, чи загорнуті в об'єкт (напр. data.data)
         const devicesArray = Array.isArray(dataDevices) ? dataDevices : (dataDevices.data || []);
         const systemsArray = Array.isArray(dataSystems) ? dataSystems : (dataSystems.data || []);
         
         setDevices(devicesArray);
         setSystems(systemsArray);
 
-        // Якщо є хоча б одна система, автоматично обираємо першу
+        // Автоматично обираємо першу систему, якщо вона є
         if (systemsArray.length > 0) {
           setSelectedSystemId(systemsArray[0].id || systemsArray[0]._id);
         }
@@ -78,9 +78,8 @@ export default function CalculatorPage() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // 2. Виклик бекенд-калькулятора при зміні вибору приладів АБО системи
+  // 2. Виклик бекенд-калькулятора
   useEffect(() => {
-    // Ваш бекенд вимагає мінімум 1 прилад, тому якщо нічого не вибрано - скидаємо результати
     if (selectedDeviceIds.length === 0 || !selectedSystemId) {
       setCalcResult(null);
       return;
@@ -113,12 +112,12 @@ export default function CalculatorPage() {
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
-  // Фільтрація приладів
-  const filteredDevices = devices.filter(d => {
+  // ВАЖЛИВО: Фільтрація приладів (показуємо ТІЛЬКИ якщо обрана категорія)
+  const filteredDevices = activeCategory ? devices.filter(d => {
     const passLocation = activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
-    const passCategory = !activeCategory || categoryToIcon[d.category] === activeCategory;
+    const passCategory = categoryToIcon[d.category] === activeCategory;
     return passLocation && passCategory;
-  });
+  }) : [];
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -127,30 +126,31 @@ export default function CalculatorPage() {
   };
 
   const toggleCategory = (cat: string) => {
+    // Якщо клікаємо на вже активну категорію - знімаємо виділення
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
-  // Знаходимо обрану систему для відображення в заголовку ПРАВОЇ ПАНЕЛІ
+  // Знаходимо обрану систему для правої панелі
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
-  // Витягуємо назву незалежно від того, як її назвав бекенд (name, model_name чи model)
+  // Витягуємо назву з поля model (як у твоєму picker)
   const systemDisplayName = selectedSystem 
-    ? (selectedSystem.name || selectedSystem.model_name || selectedSystem.model || selectedSystem.type || 'Модель')
+    ? (selectedSystem.model || selectedSystem.type || 'Модель')
     : 'Оберіть';
 
-  // Логіка для прогрес-бару навантаження
+  // Кольори для прогрес-бару
   const loadPercentage = calcResult?.loadPercent || 0;
   const progressWidth = Math.min(loadPercentage, 100);
-  let progressColor = '#34C759'; // Зелений
-  if (loadPercentage > 80) progressColor = '#FF9500'; // Помаранчевий
-  if (loadPercentage > 100) progressColor = '#FF2D55'; // Червоний (Перевантаження)
+  let progressColor = '#34C759'; 
+  if (loadPercentage > 80) progressColor = '#FF9500'; 
+  if (loadPercentage > 100) progressColor = '#FF2D55'; 
 
   return (
     <div className={styles.wrap}>
       <h1 className={styles.title}>Розрахунок</h1>
 
       <div className={styles.layout}>
-        {/* ЛІВА ЧАСТИНА (Контент) */}
+        {/* ЛІВА ЧАСТИНА */}
         <div className={styles['main-content']}>
           
           <div className={styles['filters-row']}>
@@ -177,34 +177,40 @@ export default function CalculatorPage() {
             ))}
           </div>
 
+          {/* Список приладів */}
           <div className={styles['device-list']}>
-            {filteredDevices.length > 0 ? filteredDevices.map(device => {
-              const id = device.id || device._id; 
-              const isSelected = selectedDeviceIds.includes(id);
-              return (
-                <div 
-                  key={id} 
-                  className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
-                  onClick={() => toggleDevice(id)}
-                >
-                  <div className={styles['device-left']}>
-                    <div className={styles.checkbox}>
-                      <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
+            {!activeCategory ? (
+              <p style={{ color: 'var(--text-muted)' }}>Оберіть категорію вище, щоб побачити прилади.</p>
+            ) : filteredDevices.length > 0 ? (
+              filteredDevices.map(device => {
+                const id = device.id || device._id; 
+                const isSelected = selectedDeviceIds.includes(id);
+                return (
+                  <div 
+                    key={id} 
+                    className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
+                    onClick={() => toggleDevice(id)}
+                  >
+                    <div className={styles['device-left']}>
+                      <div className={styles.checkbox}>
+                        <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span className={styles['device-name']}>{device.model_name || device.name}</span>
                     </div>
-                    <span className={styles['device-name']}>{device.model_name || device.name}</span>
+                    <div className={styles['device-power']}>
+                      {device.power_watts || device.power_watt} Вт {device.startup_current_watts ? `- пуск ${device.startup_current_watts} Вт` : ''}
+                    </div>
                   </div>
-                  <div className={styles['device-power']}>
-                    {device.power_watts || device.power_watt} Вт {device.startup_current_watts ? `- пуск ${device.startup_current_watts} Вт` : ''}
-                  </div>
-                </div>
-              )
-            }) : (
-              <p style={{ color: 'var(--text-muted)' }}>Приладів не знайдено.</p>
+                )
+              })
+            ) : (
+              <p style={{ color: 'var(--text-muted)' }}>У цій категорії ще немає приладів.</p>
             )}
           </div>
 
+          {/* Сітка Систем */}
           <div className={styles['systems-grid']}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
               <span className={styles['add-icon']}>+</span>
@@ -214,7 +220,8 @@ export default function CalculatorPage() {
             {systems.map(sys => {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
-              const sysName = sys.name || sys.model_name || sys.model || 'Модель';
+              // Використовуємо sys.model як у твоєму бекенді
+              const sysName = sys.model || 'Модель';
               
               return (
                 <div 
@@ -222,7 +229,7 @@ export default function CalculatorPage() {
                   className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
                   onClick={() => setSelectedSystemId(id)}
                 >
-                  <div className={styles['system-title']}>ДБЖ - {sysName}</div>
+                  <div className={styles['system-title']}>{sys.type || 'ДБЖ'} - {sysName}</div>
                   
                   <div className={styles['system-spec']}>
                     <span className={styles['spec-label']}>Тип</span>
@@ -244,7 +251,6 @@ export default function CalculatorPage() {
 
         {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
-          {/* ТУТ НАЗВА ДБЖ ЗМІНЮЄТЬСЯ ДИНАМІЧНО */}
           <div className={styles['summary-title']}>
             ДБЖ - [{systemDisplayName}]
           </div>
