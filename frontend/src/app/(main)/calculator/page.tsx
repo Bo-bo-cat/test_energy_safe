@@ -9,7 +9,7 @@ import { LaptopIcon } from '../../../components/icons/Laptop';
 import { RouterIcon } from '../../../components/icons/Router';
 import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
-import {CoffeeMachineIcon} from '../../../components/icons/Coffee_Machine';
+import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
 import { DishWasherIcon } from '../../../components/icons/Dishwasher';
@@ -17,6 +17,9 @@ import { WashingMachineIcon } from '../../../components/icons/WashingMachine';
 import { OtherIcon } from '../../../components/icons/Other';
 import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
+
+// ВАЖЛИВО: Імпорт модалки збереження сценарію
+import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
 
 const categoryToIcon: Record<string, string> = {
   'Холодильник': 'fridge',
@@ -57,7 +60,6 @@ const renderDeviceIcon = (iconName?: string) => {
 // Допоміжна функція для очищення назви моделі
 const cleanModelName = (name: string) => {
   if (!name) return 'Модель';
-  // Якщо назва містить " - ", беремо тільки те, що після нього
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
@@ -84,6 +86,10 @@ export default function CalculatorPage() {
     autonomyHours: number;
   } | null>(null);
 
+  // Стейт для модалки збереження
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   // 1. Завантаження даних
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -100,13 +106,11 @@ export default function CalculatorPage() {
         const devicesArray = Array.isArray(dataDevices) ? dataDevices : (dataDevices.data || []);
         let systemsArray = Array.isArray(dataSystems) ? dataSystems : (dataSystems.data || []);
         
-        // ВАЖЛИВО: Фільтруємо системи, залишаємо ТІЛЬКИ ті, що мають галочку (selected_for_calculation === true)
         systemsArray = systemsArray.filter((s: any) => s.selected_for_calculation === true);
         
         setDevices(devicesArray);
         setSystems(systemsArray);
 
-        // Автоматично обираємо першу З ДОСТУПНИХ (відфільтрованих) систем
         if (systemsArray.length > 0) {
           setSelectedSystemId(systemsArray[0].id || systemsArray[0]._id);
         }
@@ -149,11 +153,56 @@ export default function CalculatorPage() {
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
-  const filteredDevices = activeCategory ? devices.filter(d => {
-    const passLocation = activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
-    const passCategory = categoryToIcon[d.category] === activeCategory;
-    return passLocation && passCategory;
+  // Функція збереження сценарію на бекенд
+  const handleSaveScenario = async (scenarioName: string) => {
+    setIsSaving(true);
+    const token = localStorage.getItem('access_token');
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: scenarioName,
+          duration_hours: calcResult?.autonomyHours || 0,
+          devices_included: selectedDeviceIds
+        })
+      });
+
+      if (!res.ok) throw new Error('Помилка збереження');
+      
+      setIsModalOpen(false);
+      window.location.href = '/scenarios'; 
+      
+    } catch (err) {
+      console.error('Помилка при збереженні сценарію:', err);
+      alert('Не вдалося зберегти сценарій.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // --- ЛОГІКА ДИНАМІЧНИХ КАТЕГОРІЙ ---
+  
+  // Крок А: Фільтруємо прилади лише за локацією
+  const locationFilteredDevices = devices.filter(d => {
+    return activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
+  });
+
+  // Крок Б: Отримуємо унікальні іконки на основі цих приладів
+  // Set гарантує, що іконка з'явиться лише 1 раз, навіть якщо у вас 3 холодильники
+  const availableIcons = Array.from(
+    new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
+  );
+
+  // Крок В: Фільтруємо список приладів для відображення (якщо іконка обрана)
+  const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
+    return categoryToIcon[d.category] === activeCategory;
   }) : [];
+
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -165,10 +214,7 @@ export default function CalculatorPage() {
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
-  // Знаходимо обрану систему
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
-  
-  // Очищаємо назву для правої панелі
   const rawDisplayName = selectedSystem ? (selectedSystem.model || selectedSystem.type || 'Модель') : 'Оберіть систему';
   const systemDisplayName = selectedSystem ? cleanModelName(rawDisplayName) : rawDisplayName;
 
@@ -195,7 +241,10 @@ export default function CalculatorPage() {
               <div 
                 key={loc}
                 className={`${styles['filter-chip']} ${activeLocation === loc ? styles.active : ''}`}
-                onClick={() => setActiveLocation(loc)}
+                onClick={() => {
+                  setActiveLocation(loc);
+                  setActiveCategory(null); // Скидаємо обрану іконку при зміні локації
+                }}
               >
                 {loc}
               </div>
@@ -203,15 +252,22 @@ export default function CalculatorPage() {
           </div>
 
           <div className={styles['icon-filters']}>
-            {['fridge', 'laptop', 'router', 'light', 'tv'].map(icon => (
-              <div 
-                key={icon}
-                className={`${styles['icon-chip']} ${activeCategory === icon ? styles.active : ''}`}
-                onClick={() => toggleCategory(icon)}
-              >
-                {renderDeviceIcon(icon)}
-              </div>
-            ))}
+            {/* Рендеримо тільки ті іконки, для яких є додані прилади */}
+            {availableIcons.length > 0 ? (
+              availableIcons.map(icon => (
+                <div 
+                  key={icon}
+                  className={`${styles['icon-chip']} ${activeCategory === icon ? styles.active : ''}`}
+                  onClick={() => toggleCategory(icon)}
+                >
+                  {renderDeviceIcon(icon)}
+                </div>
+              ))
+            ) : (
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+                Немає приладів для відображення в цій локації
+              </span>
+            )}
           </div>
 
           {/* Список приладів */}
@@ -258,7 +314,6 @@ export default function CalculatorPage() {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
               
-              // Очищаємо назву для картки
               const rawSysName = sys.model || 'Модель';
               const cleanName = cleanModelName(rawSysName);
               
@@ -268,7 +323,6 @@ export default function CalculatorPage() {
                   className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
                   onClick={() => setSelectedSystemId(id)}
                 >
-                  {/* Заголовок картки тепер містить тільки чисту назву моделі */}
                   <div className={styles['system-title']}>{cleanName}</div>
                   
                   <div className={styles['system-spec']}>
@@ -291,7 +345,6 @@ export default function CalculatorPage() {
 
         {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
-          {/* Заголовок містить тільки чисту назву моделі */}
           <div className={styles['summary-title']}>
             {systemDisplayName}
           </div>
@@ -332,13 +385,20 @@ export default function CalculatorPage() {
           <button 
             className={styles['save-btn']}
             disabled={!calcResult || loadPercentage > 100 || selectedDeviceIds.length === 0}
-            onClick={() => alert("Функція збереження сценарію буде додана пізніше!")}
+            onClick={() => setIsModalOpen(true)}
           >
             {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценаріо'}
           </button>
         </div>
-
       </div>
+
+      {/* МОДАЛКА ЗБЕРЕЖЕННЯ */}
+      <SaveScenarioModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSave={handleSaveScenario}
+        isLoading={isSaving}
+      />
     </div>
   );
 }
