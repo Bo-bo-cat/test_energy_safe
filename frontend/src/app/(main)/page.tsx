@@ -3,6 +3,12 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
+// Імпортуємо твої нові іконки
+import { CameraIcon } from '../../components/icons/Camera';
+import { CalcIcon } from '../../components/icons/Calc';
+import { ScenarioIcon } from '../../components/icons/Scenario';
+import { SystemIcon } from '../../components/icons/System';
+
 export default function DashboardPage() {
   const [systems, setSystems] = useState<any[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -66,12 +72,12 @@ export default function DashboardPage() {
   const circumference = Math.PI * radius; // Довжина півкола (251.32)
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  // Колір прогресу (як на калькуляторі)
-  let progressColor = '#FF9500'; // Помаранчевий (дефолт для дизайну)
-  if (safePercent > 90) progressColor = '#FF2D55'; // Червоний при перевантаженні
+  // Колір прогресу
+  let progressColor = '#FF9500'; 
+  if (safePercent > 90) progressColor = '#FF2D55'; 
 
   if (isLoading) {
-    return <div className={styles.wrap}><p>Завантаження...</p></div>;
+    return <div className={styles.wrap}><p style={{ color: 'var(--text-muted)' }}>Завантаження...</p></div>;
   }
 
   return (
@@ -88,9 +94,7 @@ export default function DashboardPage() {
             {/* SVG Напівколо */}
             <div className={styles.donutWrapper}>
               <svg width="200" height="100" viewBox="0 0 200 100">
-                {/* Сірий фон */}
                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border-color)" strokeWidth="16" strokeLinecap="round" />
-                {/* Кольоровий прогрес */}
                 <path 
                   d="M 20 100 A 80 80 0 0 1 180 100" 
                   fill="none" 
@@ -116,7 +120,7 @@ export default function DashboardPage() {
               </div>
               <div className={styles.statBoxOutline}>
                 <div className={styles.statBoxOutlineValue}>
-                  {loadWatts > 0 ? Math.round(loadWatts * 2.5) : 0} {/* Приблизний пусковий струм для краси */}
+                  {loadWatts > 0 ? Math.round(loadWatts * 2.5) : 0}
                 </div>
                 <div className={styles.statBoxOutlineLabel}>Пуск, Вт</div>
               </div>
@@ -160,22 +164,22 @@ export default function DashboardPage() {
       <div className={styles.middleFlex}>
         
         <Link href="/devices" className={styles.actionBtn}>
-          <svg className={styles.actionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="4"></line><line x1="8" y1="4" x2="16" y2="4"></line><circle cx="12" cy="15" r="3"></circle></svg>
+          <CameraIcon className={styles.actionIcon} />
           <span className={styles.actionText}>Додати прилад</span>
         </Link>
         
         <Link href="/calculator" className={styles.actionBtn}>
-          <svg className={styles.actionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line></svg>
+          <CalcIcon className={styles.actionIcon} />
           <span className={styles.actionText}>Розрахувати</span>
         </Link>
 
         <Link href="/scenarios" className={styles.actionBtn}>
-          <svg className={styles.actionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          <ScenarioIcon className={styles.actionIcon} />
           <span className={styles.actionText}>Сценарії</span>
         </Link>
 
         <Link href="/picker" className={styles.actionBtn}>
-          <svg className={styles.actionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="6" width="16" height="14" rx="2" ry="2"></rect><line x1="9" y1="6" x2="9" y2="2"></line><line x1="15" y1="6" x2="15" y2="2"></line><line x1="12" y1="10" x2="12" y2="16"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg>
+          <SystemIcon className={styles.actionIcon} />
           <span className={styles.actionText}>Підбір системи</span>
         </Link>
 
@@ -210,7 +214,6 @@ export default function DashboardPage() {
               onClick={() => setActiveScenarioId(scen.id)}
             >
               {scen.name}
-              {/* Показуємо галочку тільки для обраного */}
               {activeScenarioId === scen.id && (
                 <svg className={styles.checkIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>

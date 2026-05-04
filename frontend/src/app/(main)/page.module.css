@@ -217,13 +217,13 @@
 .sectionTitle {
   font-size: 20px;
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   color: var(--text-main);
 }
 
 .scenariosFlex {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -231,15 +231,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 20px;
-  border-radius: 12px;
+  padding: 16px 24px; /* Збільшені відступи */
+  border-radius: 14px; 
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px; /* Більший шрифт */
+  font-weight: 800;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s ease;
+  min-width: 160px; /* Мінімальна ширина для солідності */
+  justify-content: center;
 }
 
 .scenarioChip.active {
@@ -250,11 +252,13 @@
 
 .scenarioChip:hover {
   opacity: 0.9;
+  transform: translateY(-2px);
 }
 
 .checkIcon {
-  width: 18px;
-  height: 18px;
+  width: 20px; /* Збільшена іконка */
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* =========================================
@@ -269,7 +273,7 @@
 
 @media (max-width: 768px) {
   .wrap {
-    padding: 16px 16px 100px 16px; /* Запас для меню */
+    padding: 16px 16px 100px 16px; 
   }
 
   .statusContent {
