@@ -42,7 +42,7 @@ export default function CalculatorPage() {
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
 
-  // Результати калькуляції
+  // Результати калькуляції з бекенду
   const [calcResult, setCalcResult] = useState<{
     totalPowerWatts: number;
     loadPercent: number;
@@ -62,15 +62,25 @@ export default function CalculatorPage() {
         const dataDevices = await resDevices.json();
         const dataSystems = await resSystems.json();
         
-        if (Array.isArray(dataDevices)) setDevices(dataDevices);
-        if (Array.isArray(dataSystems)) setSystems(dataSystems);
+        // Перевіряємо чи дані прийшли масивом, чи загорнуті в об'єкт (напр. data.data)
+        const devicesArray = Array.isArray(dataDevices) ? dataDevices : (dataDevices.data || []);
+        const systemsArray = Array.isArray(dataSystems) ? dataSystems : (dataSystems.data || []);
+        
+        setDevices(devicesArray);
+        setSystems(systemsArray);
+
+        // Якщо є хоча б одна система, автоматично обираємо першу
+        if (systemsArray.length > 0) {
+          setSelectedSystemId(systemsArray[0].id || systemsArray[0]._id);
+        }
       })
       .catch(err => console.error("Помилка завантаження даних:", err))
       .finally(() => setIsLoading(false));
   }, []);
 
-  // 2. Виклик бекенд-калькулятора при зміні вибору
+  // 2. Виклик бекенд-калькулятора при зміні вибору приладів АБО системи
   useEffect(() => {
+    // Ваш бекенд вимагає мінімум 1 прилад, тому якщо нічого не вибрано - скидаємо результати
     if (selectedDeviceIds.length === 0 || !selectedSystemId) {
       setCalcResult(null);
       return;
@@ -98,7 +108,7 @@ export default function CalculatorPage() {
         setCalcResult(data);
       })
       .catch(err => {
-        console.error(err);
+        console.error('Помилка при розрахунку:', err);
         setCalcResult(null);
       });
   }, [selectedDeviceIds, selectedSystemId]);
@@ -110,7 +120,6 @@ export default function CalculatorPage() {
     return passLocation && passCategory;
   });
 
-  // Обробники кліків
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
       prev.includes(id) ? prev.filter(did => did !== id) : [...prev, id]
@@ -121,15 +130,20 @@ export default function CalculatorPage() {
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
+  // Знаходимо обрану систему для відображення в заголовку ПРАВОЇ ПАНЕЛІ
+  const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
+  
+  // Витягуємо назву незалежно від того, як її назвав бекенд (name, model_name чи model)
+  const systemDisplayName = selectedSystem 
+    ? (selectedSystem.name || selectedSystem.model_name || selectedSystem.model || selectedSystem.type || 'Модель')
+    : 'Оберіть';
+
   // Логіка для прогрес-бару навантаження
   const loadPercentage = calcResult?.loadPercent || 0;
   const progressWidth = Math.min(loadPercentage, 100);
   let progressColor = '#34C759'; // Зелений
   if (loadPercentage > 80) progressColor = '#FF9500'; // Помаранчевий
   if (loadPercentage > 100) progressColor = '#FF2D55'; // Червоний (Перевантаження)
-
-  // Знаходимо обрану систему для відображення в заголовку
-  const selectedSystem = systems.find(s => (s.id || s._id) === selectedSystemId);
 
   return (
     <div className={styles.wrap}>
@@ -139,7 +153,6 @@ export default function CalculatorPage() {
         {/* ЛІВА ЧАСТИНА (Контент) */}
         <div className={styles['main-content']}>
           
-          {/* Фільтри локації */}
           <div className={styles['filters-row']}>
             {['Усі', 'Дім', 'Офіс'].map(loc => (
               <div 
@@ -152,7 +165,6 @@ export default function CalculatorPage() {
             ))}
           </div>
 
-          {/* Фільтри категорій (Іконки) */}
           <div className={styles['icon-filters']}>
             {['fridge', 'laptop', 'router', 'light', 'tv'].map(icon => (
               <div 
@@ -165,10 +177,9 @@ export default function CalculatorPage() {
             ))}
           </div>
 
-          {/* Список приладів */}
           <div className={styles['device-list']}>
             {filteredDevices.length > 0 ? filteredDevices.map(device => {
-              const id = device.id || device._id; // Підтримка різних форматів ID
+              const id = device.id || device._id; 
               const isSelected = selectedDeviceIds.includes(id);
               return (
                 <div 
@@ -194,9 +205,8 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          {/* Сітка Систем */}
           <div className={styles['systems-grid']}>
-            <Link href="/systems" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
+            <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
               <span className={styles['add-icon']}>+</span>
               <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>Додати мою ДБЖ</span>
             </Link>
@@ -204,17 +214,19 @@ export default function CalculatorPage() {
             {systems.map(sys => {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
+              const sysName = sys.name || sys.model_name || sys.model || 'Модель';
+              
               return (
                 <div 
                   key={id} 
                   className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
                   onClick={() => setSelectedSystemId(id)}
                 >
-                  <div className={styles['system-title']}>ДБЖ - {sys.name}</div>
+                  <div className={styles['system-title']}>ДБЖ - {sysName}</div>
                   
                   <div className={styles['system-spec']}>
                     <span className={styles['spec-label']}>Тип</span>
-                    <span className={styles['spec-value']}>{sys.type}</span>
+                    <span className={styles['spec-value']}>{sys.type || 'Електростанція'}</span>
                   </div>
                   <div className={styles['system-spec']}>
                     <span className={styles['spec-label']}>Потужність</span>
@@ -232,8 +244,9 @@ export default function CalculatorPage() {
 
         {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
+          {/* ТУТ НАЗВА ДБЖ ЗМІНЮЄТЬСЯ ДИНАМІЧНО */}
           <div className={styles['summary-title']}>
-            ДБЖ - [{selectedSystem ? selectedSystem.name : 'Оберіть'}]
+            ДБЖ - [{systemDisplayName}]
           </div>
 
           <div className={styles['stats-grid']}>
@@ -259,7 +272,6 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          {/* Смуга навантаження */}
           <div className={styles['progress-container']}>
             <div 
               className={styles['progress-fill']} 
@@ -272,10 +284,10 @@ export default function CalculatorPage() {
 
           <button 
             className={styles['save-btn']}
-            disabled={!calcResult || loadPercentage > 100}
+            disabled={!calcResult || loadPercentage > 100 || selectedDeviceIds.length === 0}
             onClick={() => alert("Функція збереження сценарію буде додана пізніше!")}
           >
-            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценарій'}
+            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценаріо'}
           </button>
         </div>
 
