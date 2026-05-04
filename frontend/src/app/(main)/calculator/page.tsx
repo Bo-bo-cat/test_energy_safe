@@ -56,7 +56,7 @@ export default function CalculatorPage() {
 
     Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems`, { headers: { Authorization: `Bearer ${token}` } })
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/picker`, { headers: { Authorization: `Bearer ${token}` } })
     ])
       .then(async ([resDevices, resSystems]) => {
         const dataDevices = await resDevices.json();
