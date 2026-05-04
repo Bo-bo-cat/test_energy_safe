@@ -13,7 +13,7 @@ import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
 import { HomeIcon } from '../../../components/icons/Home';
 import { OfficeIcon } from '../../../components/icons/Office';
-import {CoffeeMachineIcon} from '../../../components/icons/Coffee_Machine';
+import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
 import { DishWasherIcon } from '../../../components/icons/Dishwasher';
@@ -22,10 +22,8 @@ import { OtherIcon } from '../../../components/icons/Other';
 import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
-
 // Компонент модалки
 import { DecisionModal } from '../../../components/DecisionModal';
-import { imageOptimizer } from 'next/dist/server/image-optimizer';
 
 const categoryToIcon: Record<string, string> = {
   'Холодильник': 'fridge',
@@ -58,10 +56,10 @@ const renderDeviceIcon = (iconName?: string) => {
     case 'kettle': return <KettleIcon className={styles['device-svg']} />;
     case 'coffee': return <CoffeeMachineIcon className={styles['device-svg']} />;
     case 'other': return <OtherIcon className={styles['device-svg']} />;
-
     default: return <div className={styles['device-svg']} style={{ backgroundColor: 'var(--border-color)', borderRadius: '4px' }} />;
   }
 };
+
 export default function DevicesPage() {
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
