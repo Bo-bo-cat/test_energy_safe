@@ -3,10 +3,12 @@
 .wrap {
   width: 100%;
   max-width: 1440px;
-  padding-top: 32px;
+  margin: 0 auto;
+  padding: 32px 24px;
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   transition: color 0.3s ease;
+  box-sizing: border-box; /* Гарантуємо, що padding не розширює блок */
 }
 
 .title {
@@ -22,6 +24,7 @@
   display: flex;
   gap: 32px;
   align-items: flex-start;
+  width: 100%;
 }
 
 .main-content {
@@ -29,7 +32,7 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  min-width: 0; /* Щоб flex-елементи не вилазили за межі */
+  min-width: 0; /* Дозволяє контенту стискатися всередині flex */
 }
 
 /* --- ФІЛЬТРИ --- */
@@ -94,6 +97,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .device-item {
@@ -106,6 +110,8 @@
   padding: 16px 20px;
   cursor: pointer;
   transition: border-color 0.2s ease, background-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .device-item:hover {
@@ -120,6 +126,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0; /* Щоб довгі назви коректно обрізались */
 }
 
 /* Кастомний чекбокс */
@@ -131,6 +138,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0; /* Чекбокс не повинен стискатися */
   transition: all 0.2s ease;
   background-color: var(--bg-main);
 }
@@ -156,12 +164,17 @@
   font-size: 18px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Три крапки для довгого тексту */
 }
 
 .device-power {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-main);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* --- СИСТЕМИ (ДБЖ) --- */
@@ -169,6 +182,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+  width: 100%;
 }
 
 .system-card {
@@ -180,6 +194,7 @@
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .system-card:hover {
@@ -261,6 +276,7 @@
   position: sticky;
   top: 32px;
   flex-shrink: 0;
+  box-sizing: border-box; /* Важливо для мобілки */
 }
 
 .summary-title {
@@ -344,19 +360,20 @@
   cursor: not-allowed;
 }
 
-/* --- АДАПТАЦІЯ --- */
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (МОБІЛЬНІ ТА ПЛАНШЕТИ)
+   ========================================= */
 
-/* Планшети (і великі телефони в горизонтальному режимі) */
+/* Планшети (і великі телефони) */
 @media (max-width: 1100px) {
   .layout {
     flex-direction: column;
   }
   
   .summary-panel {
-    width: 100%;
-    position: static; /* Відключаємо прилипання (sticky) для мобілок */
-    margin-top: 24px;
-    box-sizing: border-box; /* Гарантуємо, що padding не розширить блок за межі екрана */
+    width: 100%; /* Розтягуємо на всю ширину */
+    position: static; /* Відключаємо прилипання */
+    margin-top: 0; 
   }
 
   .systems-grid {
@@ -364,18 +381,14 @@
   }
 }
 
-/* Мобільні телефони (Вертикальний режим - Portrait) */
+/* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) {
   .wrap {
-    padding-top: 16px;
-    padding-bottom: 120px; /* Великий відступ знизу для мобільного навігаційного меню */
-    padding-left: 16px;    /* Додаємо відступи від країв екрана */
-    padding-right: 16px;
-    box-sizing: border-box;
+    padding: 24px 16px 120px 16px; /* Зменшені бокові відступи, великий відступ знизу для меню */
   }
 
   .title {
-    font-size: 32px; /* Трохи зменшуємо заголовок */
+    font-size: 32px;
     margin-bottom: 16px;
   }
 
@@ -383,16 +396,25 @@
     gap: 24px;
   }
 
-  /* Робимо список приладів компактнішим */
+  /* Перебудова списку приладів для вузьких екранів */
   .device-item {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 12px 16px;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .device-left {
+    width: 100%;
+  }
+
+  .device-name {
+    font-size: 16px;
   }
 
   .device-power {
-    margin-left: 40px; /* Вирівнюємо текст потужності під назвою приладу, враховуючи чекбокс */
+    margin-left: 40px; /* Вирівнюємо текст під чекбокс */
+    font-size: 13px;
   }
 
   /* Сітка систем: одна під одною */
@@ -400,13 +422,13 @@
     grid-template-columns: 1fr;
   }
 
-  /* Адаптація блоку результатів (summary-panel) */
+  /* Адаптація блоку результатів */
   .summary-panel {
     padding: 20px 16px;
   }
 
   .stats-grid {
-    gap: 8px; /* Зменшуємо відстань між блоками статистики */
+    gap: 8px; 
   }
 
   .stat-box {
@@ -414,7 +436,7 @@
   }
 
   .stat-value {
-    font-size: 20px; /* Трохи менші цифри для вузького екрана */
+    font-size: 20px; 
   }
 
   .stat-label {
@@ -422,35 +444,28 @@
   }
 }
 
-/* Мобільні телефони (Горизонтальний режим - Landscape) */
+/* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 900px) and (orientation: landscape) {
   .wrap {
-    padding-top: 12px;
-    padding-bottom: 90px;
-    padding-left: 16px;
-    padding-right: 16px;
-    box-sizing: border-box;
+    padding: 16px 16px 90px 16px;
   }
 
   .title {
     font-size: 28px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
-  /* Зменшуємо загальні відступи для економії вертикального простору */
   .main-content {
     gap: 16px;
   }
 
-  /* Вибудовуємо системи у два стовпці, якщо є місце */
+  /* Системи в два стовпці */
   .systems-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Робимо панель результатів компактнішою */
   .summary-panel {
     padding: 16px;
-    margin-top: 16px;
   }
 
   .stats-grid {
