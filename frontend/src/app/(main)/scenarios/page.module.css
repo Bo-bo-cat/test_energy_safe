@@ -137,6 +137,13 @@
   background-color: var(--bg-card);
 }
 
+/* Підсвічування обраного сценарію */
+.card.selected {
+  border-color: var(--accent-orange);
+  background-color: rgba(255, 110, 0, 0.03); /* Дуже легкий помаранчевий фон */
+  box-shadow: 0px 4px 16px rgba(255, 110, 0, 0.1);
+}
+
 .addIcon {
   font-size: 56px;
   font-weight: 800;

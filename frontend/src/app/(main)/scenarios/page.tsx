@@ -3,15 +3,23 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Іконка видалення (з вашого проєкту)
+// Іконки
 import { DeleteIcon } from '../../../components/icons/Delete'; 
-import { PenIcon } from '../../../components/icons/Pen';
+import { PenIcon } from '../../../components/icons/Pen'; 
+
+// Модалка
+import { DecisionModal } from '../../../components/DecisionModal';
 
 export default function ScenariosPage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Стан для обраного сценарію (підсвічування)
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
 
-  // Завантаження сценаріїв
+  // Стан для модалки видалення
+  const [scenarioToDelete, setScenarioToDelete] = useState<string | null>(null);
+
   useEffect(() => {
     fetchScenarios();
   }, []);
@@ -35,14 +43,29 @@ export default function ScenariosPage() {
     }
   };
 
-  // Видалення сценарію
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Ви впевнені, що хочете видалити цей сценарій?')) return;
+  // Ця функція лише відкриває модалку
+  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Щоб клік на іконку не виділяв картку
+    setScenarioToDelete(id);
+  };
+
+  // А ця функція викликається, коли юзер тисне "Так" у модалці
+  const confirmDelete = async () => {
+    if (!scenarioToDelete) return;
+    const id = scenarioToDelete;
+    
+    // Закриваємо модалку
+    setScenarioToDelete(null);
+
+    // Якщо ми видаляємо той, що зараз обраний — знімаємо виділення
+    if (selectedScenarioId === id) {
+      setSelectedScenarioId(null);
+    }
 
     const token = localStorage.getItem('access_token');
     if (!token) return;
 
-    // Оптимістичне оновлення UI (одразу прибираємо картку)
+    // Оптимістичне оновлення
     setScenarios(prev => prev.filter(s => s.id !== id));
 
     try {
@@ -52,8 +75,13 @@ export default function ScenariosPage() {
       });
     } catch (err) {
       console.error('Помилка видалення:', err);
-      fetchScenarios(); // Відкочуємо назад, якщо помилка
+      fetchScenarios(); // Відкочуємо назад у разі помилки
     }
+  };
+
+  const handleCardClick = (id: string) => {
+    // Якщо клікаємо на вже обраний - знімаємо виділення
+    setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
   return (
@@ -65,39 +93,42 @@ export default function ScenariosPage() {
       ) : (
         <div className={styles.grid}>
           
-          {/* Рендер списку сценаріїв */}
           {scenarios.map(scenario => {
-            // Підтягуємо нові поля. 
-            // Використовуємо || (або), щоб підтримати і camelCase, і snake_case, 
-            // залежно від того, як саме ваш Python-бекенд їх повертає.
-            
             const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
             const autonomyHours = scenario.autonomyHours || scenario.autonomy_hours || scenario.duration_hours || 0;
             const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
             
-            // Округлюємо значення для красивого відображення (напр. 1.08 год -> 1.1)
             const displayAutonomy = typeof autonomyHours === 'number' ? autonomyHours.toFixed(1) : autonomyHours;
             const displayLoad = typeof loadPercent === 'number' ? Math.round(loadPercent) : loadPercent;
 
-            // Кольори прогрес-бару
             let progressColor = '#34C759'; 
             if (loadPercent > 33 && loadPercent <= 66) progressColor = '#FF9500'; 
             if (loadPercent > 66) progressColor = '#FF2D55'; 
+            
+            const isSelected = selectedScenarioId === scenario.id;
 
             return (
-              <div key={scenario.id} className={styles.card}>
+              <div 
+                key={scenario.id} 
+                className={`${styles.card} ${isSelected ? styles.selected : ''}`}
+                onClick={() => handleCardClick(scenario.id)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>{scenario.name}</div>
                   <div className={styles.actions}>
                     <button 
                       className={styles.iconBtn} 
-                      onClick={() => alert('Функція редагування в розробці!')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        alert('Функція редагування в розробці!');
+                      }}
                     >
                       <PenIcon/>
                     </button>
                     <button 
                       className={styles.iconBtn} 
-                      onClick={() => handleDelete(scenario.id)}
+                      onClick={(e) => handleDeleteClick(scenario.id, e)}
                     >
                       <DeleteIcon />
                     </button>
@@ -131,7 +162,6 @@ export default function ScenariosPage() {
             );
           })}
 
-          {/* Кнопка Додати сценарій (Веде на Калькулятор, де створюються сценарії) */}
           <Link href="/calculator" className={`${styles.card} ${styles.addCard}`}>
             <div className={styles.addIcon}>+</div>
             <div className={styles.addText}>Додати сценарій</div>
@@ -139,6 +169,14 @@ export default function ScenariosPage() {
 
         </div>
       )}
+
+      {/* Підключаємо DecisionModal */}
+      <DecisionModal 
+        isOpen={scenarioToDelete !== null}
+        onClose={() => setScenarioToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Видалити сценарій?"
+      />
     </div>
   );
 }
