@@ -29,6 +29,16 @@ const renderDeviceIcon = (iconName?: string) => {
   }
 };
 
+// Допоміжна функція для очищення назви моделі
+const cleanModelName = (name: string) => {
+  if (!name) return 'Модель';
+  // Якщо назва містить " - ", беремо тільки те, що після нього
+  if (name.includes(' - ')) {
+    return name.split(' - ')[1].trim();
+  }
+  return name;
+};
+
 export default function CalculatorPage() {
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
@@ -49,7 +59,7 @@ export default function CalculatorPage() {
     autonomyHours: number;
   } | null>(null);
 
-  // 1. Завантаження даних приладів та систем
+  // 1. Завантаження даних
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -63,12 +73,15 @@ export default function CalculatorPage() {
         const dataSystems = await resSystems.json();
         
         const devicesArray = Array.isArray(dataDevices) ? dataDevices : (dataDevices.data || []);
-        const systemsArray = Array.isArray(dataSystems) ? dataSystems : (dataSystems.data || []);
+        let systemsArray = Array.isArray(dataSystems) ? dataSystems : (dataSystems.data || []);
+        
+        // ВАЖЛИВО: Фільтруємо системи, залишаємо ТІЛЬКИ ті, що мають галочку (selected_for_calculation === true)
+        systemsArray = systemsArray.filter((s: any) => s.selected_for_calculation === true);
         
         setDevices(devicesArray);
         setSystems(systemsArray);
 
-        // Автоматично обираємо першу систему, якщо вона є
+        // Автоматично обираємо першу З ДОСТУПНИХ (відфільтрованих) систем
         if (systemsArray.length > 0) {
           setSelectedSystemId(systemsArray[0].id || systemsArray[0]._id);
         }
@@ -111,7 +124,6 @@ export default function CalculatorPage() {
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
-  // Фільтрація приладів (показуємо ТІЛЬКИ якщо обрана категорія)
   const filteredDevices = activeCategory ? devices.filter(d => {
     const passLocation = activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
     const passCategory = categoryToIcon[d.category] === activeCategory;
@@ -128,24 +140,21 @@ export default function CalculatorPage() {
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
-  // Знаходимо обрану систему для правої панелі
+  // Знаходимо обрану систему
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
-  // Витягуємо назву з поля model (як у твоєму picker). Без приставки ДБЖ і дужок.
-  const systemDisplayName = selectedSystem 
-    ? (selectedSystem.model || selectedSystem.type || 'Модель')
-    : 'Оберіть систему';
+  // Очищаємо назву для правої панелі
+  const rawDisplayName = selectedSystem ? (selectedSystem.model || selectedSystem.type || 'Модель') : 'Оберіть систему';
+  const systemDisplayName = selectedSystem ? cleanModelName(rawDisplayName) : rawDisplayName;
 
-  // Логіка для прогрес-бару навантаження
   const loadPercentage = calcResult?.loadPercent || 0;
   const progressWidth = Math.min(loadPercentage, 100);
   
-  // Встановлюємо колір за вашими умовами
-  let progressColor = '#34C759'; // 1% - 33% (Зелений)
+  let progressColor = '#34C759'; 
   if (loadPercentage > 33 && loadPercentage <= 66) {
-    progressColor = '#FF9500'; // 34% - 66% (Помаранчевий)
+    progressColor = '#FF9500'; 
   } else if (loadPercentage > 66) {
-    progressColor = '#FF2D55'; // 67% - 100%+ (Червоний)
+    progressColor = '#FF2D55'; 
   }
 
   return (
@@ -223,7 +232,10 @@ export default function CalculatorPage() {
             {systems.map(sys => {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
-              const sysName = sys.model || 'Модель';
+              
+              // Очищаємо назву для картки
+              const rawSysName = sys.model || 'Модель';
+              const cleanName = cleanModelName(rawSysName);
               
               return (
                 <div 
@@ -231,7 +243,8 @@ export default function CalculatorPage() {
                   className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
                   onClick={() => setSelectedSystemId(id)}
                 >
-                  <div className={styles['system-title']}>{sys.type || 'ДБЖ'} - {sysName}</div>
+                  {/* Заголовок картки тепер містить тільки чисту назву моделі */}
+                  <div className={styles['system-title']}>{cleanName}</div>
                   
                   <div className={styles['system-spec']}>
                     <span className={styles['spec-label']}>Тип</span>
@@ -253,7 +266,7 @@ export default function CalculatorPage() {
 
         {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
-          {/* Змінено заголовок: тепер він показує лише назву системи */}
+          {/* Заголовок містить тільки чисту назву моделі */}
           <div className={styles['summary-title']}>
             {systemDisplayName}
           </div>

@@ -8,6 +8,15 @@ import { DeleteIcon } from '../../../components/icons/Delete';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+// Функція для очищення назви (щоб точно не було дублювання типу)
+const cleanModelName = (name: string) => {
+  if (!name) return 'Модель';
+  if (name.includes(' - ')) {
+    return name.split(' - ')[1].trim();
+  }
+  return name;
+};
+
 export default function SystemsPage() {
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
@@ -98,7 +107,6 @@ export default function SystemsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    // Оптимістичне оновлення UI
     setSystems(prev => prev.filter(s => s.id !== id));
     
     const token = localStorage.getItem('access_token');
@@ -111,12 +119,10 @@ export default function SystemsPage() {
       });
     } catch (err) { 
       console.error('Помилка видалення:', err); 
-      // У разі помилки можна було б перезавантажити список, але поки залишаємо так
     }
   };
 
   const handleToggleSelect = async (id: string, currentState: boolean) => {
-    // Оптимістичне оновлення UI
     setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: !currentState } : s));
     
     const token = localStorage.getItem('access_token');
@@ -178,7 +184,6 @@ export default function SystemsPage() {
         </>
       )}
 
-      {/* Повідомлення, якщо список порожній */}
       {displayedList.length === 0 && (
         <p style={{ color: '#A0A0A0', fontWeight: 500, marginBottom: '48px' }}>
           {tab === 'my' ? 'У вас ще немає збережених систем.' : 'Рекомендовані системи завантажуються...'}
@@ -190,7 +195,8 @@ export default function SystemsPage() {
           <div key={item.id} className={styles.card}>
             
             <div className={styles.cardHeader}>
-              <div className={styles.cardTitle}>{item.type} - {item.model}</div>
+              {/* ВАЖЛИВО: Залишили тільки чисту назву моделі, без типу! */}
+              <div className={styles.cardTitle}>{cleanModelName(item.model)}</div>
               
               {tab === 'my' && (
                 <div className={styles.cardActions}>
