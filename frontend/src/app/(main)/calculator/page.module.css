@@ -363,7 +363,9 @@
 @media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
   .wrap {
     display: block; 
-    padding: 16px 0 24px 0; 
+    /* Додаємо величезний відступ знизу (120px), щоб можна було 
+       доскролити до кінця і плаваюча панель нічого не перекривала */
+    padding: 16px 0 120px 0; 
     overflow-x: clip; 
     max-width: 100vw;
   }
@@ -384,7 +386,7 @@
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    margin-bottom: 24px;
+    margin-bottom: 0;
   }
 
   /* 1. КАРУСЕЛЬ ІКОНОК */
@@ -425,9 +427,9 @@
 
   /* 3. КАРУСЕЛЬ ДБЖ (ІДЕАЛЬНІ КВАДРАТИ ЧЕРЕЗ GRID) */
   .systems-grid {
-    display: grid; /* ВАЖЛИВО: Використовуємо GRID замість flex */
-    grid-auto-flow: column; /* Змушує картки ставати в один рядок */
-    grid-auto-columns: 150px; /* ЖОРСТКА ШИРИНА 150px */
+    display: grid; 
+    grid-auto-flow: column; 
+    grid-auto-columns: 150px; 
     overflow-x: auto;
     gap: 12px;
     padding: 4px 16px 16px 16px;
@@ -439,7 +441,7 @@
 
   .system-card, .add-system-card {
     width: 100%;
-    height: 150px; /* ЖОРСТКА ВИСОТА 150px = Квадрат 150x150 */
+    height: 150px; 
     padding: 14px; 
     scroll-snap-align: center;
     border-radius: 16px;
@@ -447,12 +449,10 @@
     flex-direction: column;
   }
 
-  /* Заголовок ДБЖ */
   .system-title {
     font-size: 15px;
-    margin-bottom: auto; /* Відштовхує характеристики в самий низ картки */
+    margin-bottom: auto; 
     line-height: 1.2;
-    /* Обрізаємо текст на 2-х рядках, якщо він задовгий */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -461,13 +461,12 @@
     white-space: normal;
   }
 
-  /* Характеристики: робимо в 1 рядок! */
   .system-spec {
     display: flex;
-    flex-direction: row; /* Текст і значення тепер на одному рядку */
-    justify-content: space-between; /* Текст зліва, значення справа */
+    flex-direction: row; 
+    justify-content: space-between; 
     align-items: center;
-    border-bottom: none; /* Прибираємо лінії між ними */
+    border-bottom: none; 
     padding: 2px 0;
   }
 
@@ -481,7 +480,6 @@
     font-weight: 700;
   }
 
-  /* Картка "Додати" */
   .add-system-card {
     justify-content: center;
   }
@@ -494,19 +492,19 @@
     text-align: center;
   }
 
-  /* 4. "STICKY BOTTOM SHEET" */
+  /* 4. ПЛАВАЮЧА ПАНЕЛЬ РЕЗУЛЬТАТІВ (FLOATING CARD) */
   .summary-panel {
-    width: 100%;
+    width: calc(100% - 32px); /* Робимо відступи по боках по 16px */
+    margin: 0 auto; /* Центруємо */
     position: sticky;
-    bottom: 0;
+    bottom: 80px; /* Прилипає вище твого меню навігації! */
     z-index: 10;
     
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0px -4px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 20px; /* ТЕПЕР УСІ 4 КУТИ КРУГЛІ! */
+    box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.25); /* Додали круту тінь */
     padding: 16px 20px;
     background-color: var(--bg-card);
-    border: none;
-    border-top: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
   }
 
   .summary-title {
