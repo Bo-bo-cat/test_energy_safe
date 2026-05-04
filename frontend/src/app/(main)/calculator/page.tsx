@@ -159,13 +159,14 @@ export default function CalculatorPage() {
     const token = localStorage.getItem('access_token');
     
     try {
+      // Формуємо об'єкт ТОЧНО так, як вимагає Pydantic на бекенді
       const payload = {
         name: scenarioName,
-        duration_hours: calcResult?.autonomyHours || 0,
-        devices_included: selectedDeviceIds
+        selectedDeviceIds: selectedDeviceIds,
+        totalPowerWatts: calcResult?.totalPowerWatts || 0,
+        loadPercent: calcResult?.loadPercent || 0,
+        autonomyHours: calcResult?.autonomyHours || 0
       };
-      
-      console.log("Відправляємо на бекенд:", payload);
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, {
         method: 'POST',
@@ -177,7 +178,6 @@ export default function CalculatorPage() {
       });
 
       if (!res.ok) {
-        // Читаємо реальну помилку від бекенду!
         const errorData = await res.json();
         console.error("Помилка від бекенду:", errorData);
         alert(`Помилка бекенду: ${JSON.stringify(errorData.detail || errorData)}`);
@@ -189,7 +189,6 @@ export default function CalculatorPage() {
       
     } catch (err) {
       console.error('Помилка при збереженні сценарію:', err);
-      // alert('Не вдалося зберегти сценарій.'); // Закоментували старий алерт
     } finally {
       setIsSaving(false);
     }
