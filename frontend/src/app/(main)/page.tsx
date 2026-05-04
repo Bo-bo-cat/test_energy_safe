@@ -9,13 +9,15 @@ import { CalcIcon } from '../../components/icons/Calc';
 import { ScenarioIcon } from '../../components/icons/Scenario';
 import { SystemIcon } from '../../components/icons/System';
 
-// Допоміжна функція для очищення назви моделі (щоб було без зайвих приставок)
+// Допоміжна функція для очищення назви моделі
 const cleanModelName = (name: string) => {
   if (!name) return 'Оберіть систему';
+  // Якщо в назві є тире, беремо частину після нього
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
-  return name;
+  // Інакше повертаємо як є, але прибираємо "ДБЖ - " якщо воно там застрягло
+  return name.replace('ДБЖ - ', '').trim();
 };
 
 export default function DashboardPage() {
@@ -24,7 +26,7 @@ export default function DashboardPage() {
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Обраний сценарій для відображення статистики (за замовчуванням перший)
+  // Обраний сценарій
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -71,22 +73,24 @@ export default function DashboardPage() {
   let displaySystem = null;
   
   if (activeScenario) {
-    // Шукаємо ID системи у сценарії (бекенд може повертати systemId або system_id)
-    const linkedSystemId = activeScenario.systemId || activeScenario.system_id || activeScenario.system?.id;
+    // ОСЬ ТУТ БУЛА ПОМИЛКА: Тепер ми чітко шукаємо selectedSystemId
+    const linkedSystemId = activeScenario.selectedSystemId || activeScenario.systemId;
+    
     if (linkedSystemId) {
       displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
     }
   }
 
-  // Якщо до сценарію не прив'язане конкретне ДБЖ (або ми його не знайшли), беремо дефолтне
-  if (!displaySystem) {
+  // Якщо ДБЖ не знайдено (або сценарій старий), беремо дефолтне
+  if (!displaySystem && systems.length > 0) {
     displaySystem = systems.find(s => s.selected_for_calculation === true) || systems[0];
   }
 
   // 3. Формуємо красиві змінні для відображення ДБЖ
-  const rawSystemName = displaySystem ? (displaySystem.model || 'Оберіть систему') : 'Оберіть систему';
+  const rawSystemName = displaySystem ? (displaySystem.model || displaySystem.name || 'Оберіть систему') : 'Оберіть систему';
   const systemName = cleanModelName(rawSystemName);
   const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
+  const systemBattery = displaySystem ? (displaySystem.battery || 'Невідомо') : 'Невідомо';
 
   // Прогрес у відсотках (обмежено 100%)
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
@@ -94,7 +98,7 @@ export default function DashboardPage() {
 
   // Налаштування для SVG напівкола
   const radius = 80;
-  const circumference = Math.PI * radius; // Довжина півкола (251.32)
+  const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
   // Колір прогресу
@@ -128,7 +132,7 @@ export default function DashboardPage() {
                   strokeLinecap="round"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
-                  style={{ transition: 'stroke-dashoffset 1s ease-in-out' }}
+                  style={{ transition: 'stroke-dashoffset 0.8s ease-in-out' }}
                 />
               </svg>
               <div className={styles.donutText}>
@@ -162,6 +166,7 @@ export default function DashboardPage() {
 
         {/* Картка ДБЖ */}
         <div className={styles.card}>
+          {/* Прибрали "ДБЖ - ", тепер тут просто чиста назва */}
           <h2 className={styles.cardTitle}>{systemName}</h2>
           <div className={styles.upsSpecs}>
             <div className={styles.upsRow}>
@@ -174,7 +179,7 @@ export default function DashboardPage() {
             </div>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Батарея</span>
-              <span className={styles.upsValue}>{displaySystem?.battery || 'Невідомо'}</span>
+              <span className={styles.upsValue}>{systemBattery}</span>
             </div>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Автономія</span>
