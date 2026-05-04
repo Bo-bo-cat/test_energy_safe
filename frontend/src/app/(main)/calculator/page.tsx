@@ -163,6 +163,7 @@ export default function CalculatorPage() {
       const payload = {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
+        systemId: selectedSystemId, // <--- ДОДАЛИ ОСЬ ЦЕЙ РЯДОК!
         totalPowerWatts: calcResult?.totalPowerWatts || 0,
         loadPercent: calcResult?.loadPercent || 0,
         autonomyHours: calcResult?.autonomyHours || 0
