@@ -8,6 +8,12 @@
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   box-sizing: border-box;
+  overflow-x: clip; /* Запобігає будь-якому горизонтальному скролу */
+}
+
+/* Робимо всі елементи всередині безпечними для ширини 100% */
+.wrap * {
+  box-sizing: border-box;
 }
 
 .title {
@@ -26,6 +32,7 @@
   gap: 32px;
   align-items: flex-start;
   width: 100%;
+  max-width: 100%;
 }
 
 .main-content {
@@ -33,7 +40,8 @@
   display: flex;
   flex-direction: column;
   gap: 32px;
-  min-width: 0;
+  min-width: 0; 
+  max-width: 100%;
 }
 
 /* --- ФІЛЬТРИ --- */
@@ -41,6 +49,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .filter-chip {
@@ -66,6 +75,7 @@
   gap: 12px;
   margin-top: -16px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .icon-chip {
@@ -112,7 +122,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  box-sizing: border-box;
 }
 
 .device-item.selected {
@@ -123,7 +132,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  min-width: 0;
+  min-width: 0; 
 }
 
 .checkbox {
@@ -190,7 +199,7 @@
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  width: 100%;
 }
 
 .system-card.selected {
@@ -262,7 +271,6 @@
   position: sticky;
   top: 32px;
   flex-shrink: 0;
-  box-sizing: border-box;
 }
 
 .summary-title {
@@ -278,6 +286,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   margin-bottom: 32px;
+  width: 100%;
 }
 
 .stat-box {
@@ -289,6 +298,7 @@
   align-items: center;
   text-align: center;
   gap: 8px;
+  min-width: 0; /* Дозволяє контенту всередині переноситись, а не розтягувати грід */
 }
 
 .stat-value {
@@ -353,18 +363,18 @@
 
 @media (max-width: 768px) {
   .wrap {
-    /* Робимо висоту контейнера 100% і використовуємо flex, 
-       щоб нижня панель прилипала до низу */
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 80px); /* Враховуємо висоту твого меню знизу */
-    padding: 16px 0 0 0; /* Прибираємо бокові відступи для каруселей */
+    min-height: calc(100vh - 80px);
+    padding: 16px 0 0 0; 
+    overflow-x: clip; /* Гарантує відсутність горизонтального скролу */
+    max-width: 100vw;
   }
 
-  /* Внутрішній відступ для елементів, які не є каруселями */
   .title, .filters-row, .device-list {
     padding-left: 16px;
     padding-right: 16px;
+    width: 100%;
   }
 
   .title {
@@ -374,17 +384,19 @@
 
   .main-content {
     gap: 20px;
-    flex: 1; /* Контент займає весь доступний простір зверху */
+    flex: 1;
+    width: 100%;
   }
 
   /* 1. КАРУСЕЛЬ ІКОНОК */
   .icon-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
-    padding: 0 16px 8px 16px; /* Відступи по краях і знизу */
+    padding: 0 16px 8px 16px;
     margin-top: -12px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    width: 100%;
   }
   .icon-filters::-webkit-scrollbar { display: none; }
 
@@ -415,18 +427,19 @@
     padding: 4px 16px 16px 16px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    width: 100%;
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0 240px; /* Ширина картки в каруселі */
+    flex: 0 0 240px;
     scroll-snap-align: center;
   }
 
-  /* 4. "STICKY BOTTOM SHEET" (БЕЗПЕЧНИЙ ВАРІАНТ) */
+  /* 4. "STICKY BOTTOM SHEET" */
   .summary-panel {
     width: 100%;
-    margin-top: auto; /* Притискає панель до самого низу */
+    margin-top: auto; 
     position: sticky;
     bottom: 0;
     z-index: 10;
@@ -452,8 +465,9 @@
   .stat-box {
     padding: 8px 4px;
     border-radius: 8px;
-    background-color: var(--bg-main); /* Легкий акцентний фон для цифр */
+    background-color: var(--bg-main);
     border: none;
+    min-width: 0;
   }
 
   .stat-value {
@@ -463,10 +477,12 @@
   .stat-label {
     font-size: 10px;
     color: var(--text-muted);
+    word-break: break-word; /* Якщо слово довге, воно перенесеться і не зламає сітку */
+    white-space: normal;
   }
 
   .progress-container {
-    height: 6px; /* Тонка елегантна лінія */
+    height: 6px;
     margin-bottom: 16px;
   }
 
