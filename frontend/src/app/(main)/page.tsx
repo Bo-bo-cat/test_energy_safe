@@ -9,6 +9,15 @@ import { CalcIcon } from '../../components/icons/Calc';
 import { ScenarioIcon } from '../../components/icons/Scenario';
 import { SystemIcon } from '../../components/icons/System';
 
+// Допоміжна функція для очищення назви моделі (щоб було без зайвих приставок)
+const cleanModelName = (name: string) => {
+  if (!name) return 'Оберіть систему';
+  if (name.includes(' - ')) {
+    return name.split(' - ')[1].trim();
+  }
+  return name;
+};
+
 export default function DashboardPage() {
   const [systems, setSystems] = useState<any[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -53,16 +62,32 @@ export default function DashboardPage() {
     }
   };
 
-  // Шукаємо ДБЖ, обране для розрахунку
-  const selectedSystem = systems.find(s => s.selected_for_calculation === true) || systems[0];
-  const systemName = selectedSystem ? (selectedSystem.model || 'Оберіть систему') : 'Оберіть систему';
-  const systemPower = selectedSystem ? (selectedSystem.power || 0) : 0;
-
-  // Дані активного сценарію
+  // 1. Отримуємо дані активного сценарію
   const activeScenario = scenarios.find(s => s.id === activeScenarioId) || null;
   const loadWatts = activeScenario ? (activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
   const autonomy = activeScenario ? (activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
   
+  // 2. Визначаємо ДБЖ, яке належить до цього сценарію
+  let displaySystem = null;
+  
+  if (activeScenario) {
+    // Шукаємо ID системи у сценарії (бекенд може повертати systemId або system_id)
+    const linkedSystemId = activeScenario.systemId || activeScenario.system_id || activeScenario.system?.id;
+    if (linkedSystemId) {
+      displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
+    }
+  }
+
+  // Якщо до сценарію не прив'язане конкретне ДБЖ (або ми його не знайшли), беремо дефолтне
+  if (!displaySystem) {
+    displaySystem = systems.find(s => s.selected_for_calculation === true) || systems[0];
+  }
+
+  // 3. Формуємо красиві змінні для відображення ДБЖ
+  const rawSystemName = displaySystem ? (displaySystem.model || 'Оберіть систему') : 'Оберіть систему';
+  const systemName = cleanModelName(rawSystemName);
+  const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
+
   // Прогрес у відсотках (обмежено 100%)
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
   const safePercent = Math.min(Math.round(loadPercent), 100);
@@ -137,11 +162,11 @@ export default function DashboardPage() {
 
         {/* Картка ДБЖ */}
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>ДБЖ - {systemName}</h2>
+          <h2 className={styles.cardTitle}>{systemName}</h2>
           <div className={styles.upsSpecs}>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Тип</span>
-              <span className={styles.upsValue}>{selectedSystem?.type || 'Портативна станція'}</span>
+              <span className={styles.upsValue}>{displaySystem?.type || 'Портативна станція'}</span>
             </div>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Потужність</span>
@@ -149,7 +174,7 @@ export default function DashboardPage() {
             </div>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Батарея</span>
-              <span className={styles.upsValue}>{selectedSystem?.battery || 'Невідомо'}</span>
+              <span className={styles.upsValue}>{displaySystem?.battery || 'Невідомо'}</span>
             </div>
             <div className={styles.upsRow}>
               <span className={styles.upsLabel}>Автономія</span>
