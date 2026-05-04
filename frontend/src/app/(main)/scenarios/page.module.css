@@ -89,7 +89,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  font-size: 32px; /* Збільшили з 13px до 16px */
+  font-size: 18px; /* Збільшили з 13px до 16px */
   font-weight: 700;
   color: var(--text-main);
 }
@@ -140,8 +140,9 @@
 /* Підсвічування обраного сценарію */
 .card.selected {
   border-color: var(--accent-orange);
-  background-color: rgba(255, 110, 0, 0.03); /* Дуже легкий помаранчевий фон */
-  box-shadow: 0px 4px 16px rgba(255, 110, 0, 0.1);
+  background-color: var(--bg-card); /* Повертаємо чистий фон картки */
+  /* Робимо рамку візуально товстішою (через тінь, щоб не стрибав розмір) + додаємо світіння */
+  box-shadow: 0 0 0 1px var(--accent-orange), 0px 8px 24px rgba(255, 110, 0, 0.15); 
 }
 
 .addIcon {
