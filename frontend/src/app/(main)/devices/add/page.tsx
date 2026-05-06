@@ -8,13 +8,11 @@ import { PenIcon } from '../../../../components/icons/Pen';
 import { AlertModal } from '../../../../components/AlertModal';
 
 export default function AddDevicePage() {
-  // Стейт для нашої нової модалки
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  // Функція для обробки кліку по кнопці "Фото етикетки"
   const handleCameraClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Зупиняємо перехід за посиланням
-    setIsAlertOpen(true); // Відкриваємо нашу кастомну модалку
+    e.preventDefault(); 
+    setIsAlertOpen(true); 
   };
 
   return (
@@ -22,7 +20,6 @@ export default function AddDevicePage() {
       <h1 className={styles['title']}>Додати прилад</h1>
 
       <section className={styles['cards']}>
-        {/* Кнопка 1: Фото етикетки */}
         <Link 
           href="#" 
           onClick={handleCameraClick} 
@@ -36,7 +33,6 @@ export default function AddDevicePage() {
           </div>
         </Link>
 
-        {/* Кнопка 2: Ввести вручну -> перехід на форму */}
         <Link href="/devices/add/manual" className={styles['card']}>
           <div className={styles['card-inner']}>
             <span className={styles['icon']}>
@@ -54,13 +50,11 @@ export default function AddDevicePage() {
         </p>
       </section>
 
-      {/* Наша кастомна модалка */}
+      {/* Акуратний топ-алерт без зайвого тексту */}
       <AlertModal 
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         title="Скоро буде!"
-        message="Функція розпізнавання етикеток по фото знаходиться в розробці. Поки що скористайтесь ручним введенням."
-        buttonText="Зрозуміло"
       />
     </main>
   );
