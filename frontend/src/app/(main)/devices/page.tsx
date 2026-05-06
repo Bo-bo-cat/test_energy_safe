@@ -151,7 +151,6 @@ export default function DevicesPage() {
   return (
     <div className={styles['wrap']}>
       
-      {/* --- ОБГОРТКА ДЛЯ ОПТИМІЗАЦІЇ ЛАНДШАФТУ --- */}
       <div className={styles['header-container']}>
         <div className={styles['top-section']}>
           <h1 className={styles['title']}>Мої прилади</h1>
@@ -199,7 +198,6 @@ export default function DevicesPage() {
           </div>
         </div>
       </div>
-      {/* -------------------------------------- */}
 
       <div className={styles['device-list']}>
         {isLoading ? (
@@ -207,8 +205,9 @@ export default function DevicesPage() {
         ) : Object.keys(groupedDevices).length > 0 ? (
           Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
             <div key={categoryName} className={styles['category-group']}>
+              {/* ДОДАНО УМОВНИЙ КЛАС .expanded */}
               <div 
-                className={styles['category-header']} 
+                className={`${styles['category-header']} ${expandedCategories[categoryName] ? styles['expanded'] : ''}`} 
                 onClick={() => toggleCategory(categoryName)}
               >
                 <div className={styles['category-header-left']}>

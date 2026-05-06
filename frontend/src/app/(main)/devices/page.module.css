@@ -8,7 +8,6 @@
   transition: background-color 0.3s ease;
 }
 
-/* Новий контейнер, який керує розміщенням блоків */
 .header-container {
   display: flex;
   flex-direction: column;
@@ -119,7 +118,11 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.category-group { display: flex; flex-direction: column; gap: 8px; }
+/* ПРИБРАНО GAP: 8px, щоб список торкався плашки */
+.category-group { 
+  display: flex; 
+  flex-direction: column; 
+}
 
 .category-header {
   background-color: var(--bg-card); 
@@ -130,7 +133,15 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2; /* Щоб рамка була поверх списку */
+}
+
+/* Коли список відкритий — робимо нижні кути плашки рівними */
+.category-header.expanded {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .category-header-left { display: flex; align-items: center; gap: 12px; }
@@ -161,9 +172,25 @@
 .dropdown-container {
   background-color: var(--bg-card-inner); 
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-top: none; /* Відключаємо верхню рамку, щоб не було подвійної лінії з хедером */
+  border-radius: 0 0 12px 12px; /* Кути закруглені лише знизу */
   padding: 10px;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+  transform-origin: top center;
+  animation: slideDown 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Анімація плавного випадання */
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
 }
 
 .dropdown-scroll {
@@ -288,7 +315,6 @@
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
-   Повне переформатування простору
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
@@ -296,7 +322,6 @@
     padding-bottom: 12px;
   }
 
-  /* Ставимо хедер і статистику в ОДИН рядок */
   .header-container {
     flex-direction: row;
     justify-content: space-between;
@@ -321,7 +346,6 @@
     flex-shrink: 0;
   }
 
-  /* Компактизація елементів */
   .title { font-size: 20px; }
   .add-btn { padding: 6px 12px; font-size: 13px; height: fit-content; }
   .filter-chip { width: 70px; font-size: 12px; padding: 6px 0; }
@@ -329,7 +353,6 @@
   .summary-label { font-size: 11px; margin-bottom: 4px; }
   .summary-value { font-size: 18px; }
 
-  /* Збільшуємо місце для списку */
   .device-list {
     max-height: calc(100vh - 110px); 
     gap: 8px;
@@ -339,12 +362,17 @@
   .category-title { font-size: 15px; }
   .device-icon { width: 32px; height: 32px; }
   .device-svg { width: 18px; height: 18px; }
+  
+  .arrow-icon { 
+    width: 10px !important; 
+    height: 10px !important; 
+    min-width: 10px !important;
+    flex-shrink: 0 !important;
+  }
 
-  /* Випадаючий список */
   .dropdown-container { padding: 8px; }
   .dropdown-scroll { max-height: 40vh; }
   
-  /* Повертаємо елементи списку в рядок, скасовуючи мобільну колонку */
   .dropdown-item {
     flex-direction: row;
     align-items: center;
