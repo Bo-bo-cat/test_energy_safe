@@ -30,7 +30,7 @@ export function AlertModal({
     if (isOpen && autoClose) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000); 
+      }, 1000); 
       return () => clearTimeout(timer);
     }
   }, [isOpen, autoClose, onClose]);
