@@ -5,10 +5,11 @@ import styles from './page.module.css';
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
+import { AlertModal } from '../../../components/AlertModal';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-// Функція для очищення назви (щоб точно не було дублювання типу)
+// Функція для очищення назви
 const cleanModelName = (name: string) => {
   if (!name) return 'Модель';
   if (name.includes(' - ')) {
@@ -22,6 +23,9 @@ export default function SystemsPage() {
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [query, setQuery] = useState('');
+  
+  // Стейт для алерту успішного додавання
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   useEffect(() => {
     fetchMySystems();
@@ -100,7 +104,10 @@ export default function SystemsPage() {
           selected_for_calculation: false
         }),
       });
-      if (res.ok) fetchMySystems();
+      if (res.ok) {
+        fetchMySystems();
+        setIsAlertOpen(true); // Показуємо алерт "Додано"
+      }
     } catch (err) { 
       console.error('Помилка додавання рекомендованої системи:', err); 
     }
@@ -195,23 +202,19 @@ export default function SystemsPage() {
           <div key={item.id} className={styles.card}>
             
             <div className={styles.cardHeader}>
-              {/* ВАЖЛИВО: Залишили тільки чисту назву моделі, без типу! */}
               <div className={styles.cardTitle}>{cleanModelName(item.model)}</div>
               
-              {tab === 'my' && (
-                <div className={styles.cardActions}>
-                  <button className={styles.iconBtn} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                    {item.selected_for_calculation ? (
-                      <CheckboxCheckedIcon className={styles.actionIconOrange} />
-                    ) : (
-                      <CheckboxIcon className={styles.actionIconGray} />
-                    )}
-                  </button>
+              <div className={styles.cardActions}>
+                {tab === 'my' ? (
                   <button className={styles.iconBtn} onClick={() => handleDelete(item.id)}>
                     <DeleteIcon className={styles.actionIconOrange} />
                   </button>
-                </div>
-              )}
+                ) : (
+                  <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
+                    <span className={styles.plusIconTop}>+</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className={styles.specs}>
@@ -233,9 +236,16 @@ export default function SystemsPage() {
               </div>
             </div>
 
-            {tab === 'recommended' && (
-              <div className={styles.plusBtnContainer}>
-                <button className={styles.plusIcon} onClick={() => handleAddRecommended(item)}>+</button>
+            {tab === 'my' && (
+              <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
+                <span className={styles.calcLabel}>Додати до Розрахунку</span>
+                <button className={styles.iconBtn}>
+                  {item.selected_for_calculation ? (
+                    <CheckboxCheckedIcon className={styles.actionIconOrange} />
+                  ) : (
+                    <CheckboxIcon className={styles.actionIconOrange} />
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -248,6 +258,13 @@ export default function SystemsPage() {
           <div className={styles.hintText}>Додайте одну з рекомендованих систем, щоб подивитись як це працює</div>
         </div>
       )}
+
+      {/* Тост-алерт при успішному додаванні */}
+      <AlertModal 
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        title="Додано"
+      />
     </div>
   );
 }

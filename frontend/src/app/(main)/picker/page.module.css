@@ -6,7 +6,7 @@
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
-  color: var(--text-main); /* Основний колір тексту */
+  color: var(--text-main);
   transition: color 0.3s ease;
 }
 
@@ -38,8 +38,8 @@
 }
 
 .tabBtn.active {
-  background-color: var(--text-main); /* Темний фон у світлій, світлий у темній */
-  color: var(--bg-main); /* Контрастний текст */
+  background-color: var(--text-main);
+  color: var(--bg-main);
   border-color: var(--text-main);
 }
 
@@ -63,7 +63,7 @@
   padding: 16px 20px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  background-color: var(--bg-card); /* Додано фон для інпуту */
+  background-color: var(--bg-card);
   font-size: 18px;
   color: var(--text-main);
   font-family: inherit;
@@ -74,7 +74,7 @@
 }
 
 .addInput::placeholder {
-  color: var(--text-muted); /* Колір плейсхолдера */
+  color: var(--text-muted);
 }
 
 .addInput:focus { 
@@ -83,7 +83,7 @@
 
 .addBtn {
   background-color: var(--accent-orange);
-  color: #FFFFFF; /* Залишаємо білим для помаранчевого фону */
+  color: #FFFFFF;
   border: none;
   border-radius: 12px;
   padding: 0 32px;
@@ -99,7 +99,7 @@
 }
 
 .addBtn:hover { 
-  opacity: 0.9; /* Трохи змінили ховер для універсальності, або можна залишити #E05A00 */
+  opacity: 0.9;
 }
 
 /* --- СІТКА КАРТОК --- */
@@ -121,20 +121,20 @@
 }
 
 .card:hover {
-  /* Легка тінь, адаптована (може знадобитися своя змінна для тіні в майбутньому, але поки залишимо напівпрозору чорну) */
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
   gap: 12px;
 }
 
 .cardTitle {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
   word-break: break-word; 
@@ -167,27 +167,28 @@
   color: var(--accent-orange);
 }
 
-.actionIconGray {
-  width: 24px;
-  height: 24px;
-  /* Було помаранчевим у вашому коді, але назва Gray. 
-     Якщо це помилка, змініть на var(--text-muted) або залиште var(--accent-orange) */
-  color: var(--accent-orange); 
+.plusIconTop {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  line-height: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* --- ХАРАКТЕРИСТИКИ --- */
 .specs {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .specRow {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 8px;
 }
 
 .specLabel {
@@ -203,56 +204,28 @@
   min-height: 17px;
 }
 
-/* Кнопка "Плюс" */
-.plusBtnContainer {
+/* --- НОВИЙ РЯДОК РОЗРАХУНКУ З ЧЕКБОКСОМ --- */
+.calcRow {
   display: flex;
-  justify-content: center;
-  margin-top: 24px;
-}
-
-.plusIcon {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  background: none;
-  border: none;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
   cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.plusIcon:hover { transform: scale(1.1); }
-
-/* --- НИЖНІ БЛОКИ --- */
-.bottomBox {
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 24px;
-  display: inline-block;
-  background-color: var(--bg-card);
-  transition: background-color 0.3s, border-color 0.3s;
-}
-
-.bottomBoxTitle {
+.calcLabel {
   font-size: 16px;
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 12px;
 }
 
-.bottomBoxValue {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-main);
-}
-
-.accent { color: var(--accent-orange); }
-
+/* --- ПІДКАЗКИ ТА ІНШЕ --- */
 .hintBox {
-  background-color: var(--bg-card-inner); /* Використовуємо вкладений фон замість сірого */
+  background-color: var(--bg-card-inner);
   border-radius: 12px;
   padding: 20px 24px;
   margin-top: 24px;
-  border: 1px solid var(--border-color); /* Додав тонку рамку для кращого виділення */
+  border: 1px solid var(--border-color);
   transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -266,15 +239,13 @@
 .hintText {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-muted); /* Трохи приглушений текст для підказки */
+  color: var(--text-muted);
 }
-
 
 /* =========================================
    АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
    ========================================= */
 
-/* Планшети */
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -282,7 +253,6 @@
   }
 }
 
-/* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) {
   .wrap {
     padding-top: 16px;
@@ -324,13 +294,12 @@
     padding: 20px;
   }
   
-  .bottomBox, .hintBox {
+  .hintBox {
     width: 100%;
     box-sizing: border-box;
   }
 }
 
-/* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 900px) and (orientation: landscape) {
   .wrap {
     padding-bottom: 90px;
