@@ -542,28 +542,28 @@
   }
 }
 
-/* 📱 ГОРИЗОНТАЛЬНИЙ РЕЖИМ (ЛАНДШАФТ) - МІНІ ДЕСКТОП */
+/* 📱 ГОРИЗОНТАЛЬНИЙ РЕЖИМ (ЛАНДШАФТ) - МАКСИМАЛЬНО КОМПАКТНИЙ */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding: 12px 24px;
+    padding: 8px 16px;
     height: 100vh; /* Фіксуємо висоту екрану */
-    overflow: hidden; /* Вимикаємо зовнішній скролл */
+    overflow: hidden; /* Вимикаємо загальний скролл сторінки */
     display: flex;
     flex-direction: column;
   }
 
   .title {
-    font-size: 20px;
-    margin: 0 0 12px 0;
+    font-size: 18px; /* Сильно зменшений заголовок */
+    margin: 0 0 8px 0;
     flex-shrink: 0;
   }
 
   .layout {
-    flex: 1; /* Дозволяє контейнеру зайняти весь залишок висоти */
+    flex: 1; 
     display: flex;
-    flex-direction: row; /* Дві колонки, як на десктопі */
-    gap: 20px;
-    min-height: 0; /* ВАЖЛИВО: дозволяє внутрішнім елементам скролитися */
+    flex-direction: row; /* Дві колонки */
+    gap: 12px; /* Зменшений відступ між лівою і правою колонкою */
+    min-height: 0; /* Магія, щоб скрол працював усередині колонок */
   }
 
   /* ЛІВА КОЛОНКА (Прокручується) */
@@ -571,56 +571,62 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Додаємо скролл лише для лівої частини */
-    padding-right: 8px; /* Місце для скролбару */
-    gap: 16px;
+    overflow-y: auto; /* Скрол для лівої частини */
+    padding-right: 6px;
+    gap: 8px; /* Мінімальні проміжки між секціями */
   }
 
-  /* Компактні фільтри */
-  .filters-row { gap: 8px; margin-bottom: 0; }
-  .filter-chip { padding: 6px 16px; font-size: 12px; }
+  /* Компактні фільтри "Усі, Дім, Офіс" */
+  .filters-row { gap: 6px; margin-bottom: 0; }
+  .filter-chip { padding: 4px 10px; font-size: 11px; }
   
-  .icon-filters { gap: 8px; margin-top: -8px; }
-  .icon-chip { width: 36px; height: 36px; }
-  .device-svg { width: 18px; height: 18px; }
+  /* Компактні іконки */
+  .icon-filters { gap: 6px; margin-top: -4px; }
+  .icon-chip { width: 30px; height: 30px; border-radius: 6px; }
+  .device-svg { width: 16px; height: 16px; }
 
   /* Компактний список приладів */
-  .device-item { padding: 10px 14px; }
-  .device-name { font-size: 14px; }
-  .device-power { font-size: 12px; }
+  .device-list { gap: 6px; }
+  .device-item { padding: 6px 10px; border-radius: 8px; }
+  .device-name { font-size: 12px; }
+  .device-power { font-size: 11px; }
+  .checkbox { width: 16px; height: 16px; border-radius: 4px; }
+  .check-icon { width: 10px; height: 10px; }
 
   /* Компактна сітка ДБЖ */
   .systems-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
   }
-  .system-card, .add-system-card { padding: 12px; }
-  .system-title { font-size: 14px; margin-bottom: 8px; }
-  .spec-label { font-size: 10px; }
-  .spec-value { font-size: 11px; }
-  .add-icon { font-size: 32px; margin-bottom: 4px; }
+  .system-card, .add-system-card { padding: 8px; border-radius: 10px; }
+  .system-title { font-size: 12px; margin-bottom: 6px; }
+  .system-spec { padding: 2px 0; }
+  .spec-label { font-size: 9px; }
+  .spec-value { font-size: 10px; }
+  .add-icon { font-size: 24px; margin-bottom: 2px; }
+  .add-system-card span:last-child { font-size: 11px !important; }
 
   /* ПРАВА КОЛОНКА (Зафіксована) */
   .summary-panel {
-    width: 280px; /* Звужуємо плашку результатів */
+    width: 240px; /* Дуже вузька плашка */
     flex-shrink: 0;
     position: static; 
     height: 100%;
-    padding: 16px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Центруємо по вертикалі */
-    overflow-y: auto; /* На випадок дуже вузьких екранів */
+    justify-content: space-between; /* Розтягуємо результати по вертикалі */
+    border-radius: 12px;
   }
 
-  .summary-title { font-size: 16px; margin-bottom: 12px; }
+  .summary-title { font-size: 14px; margin-bottom: 8px; text-align: center; }
   
-  .stats-grid { gap: 8px; margin-bottom: 16px; }
-  .stat-box { padding: 8px 4px; }
-  .stat-value { font-size: 18px; }
-  .stat-label { font-size: 9px; }
+  .stats-grid { gap: 4px; margin-bottom: 8px; }
+  .stat-box { padding: 6px 2px; border-radius: 8px; }
+  .stat-value { font-size: 16px; }
+  .stat-label { font-size: 9px; line-height: 1.1; }
   
-  .progress-container { margin-bottom: 16px; height: 8px; }
+  .progress-container { margin-bottom: 12px; height: 6px; }
   
-  .save-btn { padding: 12px; font-size: 14px; }
+  .save-btn { padding: 8px; font-size: 12px; border-radius: 8px; height: 34px; }
 }
