@@ -91,7 +91,6 @@ export default function DashboardPage() {
   let progressColor = '#FF9500'; 
   if (safePercent > 90) progressColor = '#FF2D55'; 
 
-  // Знаходимо прилади, що входять до активного сценарію
   const activeDevices = activeScenario && activeScenario.selectedDeviceIds
     ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
     : [];
@@ -242,7 +241,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* НОВИЙ БЛОК: Прилади у вибраному сценарії */}
+      {/* ПРИЛАДИ У СЦЕНАРІЇ */}
       {activeScenario && (
         <div className={styles.activeDevicesWrapper}>
           <h3 className={styles.activeDevicesTitle}>Прилади у сценарії:</h3>
@@ -251,8 +250,6 @@ export default function DashboardPage() {
               {activeDevices.map(dev => {
                 const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
                 const power = dev.powerWatts || dev.power_watts || dev.power || 0;
-                
-                // ВАЖЛИВО: Оновлено логіку отримання імені приладу
                 const deviceName = dev.model_name || dev.name || dev.model || 'Прилад';
                 
                 return (
@@ -274,4 +271,4 @@ export default function DashboardPage() {
 
     </div>
   );
-} 
+}

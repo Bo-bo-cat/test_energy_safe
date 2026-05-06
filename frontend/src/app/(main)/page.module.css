@@ -4,7 +4,7 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 20px 24px; /* ЗМЕНШЕНО ВІДСТУПИ */
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   box-sizing: border-box;
@@ -19,24 +19,24 @@
 .topGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 16px; /* ЗМЕНШЕНО */
+  margin-bottom: 16px; /* ЗМЕНШЕНО */
 }
 
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+  border-radius: 16px; /* ЗМЕНШЕНО ЗАКРУГЛЕННЯ */
+  padding: 16px 20px; /* ЗМЕНШЕНО ВІДСТУПИ */
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
 }
 
 .cardTitle {
-  font-size: 20px;
+  font-size: 18px; /* ЗМЕНШЕНО ШРИФТ */
   font-weight: 800;
-  margin-bottom: 24px;
+  margin-bottom: 16px; /* ЗМЕНШЕНО */
   color: var(--text-main);
 }
 
@@ -44,288 +44,281 @@
   display: flex;
   flex-direction: row; 
   align-items: center;
-  gap: 50px; 
+  gap: 32px; /* ЗМЕНШЕНО */
   flex: 1;
 }
 
-/* --- ГРАФІК --- */
+/* ГРАФІК (БУБЛИК) */
 .donutWrapper {
   position: relative;
-  width: 220px; 
-  height: 120px; 
+  width: 160px; /* ФІКСОВАНИЙ МЕНШИЙ РОЗМІР */
+  height: 90px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   flex-shrink: 0;
 }
 
 .donutSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  overflow: visible; 
 }
 
 .donutText {
   position: absolute;
-  bottom: 2px; 
-  text-align: center;
+  bottom: -4px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .donutPercent {
-  font-size: 48px; 
+  font-size: 32px; /* ЗМЕНШЕНО */
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
 }
 
 .donutLabel {
-  font-size: 13px; 
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: 8px;
+  margin-top: 4px;
 }
-/* ------------------------ */
 
+/* СТАТИСТИКА СПРАВА ВІД БУБЛИКА */
 .statusStats {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
-  height: 100%;
 }
 
 .statBoxOutline {
   flex: 1;
-  background-color: var(--bg-main); 
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 32px 12px; 
+  border-radius: 12px;
+  padding: 12px; /* ЗМЕНШЕНО */
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center; 
   text-align: center;
 }
 
 .statBoxOutlineValue {
-  font-size: 32px;
+  font-size: 20px; /* ЗМЕНШЕНО */
   font-weight: 800;
   color: var(--accent-orange);
-  margin-bottom: 8px;
-  line-height: 1;
+  margin-bottom: 4px;
 }
 
 .statBoxOutlineLabel {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-main);
 }
 
-/* Картка ДБЖ */
+/* ХАРАКТЕРИСТИКИ ДБЖ */
 .upsSpecs {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
 }
 
 .upsRow {
   display: flex;
   justify-content: space-between;
-  padding: 14px 0;
+  align-items: center;
+  padding: 6px 0; /* ЗМЕНШЕНО */
   border-bottom: 1px solid var(--border-color);
 }
 
 .upsRow:last-child {
   border-bottom: none;
-  padding-bottom: 0;
 }
 
 .upsLabel {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
 .upsValue {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-main);
 }
 
-/* --- СЕРЕДНІЙ РЯД --- */
+/* --- СЕРЕДНІЙ РЯД (Швидкі дії + Статистика) --- */
 .middleFlex {
   display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 16px; /* ЗМЕНШЕНО */
+  margin-bottom: 20px; /* ЗМЕНШЕНО */
+  width: 100%;
 }
 
-.actionsGroup {
+.actionsGroup, .statsGroup {
   display: flex;
-  flex: 4; 
-  gap: 16px;
-}
-
-.statsGroup {
-  display: flex;
-  flex: 3;
-  gap: 16px;
+  gap: 12px; /* ЗМЕНШЕНО */
+  flex: 1;
 }
 
 .actionBtn {
   flex: 1;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px 8px;
+  border-radius: 12px;
+  padding: 12px; /* ЗМЕНШЕНО */
   display: flex;
   flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
-  gap: 12px; 
-  cursor: pointer;
-  transition: all 0.2s ease;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   text-decoration: none;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
 }
 
 .actionBtn:hover {
   border-color: var(--accent-orange);
-  transform: translateY(-2px);
+  background-color: var(--bg-card-inner);
 }
 
 .actionIcon {
-  color: var(--text-main); 
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
+  color: var(--text-main);
 }
 
 .actionText {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-main);
   text-align: center;
-  line-height: 1.2;
 }
 
 .smallStatBox {
   flex: 1;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px 8px;
+  border-radius: 12px;
+  padding: 12px; /* ЗМЕНШЕНО */
   display: flex;
   flex-direction: column;
-  align-items: center; 
-  justify-content: center; 
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .smallStatValue {
-  font-size: 32px;
+  font-size: 22px; /* ЗМЕНШЕНО */
   font-weight: 800;
-  color: var(--accent-orange); 
-  line-height: 1;
+  color: var(--accent-orange);
 }
 
 .smallStatLabel {
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-main);
   line-height: 1.2;
 }
 
 /* --- НИЖНІЙ РЯД (Сценарії) --- */
 .sectionTitle {
-  font-size: 20px;
+  font-size: 18px; /* ЗМЕНШЕНО */
   font-weight: 800;
-  margin-bottom: 20px;
   color: var(--text-main);
+  margin-bottom: 12px; /* ЗМЕНШЕНО */
 }
 
 .scenariosFlex {
   display: flex;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 10px; /* ЗМЕНШЕНО */
+  width: 100%;
 }
 
 .scenarioChip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  border-radius: 14px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  font-size: 16px;
-  font-weight: 800;
+  border-radius: 12px;
+  padding: 10px 16px; /* ЗМЕНШЕНО */
+  font-size: 14px;
+  font-weight: 700;
   color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 160px;
-  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scenarioChip:hover {
+  border-color: var(--accent-orange);
 }
 
 .scenarioChip.active {
   background-color: var(--accent-orange);
-  border-color: var(--accent-orange);
   color: #FFFFFF;
-}
-
-.scenarioChip:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+  border-color: var(--accent-orange);
 }
 
 .checkIcon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
-/* =========================================
-   НОВИЙ БЛОК: ПРИЛАДИ У СЦЕНАРІЇ
-   ========================================= */
+
+/* --- ПРИЛАДИ В СЦЕНАРІЇ --- */
 .activeDevicesWrapper {
-  margin-top: 32px;
+  margin-top: 20px; /* ЗМЕНШЕНО */
 }
 
 .activeDevicesTitle {
-  font-size: 16px;
+  font-size: 15px; /* ЗМЕНШЕНО */
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 16px;
+  margin-bottom: 12px; /* ЗМЕНШЕНО */
 }
 
 .activeDevicesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 }
 
 .activeDeviceCard {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px 14px; /* ЗМЕНШЕНО */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px; /* Використовуємо gap замість margin */
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  min-width: 0; /* Запобігає розтягуванню картки */
-}
-
-.activeDeviceCard:hover {
-  border-color: var(--text-muted);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  gap: 8px;
+  min-width: 0; 
 }
 
 .activeDeviceName {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1; /* Займає весь вільний простір зліва */
-  min-width: 0; /* Критично важливо для роботи ellipsis у flex-контейнері */
+  flex: 1; 
+  min-width: 0; 
+}
+
+.truncateText {
+  font-size: 13px; /* ЗМЕНШЕНО */
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block; 
 }
 
 .qtyBadge {
@@ -335,127 +328,65 @@
   padding: 2px 6px;
   border-radius: 6px;
   font-weight: 800;
-  flex-shrink: 0; /* Щоб бейдж ніколи не стискався */
+  flex-shrink: 0; 
 }
 
 .activeDevicePower {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--accent-orange);
-  flex-shrink: 0; /* Щоб потужність ніколи не стискалась */
+  flex-shrink: 0; 
 }
 
+
 /* =========================================
-   АДАПТАЦІЯ НОВОГО БЛОКУ ДЛЯ ЛАНДШАФТУ
-   (Додай всередину існуючого @media для landscape, 
-   або залиш тут в кінці файлу)
+   ПЛАНШЕТИ / ПОРТРЕТНІ МОБІЛЬНІ (Vertical)
    ========================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .activeDevicesWrapper {
-    margin-top: 20px;
-    padding-bottom: 12px;
+@media (max-width: 900px) and (orientation: portrait) {
+  .wrap {
+    padding-top: 16px;
+    padding-bottom: 120px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-  .activeDevicesTitle {
-    font-size: 14px;
-    margin-bottom: 12px;
+  .topGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .statusContent {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  .donutWrapper { width: 140px; height: 80px; }
+  .donutPercent { font-size: 28px; }
+  .middleFlex { flex-direction: column; gap: 12px; }
+  .actionsGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+  .statusStats { flex-direction: column; }
+  .statsGroup {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
   }
   .activeDevicesGrid {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 8px;
-    scrollbar-width: none; /* Для Firefox */
-  }
-  .activeDevicesGrid::-webkit-scrollbar {
-    display: none; /* Для Chrome/Safari */
-  }
-  .activeDeviceCard {
-    width: 180px; /* Фіксована ширина для скролу */
-    flex-shrink: 0;
-    padding: 12px;
-  }
-  .activeDeviceName {
-    font-size: 13px;
-  }
-  .activeDevicePower {
-    font-size: 13px;
-  }
-}
-
-/* =========================================
-   АДАПТАЦІЯ (МОБІЛЬНІ ВЕРТИКАЛЬНІ)
-   ========================================= */
-
-@media (max-width: 1100px) {
-  .topGrid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 768px) {
-  .wrap {
-    padding: 16px 16px 100px 16px;
-  }
-  .statusContent {
-    flex-direction: column; 
-    gap: 32px;
-  }
-  
-  .donutWrapper {
-    width: 180px;
-    height: 100px;
-  }
-  .donutPercent {
-    font-size: 36px;
-  }
-  
-  .statusStats {
-    width: 100%;
-    flex-direction: row; 
-    gap: 8px;
-  }
-  .statBoxOutline {
-    padding: 16px 8px;
-  }
-  .statBoxOutlineValue { font-size: 20px; }
-  .statBoxOutlineLabel { font-size: 10px; }
-  
-  .middleFlex {
-    flex-direction: column; 
-    gap: 16px;
-  }
-
-  .actionsGroup {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .statsGroup {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .statsGroup .smallStatBox:nth-child(3) {
-    grid-column: span 2;
-  }
-}
-
 /* =========================================
-   ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
-   (Виправлено проблему з наїздом графіка)
+   УЛЬТРА-КОМПАКТ ДЛЯ ЛАНДШАФТУ (Landscape)
    ========================================= */
-
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
     padding: 12px 16px; 
-  }
-  
-  .cardTitle, .sectionTitle {
-    font-size: 16px;
-    margin-bottom: 12px;
+    height: 100vh;
+    overflow-y: auto; 
   }
 
   .topGrid {
@@ -465,74 +396,98 @@
 
   .card {
     padding: 12px;
-    border-radius: 16px;
+    border-radius: 12px;
+  }
+
+  .cardTitle {
+    font-size: 15px;
+    margin-bottom: 8px;
   }
 
   .statusContent {
-    flex-direction: row;
     gap: 16px;
   }
 
-  /* Замість проблемного transform: scale() просто зменшуємо розмір блоку.
-     SVG автоматично підлаштується під цей розмір, не ламаючи верстку! */
   .donutWrapper {
-    width: 150px; 
-    height: 85px; 
+    width: 120px; 
+    height: 68px; 
   }
 
   .donutPercent {
-    font-size: 32px; 
+    font-size: 24px; 
   }
 
   .donutLabel {
     font-size: 10px;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
-  .statBoxOutline { padding: 8px; }
-  .statBoxOutlineValue { font-size: 18px; margin-bottom: 4px; }
-  .statBoxOutlineLabel { font-size: 10px; }
+  .statBoxOutline { padding: 6px; }
+  .statBoxOutlineValue { font-size: 14px; margin-bottom: 2px; }
+  .statBoxOutlineLabel { font-size: 9px; }
 
-  .upsRow { padding: 8px 0; }
-  .upsLabel { font-size: 11px; }
-  .upsValue { font-size: 12px; }
+  .upsRow { padding: 4px 0; }
+  .upsLabel { font-size: 10px; }
+  .upsValue { font-size: 11px; }
 
   .middleFlex {
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  
+  .actionBtn, .smallStatBox { 
+    padding: 8px; 
+    gap: 4px;
+  }
+
+  .actionIcon { width: 18px; height: 18px; }
+  .actionText { font-size: 10px; }
+  .smallStatValue { font-size: 16px; }
+  .smallStatLabel { font-size: 9px; }
+
+  .sectionTitle {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .scenariosFlex {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .scenarioChip {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .activeDevicesWrapper {
+    margin-top: 0;
+    padding-bottom: 16px;
+  }
+
+  .activeDevicesTitle {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .activeDevicesGrid {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 4px;
-    scrollbar-width: none;
+    padding-bottom: 8px;
+    scrollbar-width: none; 
   }
-  .middleFlex::-webkit-scrollbar { display: none; }
-  
-  .actionsGroup, .statsGroup {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    width: max-content; 
+  .activeDevicesGrid::-webkit-scrollbar { display: none; }
+
+  .activeDeviceCard {
+    width: 200px; 
     flex-shrink: 0;
+    padding: 10px 12px;
   }
 
-  .actionBtn, .smallStatBox {
-    width: 110px; 
-    flex-shrink: 0;
-    padding: 10px 8px;
-    border-radius: 12px;
-    gap: 4px;
-  }
-  
-  .actionIcon { width: 20px; height: 20px; }
-  .actionText { font-size: 11px; }
-  .smallStatValue { font-size: 20px; margin-bottom: 4px; }
-  .smallStatLabel { font-size: 9px; }
-
-  .scenarioChip {
-    padding: 8px 16px;
-    font-size: 13px;
-    min-width: 120px;
-    border-radius: 10px;
+  .truncateText, .activeDevicePower {
+    font-size: 12px;
   }
 }
