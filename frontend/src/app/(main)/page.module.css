@@ -44,15 +44,15 @@
   display: flex;
   flex-direction: row; 
   align-items: center;
-  gap: 50px; /* Трохи збільшили відступ між великим графіком і плашками */
+  gap: 50px; 
   flex: 1;
 }
 
-/* --- ЗБІЛЬШЕНИЙ ГРАФІК --- */
+/* --- ЗОЛОТА СЕРЕДИНА ДЛЯ ГРАФІКА --- */
 .donutWrapper {
   position: relative;
-  width: 260px; /* Збільшили з 200px */
-  height: 130px; /* Збільшили зі 100px */
+  width: 220px; 
+  height: 120px; 
   display: flex;
   justify-content: center;
   flex-shrink: 0;
@@ -61,12 +61,12 @@
 .donutSvg {
   width: 100%;
   height: 100%;
-  overflow: visible; /* Дозволяє товстим краям лінії не обрізатись контейнером */
+  overflow: visible; 
 }
 
 .donutText {
   position: absolute;
-  bottom: -4px; /* Опустили текст трохи нижче до краю дуги */
+  bottom: 2px; /* Збалансований відступ */
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -74,14 +74,14 @@
 }
 
 .donutPercent {
-  font-size: 56px; /* ВЕЛИЧЕЗНИЙ відсоток як на макеті (було 40px) */
+  font-size: 48px; /* Акуратний великий розмір */
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
 }
 
 .donutLabel {
-  font-size: 13px; /* Трохи збільшили підпис */
+  font-size: 13px; 
   font-weight: 600;
   color: var(--text-muted);
   margin-top: 8px;
@@ -304,14 +304,11 @@
   
   /* Зменшуємо графік на телефонах */
   .donutWrapper {
-    width: 200px;
+    width: 180px;
     height: 100px;
   }
   .donutPercent {
-    font-size: 40px;
-  }
-  .donutLabel {
-    font-size: 11px;
+    font-size: 36px;
   }
   
   .statusStats {
@@ -377,8 +374,8 @@
   }
 
   .donutWrapper {
-    transform: scale(0.55); /* Сильніше стискаємо новий великий графік для ландшафту */
-    margin: -30px 0; 
+    transform: scale(0.65);
+    margin: -15px 0; 
   }
 
   .statBoxOutline { padding: 8px; }

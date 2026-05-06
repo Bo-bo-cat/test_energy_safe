@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Правильні імпорти твоїх нових іконок
+// Правильні імпорти твоїх іконок
 import { CameraIcon } from '../../components/icons/Camera';
 import { CalcIcon } from '../../components/icons/Calc';
 import { ScenarioIcon } from '../../components/icons/Scenario';
@@ -85,8 +85,8 @@ export default function DashboardPage() {
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
   const safePercent = Math.min(Math.round(loadPercent), 100);
 
-  // --- НОВІ НАЛАШТУВАННЯ ДЛЯ БІЛЬШОГО ГРАФІКА ---
-  const radius = 110; // Було 80, збільшили радіус
+  // --- ЗОЛОТА СЕРЕДИНА РОЗМІРІВ ГРАФІКА ---
+  const radius = 90; 
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
@@ -107,17 +107,14 @@ export default function DashboardPage() {
           <h2 className={styles.cardTitle}>Статус системи</h2>
           <div className={styles.statusContent}>
             
-            {/* ОНОВЛЕНИЙ SVG: збільшені розміри та товщина лінії */}
             <div className={styles.donutWrapper}>
-              <svg width="100%" height="100%" viewBox="0 0 260 130" className={styles.donutSvg}>
-                {/* Сірий фон */}
-                <path d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="var(--border-color)" strokeWidth="24" strokeLinecap="round" />
-                {/* Кольоровий прогрес */}
+              <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
+                <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--border-color)" strokeWidth="20" strokeLinecap="round" />
                 <path 
-                  d="M 20 130 A 110 110 0 0 1 240 130" 
+                  d="M 20 110 A 90 90 0 0 1 200 110" 
                   fill="none" 
                   stroke={progressColor} 
-                  strokeWidth="24" 
+                  strokeWidth="20" 
                   strokeLinecap="round"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
@@ -178,6 +175,7 @@ export default function DashboardPage() {
 
       {/* СЕРЕДНІЙ РЯД */}
       <div className={styles.middleFlex}>
+        
         <div className={styles.actionsGroup}>
           <Link href="/devices" className={styles.actionBtn}>
             <CameraIcon className={styles.actionIcon} />
@@ -215,6 +213,7 @@ export default function DashboardPage() {
             <div className={styles.smallStatLabel}>Приладів<br/>включено</div>
           </div>
         </div>
+
       </div>
 
       {/* НИЖНІЙ РЯД */}
