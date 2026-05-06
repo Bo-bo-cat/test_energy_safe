@@ -6,12 +6,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* --- СВІТЛА ТЕМА --- */
-  background-color: #FFFFFF; /* Білий фон сайту */
-  color: #111827; /* Дуже темний сірий для тексту */
+  background-color: #FFFFFF; /* Світла тема сайту */
+  color: #111827; 
   font-family: 'Inter', sans-serif;
-  /* Збільшений padding, щоб логотип не обрізався */
-  padding: 40px 24px; 
+  padding: 40px 24px; /* Хороший відступ зверху, щоб лого не впиралося */
   box-sizing: border-box;
 }
 
@@ -28,7 +26,7 @@
   align-items: center;
 }
 
-/* --- ЛІВА ЧАСТИНА --- */
+/* --- ЛІВА ЧАСТИНА (Текст + Кнопка) --- */
 .leftContent {
   display: flex;
   flex-direction: column;
@@ -38,16 +36,19 @@
 .logoWrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 40px;
 }
 
-/* Налаштування для вашої LightningIcon (лого) */
+/* Налаштування для LightningIcon (лого) */
 .logoIcon {
   width: 32px;
   height: 32px;
-  color: #FF6B00; /* Помаранчевий Energy Safe */
+  color: #FF6B00; 
   flex-shrink: 0;
+  /* FIX БЛИСКАВКИ: Гарантуємо, що виступи не обрізаються контейнером */
+  overflow: visible; 
+  padding: 1px; /* Додатковий простір для SVG */
 }
 
 .logoText {
@@ -59,7 +60,8 @@
 .mainTitle {
   font-size: 48px;
   font-weight: 900;
-  line-height: 1.1;
+  /* Трохи збільшений line-height для кращої читабельності */
+  line-height: 1.2; 
   margin-bottom: 24px;
   color: #111827;
 }
@@ -71,7 +73,7 @@
 .desc {
   font-size: 18px;
   line-height: 1.6;
-  color: #6B7280; /* Сірий опис для світлої теми */
+  color: #6B7280; 
   margin-bottom: 24px;
   max-width: 500px;
 }
@@ -79,7 +81,7 @@
 .subDesc {
   font-size: 16px;
   line-height: 1.6;
-  color: #9CA3AF; /* Трохи темніший за опис */
+  color: #9CA3AF; 
   margin-bottom: 48px;
   max-width: 500px;
   padding-left: 16px;
@@ -105,14 +107,13 @@
   box-shadow: 0 8px 24px rgba(255, 107, 0, 0.2);
 }
 
-/* --- ПРАВА ЧАСТИНА --- */
+/* --- ПРАВА ЧАСТИНА (Картки можливостей) --- */
 .rightContent {
-  /* Світлий, але виділений фон для картки */
   background-color: #F9FAFB; 
-  border: 1px solid #E5E7EB; /* Світло-сіра рамка */
+  border: 1px solid #E5E7EB; 
   border-radius: 28px;
   padding: 48px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); /* Дуже м'яка тінь */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); 
 }
 
 .featuresTitle {
@@ -129,7 +130,6 @@
 }
 
 .card {
-  /* Біла картка всередині сірого фону */
   background-color: #FFFFFF; 
   border: 1px solid #E5E7EB;
   padding: 24px;
@@ -149,7 +149,6 @@
 .cardIconWrap {
   width: 56px;
   height: 56px;
-  /* Напівпрозорий помаранчевий фон для іконок */
   background-color: rgba(255, 107, 0, 0.08); 
   color: #FF6B00;
   border-radius: 14px;
@@ -159,7 +158,6 @@
   flex-shrink: 0;
 }
 
-/* Налаштування для imported іконок (Calc, System, Scenario) */
 .cardIcon {
   width: 28px;
   height: 28px;
@@ -184,30 +182,37 @@
    ========================================================= */
 @media (max-width: 950px) {
   .wrap {
-    padding: 32px 16px; /* Менші відступи від країв екрану */
-    overflow-x: hidden; /* Захист від горизонтального скролу */
+    padding: 24px 16px; /* Трохи компактніші відступи від країв */
+    overflow-x: hidden;
   }
 
   .container {
-    /* FIX ЛАНДСКЕЙПУ: Завжди одна колонка, щоб не ламалася верстка */
-    grid-template-columns: 1fr; 
+    /* FIX МОБІЛЬНОЇ ВЕРСІЇ: 
+       Використовуємо flex таcolumn-reverse, 
+       щоб поставити картки можливостей (RightContent) 
+       ВИЩЕ за основний текст (LeftContent). */
+    display: flex;
+    flex-direction: column-reverse; 
     gap: 32px; 
-    padding: 16px 0;
-  }
-
-  .leftContent {
-    align-items: flex-start;
+    padding: 0;
   }
 
   .logoWrap {
     margin-bottom: 24px;
     gap: 8px;
   }
-  .logoIcon { width: 28px; height: 28px; }
+  
+  /* Злегка коригуємо розмір лого на мобільному */
+  .logoIcon { 
+    width: 28px; 
+    height: 28px; 
+    padding: 0; /* Прибираємо внутрішній відступ на мобільному */
+  }
   .logoText { font-size: 20px; }
 
   .mainTitle {
-    font-size: 32px; /* Компактніший заголовок */
+    /* Робимо заголовок трохи компактнішим, щоб не був "горою" */
+    font-size: 28px; 
     margin-bottom: 16px;
   }
 
@@ -218,22 +223,25 @@
 
   .subDesc {
     margin-bottom: 32px;
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .startBtn {
-    width: 100%; /* Кнопка на всю ширину мобільного */
+    width: 100%; 
     padding: 14px 32px;
     font-size: 16px;
+    margin-bottom: 20px; /* Відступ внизу */
   }
 
   .rightContent {
-    padding: 24px; /* Компактні відступи всередині картки */
-    border-radius: 24px;
+    padding: 24px; /* Компактні відступи всередині сірого блоку */
+    border-radius: 20px;
+    /* Spacing when stacked first */
+    margin-bottom: 16px; 
   }
 
   .featuresTitle {
-    font-size: 22px;
+    font-size: 20px;
     margin-bottom: 24px;
   }
 
@@ -253,6 +261,7 @@
 /* Фікс для дуже малих екранів */
 @media (max-width: 480px) {
   .mainTitle {
-    font-size: 28px;
+    font-size: 26px;
   }
+  .logoText { font-size: 18px; }
 }
