@@ -1,16 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 import { CameraIcon } from '../../../../components/icons/Camera';
 import { PenIcon } from '../../../../components/icons/Pen';
+import { AlertModal } from '../../../../components/AlertModal';
 
 export default function AddDevicePage() {
-  
+  // Стейт для нашої нової модалки
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
   // Функція для обробки кліку по кнопці "Фото етикетки"
   const handleCameraClick = (e: React.MouseEvent) => {
     e.preventDefault(); // Зупиняємо перехід за посиланням
-    alert('Скоро буде!'); // Показуємо сповіщення
+    setIsAlertOpen(true); // Відкриваємо нашу кастомну модалку
   };
 
   return (
@@ -18,7 +22,7 @@ export default function AddDevicePage() {
       <h1 className={styles['title']}>Додати прилад</h1>
 
       <section className={styles['cards']}>
-        {/* Кнопка 1: Фото етикетки -> викликає alert замість переходу */}
+        {/* Кнопка 1: Фото етикетки */}
         <Link 
           href="#" 
           onClick={handleCameraClick} 
@@ -49,6 +53,15 @@ export default function AddDevicePage() {
           Шукай чорно-жовту наклейку з написом “Вт” або “W” - зазвичай на задній панелі або знизу приладу
         </p>
       </section>
+
+      {/* Наша кастомна модалка */}
+      <AlertModal 
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        title="Скоро буде!"
+        message="Функція розпізнавання етикеток по фото знаходиться в розробці. Поки що скористайтесь ручним введенням."
+        buttonText="Зрозуміло"
+      />
     </main>
   );
 }
