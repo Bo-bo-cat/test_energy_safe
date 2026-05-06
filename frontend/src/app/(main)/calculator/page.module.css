@@ -362,8 +362,6 @@
 
 /* 📱 МОБІЛЬНІ ТЕЛЕФОНИ (ВЕРТИКАЛЬНО) */
 @media (max-width: 768px) and (orientation: portrait) {
-  /* Залиште тут попередні стилі для мобільного вертикального режиму, 
-     вони працювали добре */
   .wrap {
     display: block; 
     padding: 16px 0 120px 0; 
@@ -496,7 +494,6 @@
     position: sticky;
     bottom: 80px; 
     z-index: 10;
-    
     border-radius: 20px; 
     box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.25); 
     padding: 16px 20px;
@@ -545,105 +542,85 @@
   }
 }
 
-/* 📱 ГОРИЗОНТАЛЬНИЙ РЕЖИМ (ЛАНДШАФТ) */
+/* 📱 ГОРИЗОНТАЛЬНИЙ РЕЖИМ (ЛАНДШАФТ) - МІНІ ДЕСКТОП */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding: 16px;
-    height: 100vh; /* Займаємо всю висоту вікна */
-    overflow: hidden; /* Вимикаємо загальний скрол */
-  }
-
-  .layout {
+    padding: 12px 24px;
+    height: 100vh; /* Фіксуємо висоту екрану */
+    overflow: hidden; /* Вимикаємо зовнішній скролл */
     display: flex;
-    flex-direction: row; /* Дві колонки */
-    gap: 20px;
-    height: calc(100% - 40px); /* Віднімаємо висоту заголовка */
+    flex-direction: column;
   }
 
   .title {
-    font-size: 24px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin: 0 0 12px 0;
+    flex-shrink: 0;
   }
 
-  /* ЛІВА КОЛОНКА (Прилади) */
+  .layout {
+    flex: 1; /* Дозволяє контейнеру зайняти весь залишок висоти */
+    display: flex;
+    flex-direction: row; /* Дві колонки, як на десктопі */
+    gap: 20px;
+    min-height: 0; /* ВАЖЛИВО: дозволяє внутрішнім елементам скролитися */
+  }
+
+  /* ЛІВА КОЛОНКА (Прокручується) */
   .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    overflow-y: auto; /* Додаємо внутрішній скрол для приладів */
+    overflow-y: auto; /* Додаємо скролл лише для лівої частини */
     padding-right: 8px; /* Місце для скролбару */
+    gap: 16px;
   }
 
-  .filters-row {
-    margin-bottom: 0;
-  }
+  /* Компактні фільтри */
+  .filters-row { gap: 8px; margin-bottom: 0; }
+  .filter-chip { padding: 6px 16px; font-size: 12px; }
+  
+  .icon-filters { gap: 8px; margin-top: -8px; }
+  .icon-chip { width: 36px; height: 36px; }
+  .device-svg { width: 18px; height: 18px; }
 
-  .icon-filters {
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
+  /* Компактний список приладів */
+  .device-item { padding: 10px 14px; }
+  .device-name { font-size: 14px; }
+  .device-power { font-size: 12px; }
 
-  .device-list {
-    flex: 1; /* Список займає залишок місця */
+  /* Компактна сітка ДБЖ */
+  .systems-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
   }
+  .system-card, .add-system-card { padding: 12px; }
+  .system-title { font-size: 14px; margin-bottom: 8px; }
+  .spec-label { font-size: 10px; }
+  .spec-value { font-size: 11px; }
+  .add-icon { font-size: 32px; margin-bottom: 4px; }
 
-  /* ПРАВА КОЛОНКА (Станції та Результати) */
+  /* ПРАВА КОЛОНКА (Зафіксована) */
   .summary-panel {
-    width: 320px; /* Фіксована ширина правої колонки */
+    width: 280px; /* Звужуємо плашку результатів */
+    flex-shrink: 0;
+    position: static; 
+    height: 100%;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    padding: 16px;
-    position: static; /* Вимикаємо sticky */
-    margin: 0;
-    box-shadow: none;
-    height: 100%;
-    overflow-y: auto; /* Скрол для результатів, якщо не влазять */
+    justify-content: center; /* Центруємо по вертикалі */
+    overflow-y: auto; /* На випадок дуже вузьких екранів */
   }
 
-  /* Переносимо сітку станцій у праву колонку візуально */
-  /* Оскільки в HTML вони в різних блоках, ми використаємо flex-order 
-     на рівні .wrap (але це вимагає змін в HTML). 
-     Без змін в HTML ми можемо лише оптимізувати поточний потік. */
-}
-
-/* Оптимізація без зміни HTML структури для горизонтального режиму */
-@media (max-width: 950px) and (orientation: landscape) {
-   .wrap {
-    padding: 16px;
-    overflow-x: hidden;
-  }
-
-  .layout {
-    flex-direction: row; /* Зберігаємо 2 колонки */
-    gap: 20px;
-  }
-
-  .main-content {
-    flex: 1; /* Ліва колонка розтягується */
-    min-width: 0; /* Дозволяє стискатися */
-  }
-
-  .summary-panel {
-    width: 300px; /* Звужуємо праву колонку */
-    flex-shrink: 0;
-    padding: 16px;
-    position: sticky;
-    top: 16px; /* Тримаємо на екрані */
-  }
-
-  /* Робимо сітку станцій компактнішою */
-  .systems-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-  }
-
-  .system-card, .add-system-card {
-    padding: 12px;
-  }
-
-  .system-title {
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
+  .summary-title { font-size: 16px; margin-bottom: 12px; }
+  
+  .stats-grid { gap: 8px; margin-bottom: 16px; }
+  .stat-box { padding: 8px 4px; }
+  .stat-value { font-size: 18px; }
+  .stat-label { font-size: 9px; }
+  
+  .progress-container { margin-bottom: 16px; height: 8px; }
+  
+  .save-btn { padding: 12px; font-size: 14px; }
 }
