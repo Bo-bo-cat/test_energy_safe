@@ -15,7 +15,7 @@
   box-sizing: border-box;
 }
 
-/* --- ВЕРХНІЙ РЯД (Статус + ДБЖ) --- */
+/* --- ВЕРХНІЙ РЯД --- */
 .topGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -44,22 +44,29 @@
   display: flex;
   flex-direction: row; 
   align-items: center;
-  gap: 40px;
+  gap: 50px; /* Трохи збільшили відступ між великим графіком і плашками */
   flex: 1;
 }
 
+/* --- ЗБІЛЬШЕНИЙ ГРАФІК --- */
 .donutWrapper {
   position: relative;
-  width: 200px;
-  height: 100px; 
+  width: 260px; /* Збільшили з 200px */
+  height: 130px; /* Збільшили зі 100px */
   display: flex;
   justify-content: center;
   flex-shrink: 0;
 }
 
+.donutSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* Дозволяє товстим краям лінії не обрізатись контейнером */
+}
+
 .donutText {
   position: absolute;
-  bottom: 0;
+  bottom: -4px; /* Опустили текст трохи нижче до краю дуги */
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -67,18 +74,19 @@
 }
 
 .donutPercent {
-  font-size: 40px;
+  font-size: 56px; /* ВЕЛИЧЕЗНИЙ відсоток як на макеті (було 40px) */
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
 }
 
 .donutLabel {
-  font-size: 11px;
+  font-size: 13px; /* Трохи збільшили підпис */
   font-weight: 600;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 8px;
 }
+/* ------------------------ */
 
 .statusStats {
   display: flex;
@@ -144,21 +152,19 @@
   color: var(--text-main);
 }
 
-/* --- СЕРЕДНІЙ РЯД (РОЗДІЛЕНИЙ НА ГРУПИ) --- */
+/* --- СЕРЕДНІЙ РЯД --- */
 .middleFlex {
   display: flex;
   gap: 16px;
   margin-bottom: 32px;
 }
 
-/* Блок з кнопками */
 .actionsGroup {
   display: flex;
   flex: 4; 
   gap: 16px;
 }
 
-/* Блок зі статистикою */
 .statsGroup {
   display: flex;
   flex: 3;
@@ -293,8 +299,21 @@
   }
   .statusContent {
     flex-direction: column; 
-    gap: 24px;
+    gap: 32px;
   }
+  
+  /* Зменшуємо графік на телефонах */
+  .donutWrapper {
+    width: 200px;
+    height: 100px;
+  }
+  .donutPercent {
+    font-size: 40px;
+  }
+  .donutLabel {
+    font-size: 11px;
+  }
+  
   .statusStats {
     width: 100%;
     flex-direction: row; 
@@ -307,25 +326,22 @@
   .statBoxOutlineLabel { font-size: 10px; }
   
   .middleFlex {
-    flex-direction: column; /* Ставимо блоки дій і статистики один під одним */
+    flex-direction: column; 
     gap: 16px;
   }
 
-  /* Жорстка сітка 2x2 для кнопок дій */
   .actionsGroup {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
-  /* Жорстка сітка 2x2 для статистики */
   .statsGroup {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
-  /* Робимо 3-тю плашку статистики на всю ширину, щоб не було дірки */
   .statsGroup .smallStatBox:nth-child(3) {
     grid-column: span 2;
   }
@@ -333,7 +349,6 @@
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
-   Абсолютний захист від "наїзду" елементів
    ========================================= */
 
 @media (max-width: 950px) and (orientation: landscape) {
@@ -362,8 +377,8 @@
   }
 
   .donutWrapper {
-    transform: scale(0.65);
-    margin: -15px 0; 
+    transform: scale(0.55); /* Сильніше стискаємо новий великий графік для ландшафту */
+    margin: -30px 0; 
   }
 
   .statBoxOutline { padding: 8px; }
@@ -374,7 +389,6 @@
   .upsLabel { font-size: 11px; }
   .upsValue { font-size: 12px; }
 
-  /* Робимо середній ряд скрольованою стрічкою */
   .middleFlex {
     display: flex;
     flex-wrap: nowrap;
@@ -390,12 +404,12 @@
     display: flex;
     flex-wrap: nowrap;
     gap: 8px;
-    width: max-content; /* Гарантує, що вони ніколи не стиснуться і не наїдуть */
+    width: max-content; 
     flex-shrink: 0;
   }
 
   .actionBtn, .smallStatBox {
-    width: 110px; /* Фіксована ширина для всіх плашок в горизонталі */
+    width: 110px; 
     flex-shrink: 0;
     padding: 10px 8px;
     border-radius: 12px;
