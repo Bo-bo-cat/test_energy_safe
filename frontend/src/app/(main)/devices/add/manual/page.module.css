@@ -265,65 +265,65 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .page-wrapper {
-    padding: 8px 24px;
-    height: 100vh; /* Фіксуємо висоту під екран */
-    overflow: hidden; /* Відключаємо скролл повністю */
+    padding: 16px 24px;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Центруємо контент по вертикалі */
+    justify-content: flex-start; /* Вирівнюємо строго по верху, без зсувів вниз */
+    align-items: center; /* Центруємо форму горизонтально */
   }
 
   .title {
-    font-size: 20px;
-    margin-bottom: 8px;
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 12px;
     text-align: center;
+    width: 100%;
   }
 
-  /* ПОВЕРТАЄМО ОДНУ КОЛОНКУ, АЛЕ МАКСИМАЛЬНО СТИСКАЄМО */
   .form {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* Мінімальна відстань між полями */
+    gap: 10px; /* Достатньо компактно, але збережена читабельність */
     width: 100%;
-    max-width: 500px; /* Центруємо форму, щоб вона не розтягувалась на весь екран */
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 0;
   }
 
   .input-group {
-    gap: 2px; /* Мінімальна відстань від лейблу до інпуту */
+    gap: 4px;
   }
 
   .label {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .input {
-    padding: 4px 12px; /* Робимо інпути дуже вузькими по висоті */
-    font-size: 13px;
+    padding: 8px 14px;
+    font-size: 14px;
     border-radius: 8px;
-    height: 32px; /* Жорстко фіксуємо висоту інпуту */
+    height: 38px; /* Читабельна і зручна для пальця висота */
   }
   
   .search-btn {
-    padding: 0 12px;
-    font-size: 13px;
-    height: 32px;
+    padding: 0 16px;
+    font-size: 14px;
+    height: 38px;
     border-radius: 8px;
   }
 
   .custom-select-dropdown {
-    max-height: 120px; /* Зменшуємо дроп-даун */
+    max-height: 140px;
   }
 
   .custom-select-item {
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 8px 14px;
+    font-size: 14px;
   }
 
   .add-startup-btn {
-    font-size: 13px;
-    margin-top: 2px;
-    padding: 2px 0;
+    font-size: 14px;
+    margin-top: 0;
+    padding: 4px 0;
   }
 
   .startup-header {
@@ -331,14 +331,14 @@
   }
 
   .submit-btn {
-    padding: 6px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 16px;
     margin-top: 4px;
-    height: 36px; /* Компактна кнопка зберегти */
+    height: 42px;
   }
   
   .error {
-    font-size: 11px;
+    font-size: 12px;
     margin: 0;
   }
 }

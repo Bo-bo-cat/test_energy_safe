@@ -159,7 +159,7 @@
 
   .card {
     aspect-ratio: auto; 
-    height: auto; 
+    height: 180px; 
     padding: 16px 20px;
   }
 
