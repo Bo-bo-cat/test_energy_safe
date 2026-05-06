@@ -86,7 +86,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <div className={styles['icon-wrapper']}>
                    <IconComponent className={styles['nav-icon']} />
                 </div>
-                {item.label}
+                {/* Обернули текст, щоб його можна було приховати */}
+                <span className={styles['nav-text']}>{item.label}</span>
               </Link>
             );
           })}
