@@ -5,8 +5,13 @@
   max-width: 1440px;
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
-  /* Додамо перехід для загального контейнера, якщо потрібно */
   transition: background-color 0.3s ease;
+}
+
+/* Новий контейнер, який керує розміщенням блоків */
+.header-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .top-section {
@@ -25,7 +30,7 @@
   margin: 0;
   font-size: 32px;
   font-weight: 800;
-  color: var(--accent-orange); /* Використовуємо змінну для акцентного кольору */
+  color: var(--accent-orange);
   letter-spacing: -0.02em;
 }
 
@@ -36,8 +41,8 @@
 }
 
 .filter-chip {
-  background-color: var(--bg-card); /* Фон зі змінної */
-  border: 1px solid var(--border-color); /* Рамка зі змінної */
+  background-color: var(--bg-card); 
+  border: 1px solid var(--border-color); 
   border-radius: 20px;
   width: 80px; 
   padding: 8px 0;
@@ -46,7 +51,7 @@
   align-items: center;
   font-size: 14px;
   font-weight: 700;
-  color: var(--text-main); /* Текст зі змінної */
+  color: var(--text-main); 
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -55,15 +60,15 @@
 .filter-icon { width: 22px; height: 22px; }
 
 .filter-chip.active {
-  background-color: var(--text-main); /* Інвертуємо фон для активного стану */
-  color: var(--bg-main); /* Інвертуємо текст */
+  background-color: var(--text-main); 
+  color: var(--bg-main); 
   border-color: var(--text-main);
 }
 
 .add-btn {
   grid-area: button;
-  background-color: var(--text-main); /* Темний фон кнопки в світлій темі, світлий - в темній */
-  color: var(--bg-main); /* Контрастний текст */
+  background-color: var(--text-main); 
+  color: var(--bg-main); 
   border-radius: 8px;
   padding: 12px 24px;
   font-weight: 700;
@@ -75,8 +80,33 @@
 }
 
 .add-btn:hover {
-  opacity: 0.8; /* Універсальний ховер-ефект */
+  opacity: 0.8; 
 }
+
+/* --- ПІДСУМОК --- */
+.summary-card {
+  background: var(--bg-card); 
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px; 
+  width: fit-content;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.summary-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted); 
+  margin-bottom: 8px;
+}
+
+.summary-value { 
+  font-size: 24px; 
+  font-weight: 700; 
+  color: var(--text-main); 
+}
+.accent { color: var(--accent-orange); } 
 
 /* --- АКОРДЕОНИ --- */
 .device-list {
@@ -92,8 +122,8 @@
 .category-group { display: flex; flex-direction: column; gap: 8px; }
 
 .category-header {
-  background-color: var(--bg-card); /* Фон картки */
-  border: 1px solid var(--border-color); /* Рамка */
+  background-color: var(--bg-card); 
+  border: 1px solid var(--border-color); 
   border-radius: 12px;
   padding: 12px 18px;
   display: flex;
@@ -107,18 +137,18 @@
 .category-title { 
   font-size: 18px; 
   font-weight: 800; 
-  color: var(--text-main); /* Текст заголовка */
+  color: var(--text-main); 
 }
 
 .device-icon {
   width: 44px; height: 44px;
-  background-color: var(--bg-main); /* Використовуємо основний фон для контрасту з карткою */
+  background-color: var(--bg-main); 
   border: 1px solid var(--border-color);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
 }
 
-.device-svg { width: 24px; height: 24px; color: var(--text-main); } /* Колір іконки */
+.device-svg { width: 24px; height: 24px; color: var(--text-main); } 
 
 .arrow-icon {
   width: 16px; height: 16px;
@@ -127,9 +157,9 @@
 }
 .arrow-up { transform: rotate(180deg); }
 
-/* --- ВИПАДАЮЧИЙ СПИСОК (SCROLL 3 ITEMS) --- */
+/* --- ВИПАДАЮЧИЙ СПИСОК --- */
 .dropdown-container {
-  background-color: var(--bg-card-inner); /* Вкладений фон */
+  background-color: var(--bg-card-inner); 
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px;
@@ -149,16 +179,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--bg-main); /* Або залишити --bg-card-inner, залежно від бажаного контрасту. Використовую --bg-main для виділення. */
+  background-color: var(--bg-main); 
   border-radius: 8px;
   padding: 10px 12px;
-  border: 1px solid var(--border-color); /* Додав тонку рамку для кращого розділення в темній темі */
+  border: 1px solid var(--border-color); 
 }
 
 .item-name {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-main); /* Основний текст */
+  color: var(--text-main); 
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -169,7 +199,7 @@
 .item-power {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-muted); /* Приглушений текст */
+  color: var(--text-muted); 
   white-space: nowrap;
 }
 
@@ -179,7 +209,7 @@
 .action-btn {
   height: 36px;
   padding: 0 12px;
-  background: var(--bg-card); /* Фон кнопок дій */
+  background: var(--bg-card); 
   border: 1px solid var(--border-color);
   border-radius: 8px;
   display: flex; align-items: center; gap: 6px;
@@ -198,51 +228,20 @@
 }
 
 .delete-btn { 
-  color: var(--accent-orange); /* Використовуємо акцентний колір для видалення */
+  color: var(--accent-orange); 
   padding: 0 10px; 
 }
 .delete-btn:hover {
-  background-color: rgba(255, 110, 0, 0.1); /* Легкий фон при наведенні на кошик */
+  background-color: rgba(255, 110, 0, 0.1); 
 }
 
 .action-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-.plus-icon {
-  font-size: 20px;
-  line-height: 1;
-  font-weight: 400;
-}
-
-/* --- ПІДСУМОК --- */
-.summary-card {
-  background: var(--bg-card); /* Фон підсумку */
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 20px; 
-  width: fit-content;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.summary-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted); /* Приглушений текст */
-  margin-bottom: 8px;
-}
-
-.summary-value { 
-  font-size: 24px; 
-  font-weight: 700; 
-  color: var(--text-main); /* Основний текст значення */
-}
-.accent { color: var(--accent-orange); } /* Акцентний колір */
+.plus-icon { font-size: 20px; line-height: 1; font-weight: 400; }
 
 /* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (МОБІЛЬНІ ТА ПЛАНШЕТИ)
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
    ========================================= */
 
-/* Планшети та загальні зміни для менших екранів */
 @media (max-width: 1024px) {
   .top-section {
     grid-template-columns: 1fr;
@@ -252,28 +251,17 @@
       "button";
     row-gap: 16px;
   }
-  
-  .add-btn {
-    justify-content: center;
-  }
+  .add-btn { justify-content: center; }
 }
 
-/* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) {
   .wrap {
     padding-top: 16px;
-    padding-bottom: 120px; /* Запас під нижнє мобільне меню */
+    padding-bottom: 120px; 
   }
-
-  .title { 
-    font-size: 28px; 
-  }
+  .title { font-size: 28px; }
+  .category-title { font-size: 18px; }
   
-  .category-title { 
-    font-size: 18px; 
-  }
-  
-  /* Фільтри можуть прокручуватися горизонтально, якщо їх буде багато */
   .filters {
     overflow-x: auto;
     padding-bottom: 4px;
@@ -292,44 +280,81 @@
     gap: 12px; 
   }
   
-  .item-controls { 
-    width: 100%; 
-    justify-content: space-between; 
-  }
-
-  .action-group {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .action-btn {
-    flex: 1;
-    justify-content: center;
-  }
-
-  .delete-btn {
-    flex: 0 0 auto; /* Кошик не розтягуємо */
-  }
+  .item-controls { width: 100%; justify-content: space-between; }
+  .action-group { width: 100%; justify-content: space-between; }
+  .action-btn { flex: 1; justify-content: center; }
+  .delete-btn { flex: 0 0 auto; }
 }
 
-/* Мобільні телефони (Горизонтально / Landscape) */
-@media (max-width: 900px) and (orientation: landscape) {
+/* =========================================
+   ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
+   Повне переформатування простору
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding-bottom: 90px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
-  .device-list { 
-    max-height: 45vh; 
-  }
-  
-  .dropdown-scroll { 
-    max-height: 150px; 
+  /* Ставимо хедер і статистику в ОДИН рядок */
+  .header-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 12px;
+    gap: 16px;
   }
 
   .top-section {
-    grid-template-columns: 1fr auto;
+    margin-bottom: 0;
+    row-gap: 8px;
+    grid-template-columns: auto auto;
     grid-template-areas:
       "title button"
       "filters filters";
+    flex: 1;
   }
+
+  .summary-card {
+    margin-bottom: 0;
+    padding: 10px 16px;
+    flex-shrink: 0;
+  }
+
+  /* Компактизація елементів */
+  .title { font-size: 20px; }
+  .add-btn { padding: 6px 12px; font-size: 13px; height: fit-content; }
+  .filter-chip { width: 70px; font-size: 12px; padding: 6px 0; }
+  .icon-chip { width: 44px; }
+  .summary-label { font-size: 11px; margin-bottom: 4px; }
+  .summary-value { font-size: 18px; }
+
+  /* Збільшуємо місце для списку */
+  .device-list {
+    max-height: calc(100vh - 110px); 
+    gap: 8px;
+  }
+
+  .category-header { padding: 8px 12px; }
+  .category-title { font-size: 15px; }
+  .device-icon { width: 32px; height: 32px; }
+  .device-svg { width: 18px; height: 18px; }
+
+  /* Випадаючий список */
+  .dropdown-container { padding: 8px; }
+  .dropdown-scroll { max-height: 40vh; }
+  
+  /* Повертаємо елементи списку в рядок, скасовуючи мобільну колонку */
+  .dropdown-item {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 10px;
+    gap: 12px;
+  }
+  
+  .item-name { font-size: 14px; }
+  .item-power { font-size: 12px; }
+  .item-controls { width: auto; justify-content: flex-end; }
+  .action-group { width: auto; }
+  .action-btn { height: 30px; padding: 0 8px; font-size: 11px; }
 }

@@ -66,7 +66,6 @@ export default function DevicesPage() {
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   
-  // Стейт для керування модалкою видалення
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
 
   useEffect(() => {
@@ -151,51 +150,56 @@ export default function DevicesPage() {
 
   return (
     <div className={styles['wrap']}>
-      <div className={styles['top-section']}>
-        <h1 className={styles['title']}>Мої прилади</h1>
-        
-        <div className={styles['filters']}>
-          <button 
-            className={`${styles['filter-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
-            onClick={() => setActiveFilter('Усі')}
-          >
-            Усі
-          </button>
-          <button 
-            className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
-            onClick={() => setActiveFilter('Дім')}
-          >
-            <HomeIcon className={styles['filter-icon']} />
-          </button>
-          <button 
-            className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
-            onClick={() => setActiveFilter('Офіс')}
-          >
-            <OfficeIcon className={styles['filter-icon']} />
-          </button>
+      
+      {/* --- ОБГОРТКА ДЛЯ ОПТИМІЗАЦІЇ ЛАНДШАФТУ --- */}
+      <div className={styles['header-container']}>
+        <div className={styles['top-section']}>
+          <h1 className={styles['title']}>Мої прилади</h1>
+          
+          <div className={styles['filters']}>
+            <button 
+              className={`${styles['filter-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
+              onClick={() => setActiveFilter('Усі')}
+            >
+              Усі
+            </button>
+            <button 
+              className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
+              onClick={() => setActiveFilter('Дім')}
+            >
+              <HomeIcon className={styles['filter-icon']} />
+            </button>
+            <button 
+              className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
+              onClick={() => setActiveFilter('Офіс')}
+            >
+              <OfficeIcon className={styles['filter-icon']} />
+            </button>
+          </div>
+
+          <Link href="/devices/add" className={styles['add-btn']}>
+            <span className={styles['plus-icon']}>+</span>
+            Додати
+          </Link>
         </div>
 
-        <Link href="/devices/add" className={styles['add-btn']}>
-          <span className={styles['plus-icon']}>+</span>
-          Додати
-        </Link>
-      </div>
-
-      <div className={styles['summary-card']}>
-        <div className={styles['summary-label']}>Загальна потужність</div>
-        <div className={styles['summary-value']}>
-          <span className={styles['accent']}>
-            {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
-          </span> Вт 
-          {filteredDevices.some(d => d.startup_power_watt) && (
-            <>
-              , пуск <span className={styles['accent']}>
-                {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
-              </span> Вт
-            </>
-          )}
+        <div className={styles['summary-card']}>
+          <div className={styles['summary-label']}>Загальна потужність</div>
+          <div className={styles['summary-value']}>
+            <span className={styles['accent']}>
+              {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
+            </span> Вт 
+            {filteredDevices.some(d => d.startup_power_watt) && (
+              <>
+                , пуск <span className={styles['accent']}>
+                  {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
+                </span> Вт
+              </>
+            )}
+          </div>
         </div>
       </div>
+      {/* -------------------------------------- */}
 
       <div className={styles['device-list']}>
         {isLoading ? (
