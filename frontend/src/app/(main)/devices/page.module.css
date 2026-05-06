@@ -345,7 +345,8 @@
   .header-container {
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start; 
+    /* ВИПРАВЛЕНО: Автоматично притискаємо плашку до нижнього краю лівого блоку */
+    align-items: flex-end; 
     margin-bottom: 12px;
     gap: 16px;
   }
@@ -361,7 +362,7 @@
 
   .summary-card {
     margin-bottom: 0;
-    margin-top: 20px; /* <--- ТЕПЕР ПЛАШКА ГАРАНТОВАНО НИЖЧЕ */
+    margin-top: 0; /* Прибираємо жорсткий відступ */
     padding: 10px 16px;
     flex-shrink: 0;
   }
@@ -369,11 +370,11 @@
   .title { 
     font-size: 20px; 
     padding-top: 0; 
-    line-height: 1; /* Зрізаємо зайву висоту заголовка */
+    line-height: 1; 
   }
   
   .add-btn { 
-    padding: 6px 12px; /* Зробили кнопку ще компактнішою */
+    padding: 6px 12px; 
     font-size: 12px; 
     height: fit-content; 
     margin-top: 0;

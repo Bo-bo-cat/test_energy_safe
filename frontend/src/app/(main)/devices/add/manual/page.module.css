@@ -265,7 +265,7 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .page-wrapper {
-    padding: 12px 24px;
+    padding: 8px 24px;
     height: 100vh; /* Фіксуємо висоту під екран */
     overflow: hidden; /* Відключаємо скролл повністю */
     display: flex;
@@ -275,20 +275,22 @@
 
   .title {
     font-size: 20px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    text-align: center;
   }
 
-  /* ПЕРЕТВОРЮЄМО ФОРМУ НА СІТКУ 2x2 */
+  /* ПОВЕРТАЄМО ОДНУ КОЛОНКУ, АЛЕ МАКСИМАЛЬНО СТИСКАЄМО */
   .form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 16px; /* Менші відступи */
-    align-items: end; /* Магія: вирівнює поля та кнопку по нижньому краю */
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* Мінімальна відстань між полями */
+    width: 100%;
+    max-width: 500px; /* Центруємо форму, щоб вона не розтягувалась на весь екран */
+    margin: 0 auto;
   }
 
   .input-group {
-    gap: 4px;
-    width: 100%;
+    gap: 2px; /* Мінімальна відстань від лейблу до інпуту */
   }
 
   .label {
@@ -296,16 +298,16 @@
   }
 
   .input {
-    padding: 8px 12px;
+    padding: 4px 12px; /* Робимо інпути дуже вузькими по висоті */
     font-size: 13px;
     border-radius: 8px;
-    height: 36px; /* Фіксована висота економить місце */
+    height: 32px; /* Жорстко фіксуємо висоту інпуту */
   }
   
   .search-btn {
     padding: 0 12px;
     font-size: 13px;
-    height: 36px;
+    height: 32px;
     border-radius: 8px;
   }
 
@@ -314,28 +316,29 @@
   }
 
   .custom-select-item {
-    padding: 8px 12px;
+    padding: 6px 12px;
     font-size: 13px;
   }
 
   .add-startup-btn {
     font-size: 13px;
-    height: 36px;
-    margin-top: 0;
-    display: flex;
-    align-items: center; /* Вирівнює текст кнопки з інпутом сусідньої колонки */
+    margin-top: 2px;
+    padding: 2px 0;
+  }
+
+  .startup-header {
+    margin-bottom: 2px;
   }
 
   .submit-btn {
-    grid-column: 1 / -1; /* Змушує кнопку зберегти розтягнутись на 2 колонки */
-    padding: 10px;
+    padding: 6px;
     font-size: 14px;
     margin-top: 4px;
-    height: 40px;
+    height: 36px; /* Компактна кнопка зберегти */
   }
   
   .error {
     font-size: 11px;
-    margin: 2px 0 0 0;
+    margin: 0;
   }
 }

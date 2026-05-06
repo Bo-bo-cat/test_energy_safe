@@ -131,59 +131,59 @@
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
+   Повертаємо читабельні розміри, фіксуємо по верхньому краю
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .page { 
-    height: 100vh; /* Фіксуємо висоту екрану */
-    overflow: hidden; /* Забороняємо скролл */
+    height: 100vh;
+    overflow: hidden; 
     flex-direction: column; 
-    justify-content: center; /* Центруємо весь контент по вертикалі */
-    padding: 12px 32px; 
+    justify-content: flex-start; /* Вирівнюємо по верхньому краю, щоб не було дірок */
+    padding: 16px 24px; 
   }
   
   .title { 
     width: 100%;
-    font-size: 22px; 
-    margin: 0 0 12px; 
-    text-align: center; /* Заголовок по центру, як на десктопі */
-    line-height: 1;
+    font-size: 28px; /* Читабельний розмір */
+    margin: 0 0 16px; 
+    text-align: center; 
   }
 
   .cards {
-    flex-direction: row; /* Кнопки в один ряд */
-    gap: 16px; 
+    flex-direction: row; 
+    gap: 20px; 
     width: 100%;
-    max-width: 800px; 
-    margin: 0 auto 12px;
+    max-width: 900px; 
+    margin: 0 auto 16px;
   }
 
   .card {
     aspect-ratio: auto; 
     height: auto; 
-    padding: 12px 16px;
+    padding: 16px 20px;
   }
 
   .card-inner { 
-    flex-direction: row; /* МАГІЯ: Іконка ПОРУЧ з текстом, щоб зекономити висоту */
-    gap: 12px; 
+    flex-direction: row; /* Іконка поруч з текстом */
+    gap: 16px; 
     justify-content: center;
   }
 
   .card-title { 
-    font-size: 15px; 
+    font-size: 18px; /* Читабельний розмір */
     margin: 0;
   } 
 
-  .icon-camera { width: 32px; height: 26px; flex-shrink: 0; }
-  .icon-pencil { width: 26px; height: 26px; flex-shrink: 0; }
+  .icon-camera { width: 44px; height: 34px; flex-shrink: 0; }
+  .icon-pencil { width: 34px; height: 34px; flex-shrink: 0; }
 
   .hint { 
     width: 100%;
-    max-width: 800px; 
+    max-width: 900px; 
     margin: 0 auto;
-    padding: 10px 20px; 
+    padding: 16px 24px; 
   }
   
-  .hint-title { font-size: 14px; margin-bottom: 2px; }
-  .hint-text { font-size: 12px; line-height: 1.3; }
+  .hint-title { font-size: 18px; margin-bottom: 4px; }
+  .hint-text { font-size: 14px; line-height: 1.4; }
 }
