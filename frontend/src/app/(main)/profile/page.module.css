@@ -9,10 +9,63 @@
   transition: color 0.3s ease;
 }
 
+/* Ховаємо мобільні кнопки на десктопі */
 .logoutBtn, .themeToggleMobile {
   display: none; 
 }
 
+/* =========================================
+   БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
+   (Завжди доступні для мобільних/планшетів)
+   ========================================= */
+.themeToggleMobile {
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.toggle-switch {
+  width: 51px;
+  height: 31px;
+  background-color: var(--text-muted);
+  border-radius: 16px;
+  position: relative;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background-color: var(--accent-orange);
+}
+
+.toggle-knob {
+  width: 27px;
+  height: 27px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
+
+/* =========================================
+   ОСНОВНІ СТИЛІ ПРОФІЛЮ
+   ========================================= */
 .title {
   font-size: 36px;
   font-weight: 800;
@@ -79,7 +132,6 @@
   margin: 0;
 }
 
-/* Кнопки макету */
 .controlsRow {
   display: flex;
   flex-direction: column;
@@ -88,7 +140,7 @@
   max-width: 400px; 
 }
 
-.changePasswordBtn {
+.changePasswordBtn, .faqBtn {
   background-color: #2C2C2C; 
   color: #FFFFFF;
   border: none;
@@ -100,23 +152,7 @@
   transition: all 0.2s;
 }
 
-.changePasswordBtn:hover {
-  opacity: 0.9;
-}
-
-.faqBtn {
-  background-color: #2C2C2C; 
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.faqBtn:hover {
+.changePasswordBtn:hover, .faqBtn:hover {
   opacity: 0.9;
 }
 
@@ -154,10 +190,14 @@
     max-width: 100%;
   }
 
+  .themeToggleMobile {
+    display: flex;
+    margin-bottom: 0;
+  }
+
   .logoutBtn {
     display: block;
     width: 100%;
-    /* Кнопка "Вийти" тепер помаранчева */
     background-color: var(--accent-orange); 
     color: #FFFFFF;
     border: none;
@@ -173,53 +213,6 @@
   .logoutBtn:hover {
     opacity: 0.9;
   }
-
-  .themeToggleMobile {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-bottom: 0;
-    color: var(--text-main);
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s;
-    user-select: none;
-  }
-
-  .toggle-switch {
-    width: 51px;
-    height: 31px;
-    background-color: var(--text-muted);
-    border-radius: 16px;
-    position: relative;
-    transition: background-color 0.3s;
-    flex-shrink: 0;
-  }
-
-  .toggle-switch.active {
-    background-color: var(--accent-orange);
-  }
-
-  .toggle-knob {
-    width: 27px;
-    height: 27px;
-    background-color: #FFFFFF;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .toggle-switch.active .toggle-knob {
-    transform: translateX(20px);
-  }
 }
 
 /* =========================================
@@ -229,7 +222,7 @@
   .wrap {
     padding: 12px 20px;
     height: 100vh;
-    overflow-y: auto; /* Дозволяємо скрол тільки всередині сторінки */
+    overflow-y: auto; 
   }
 
   .title {
@@ -238,7 +231,6 @@
   }
 
   .profileHeader {
-    /* Робимо аватарку та текст в один рядок для економії місця */
     flex-direction: row; 
     align-items: center;
     gap: 16px;
@@ -269,11 +261,10 @@
   }
 
   .controlsRow {
-    gap: 8px; /* Зменшуємо відстань між кнопками */
+    gap: 8px; 
     max-width: 100%;
   }
 
-  /* Загальні стилі для всіх кнопок у ландшафті */
   .changePasswordBtn, 
   .faqBtn, 
   .deleteBtn, 
@@ -282,6 +273,11 @@
     padding: 10px 16px;
     font-size: 13px;
     border-radius: 10px;
+  }
+
+  .themeToggleMobile {
+    display: flex;
+    margin-bottom: 0;
   }
 
   .logoutBtn {
@@ -294,11 +290,7 @@
     text-align: center;
   }
 
-  .themeToggleMobile {
-    display: flex;
-    margin-bottom: 0;
-  }
-
+  /* Перевизначаємо розміри тумблера для горизонталі */
   .toggle-switch {
     width: 44px;
     height: 26px;
