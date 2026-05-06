@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import styles from './page.module.css';
 
-// ІМПОРТУЄМО ВАШІ НОВІ ІКОНКИ
-// Переконайтеся, що шляхи правильні (наприклад, src/components/icons/)
+// Імпорти ваших іконок
 import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
@@ -16,10 +15,9 @@ export default function LandingPage() {
         
         {/* ЛІВА ЧАСТИНА: Текст та заклик до дії */}
         <div className={styles.leftContent}>
-          <div className={styles.logo}>
-            {/* Використовуємо LightningIcon як логотип */}
+          <div className={styles.logoWrap}>
             <LightningIcon className={styles.logoIcon} />
-            Energy Safe
+            <span className={styles.logoText}>Energy Safe</span>
           </div>
 
           <h1 className={styles.mainTitle}>
@@ -49,7 +47,6 @@ export default function LandingPage() {
           <div className={styles.featureCards}>
             <div className={styles.card}>
               <div className={styles.cardIconWrap}>
-                {/* Використовуємо CalcIcon */}
                 <CalcIcon className={styles.cardIcon} />
               </div>
               <div>
@@ -60,7 +57,6 @@ export default function LandingPage() {
 
             <div className={styles.card}>
               <div className={styles.cardIconWrap}>
-                {/* Використовуємо SystemIcon */}
                 <SystemIcon className={styles.cardIcon} />
               </div>
               <div>
@@ -71,7 +67,6 @@ export default function LandingPage() {
 
             <div className={styles.card}>
               <div className={styles.cardIconWrap}>
-                {/* Використовуємо ScenarioIcon */}
                 <ScenarioIcon className={styles.cardIcon} />
               </div>
               <div>

@@ -6,10 +6,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0F0F0F; /* Темний фон Energy Safe */
-  color: #FFFFFF;
+  /* --- СВІТЛА ТЕМА --- */
+  background-color: #FFFFFF; /* Білий фон сайту */
+  color: #111827; /* Дуже темний сірий для тексту */
   font-family: 'Inter', sans-serif;
-  padding: 24px;
+  /* Збільшений padding, щоб логотип не обрізався */
+  padding: 40px 24px; 
   box-sizing: border-box;
 }
 
@@ -22,7 +24,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px; /* Зменшено від десктопу для компактності */
+  gap: 60px;
   align-items: center;
 }
 
@@ -33,22 +35,25 @@
   align-items: flex-start;
 }
 
-.logo {
+.logoWrap {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #FF6B00; /* Помаранчевий Energy Safe */
-  font-size: 24px;
-  font-weight: 900;
-  margin-bottom: 32px;
+  gap: 10px;
+  margin-bottom: 40px;
 }
 
-/* Налаштування для вашої LightningIcon */
+/* Налаштування для вашої LightningIcon (лого) */
 .logoIcon {
-  width: 28px;
-  height: 28px;
-  /* Переконуємося, що SVG приймає колір помаранчевого батька */
-  color: currentColor; 
+  width: 32px;
+  height: 32px;
+  color: #FF6B00; /* Помаранчевий Energy Safe */
+  flex-shrink: 0;
+}
+
+.logoText {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 900;
 }
 
 .mainTitle {
@@ -56,7 +61,7 @@
   font-weight: 900;
   line-height: 1.1;
   margin-bottom: 24px;
-  color: #FFFFFF;
+  color: #111827;
 }
 
 .highlight {
@@ -66,7 +71,7 @@
 .desc {
   font-size: 18px;
   line-height: 1.6;
-  color: #A0A0A0; /* var(--text-muted) */
+  color: #6B7280; /* Сірий опис для світлої теми */
   margin-bottom: 24px;
   max-width: 500px;
 }
@@ -74,8 +79,8 @@
 .subDesc {
   font-size: 16px;
   line-height: 1.6;
-  color: #737373; /* Трохи темніший текст */
-  margin-bottom: 40px;
+  color: #9CA3AF; /* Трохи темніший за опис */
+  margin-bottom: 48px;
   max-width: 500px;
   padding-left: 16px;
   border-left: 3px solid #FF6B00;
@@ -85,7 +90,7 @@
   background-color: #FF6B00;
   color: #FFFFFF;
   text-decoration: none;
-  padding: 16px 40px;
+  padding: 16px 48px;
   border-radius: 12px;
   font-size: 18px;
   font-weight: 800;
@@ -97,23 +102,24 @@
 
 .startBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.2);
 }
 
 /* --- ПРАВА ЧАСТИНА --- */
 .rightContent {
-  background-color: #1A1A1A; /* var(--bg-card) */
-  border: 1px solid #2C2C2C; /* var(--border-color) */
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  /* Світлий, але виділений фон для картки */
+  background-color: #F9FAFB; 
+  border: 1px solid #E5E7EB; /* Світло-сіра рамка */
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); /* Дуже м'яка тінь */
 }
 
 .featuresTitle {
   font-size: 28px;
   font-weight: 800;
-  margin-bottom: 24px;
-  color: #FFFFFF;
+  margin-bottom: 32px;
+  color: #111827;
 }
 
 .featureCards {
@@ -123,9 +129,10 @@
 }
 
 .card {
-  background-color: #242424; /* var(--bg-card-inner) */
-  border: 1px solid #2C2C2C;
-  padding: 20px;
+  /* Біла картка всередині сірого фону */
+  background-color: #FFFFFF; 
+  border: 1px solid #E5E7EB;
+  padding: 24px;
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -135,16 +142,17 @@
 
 .card:hover {
   border-color: #FF6B00;
+  background-color: rgba(255, 107, 0, 0.01);
   transform: translateX(4px);
 }
 
 .cardIconWrap {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   /* Напівпрозорий помаранчевий фон для іконок */
-  background-color: rgba(255, 107, 0, 0.1); 
+  background-color: rgba(255, 107, 0, 0.08); 
   color: #FF6B00;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,9 +161,8 @@
 
 /* Налаштування для imported іконок (Calc, System, Scenario) */
 .cardIcon {
-  width: 24px;
-  height: 24px;
-  /* Переконуємося, що SVG приймає помаранчевий колір */
+  width: 28px;
+  height: 28px;
   color: currentColor; 
 }
 
@@ -163,38 +170,50 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 4px;
-  color: #FFFFFF;
+  color: #111827;
 }
 
 .cardDesc {
   font-size: 14px;
-  color: #A0A0A0;
-  line-height: 1.4;
+  color: #6B7280;
+  line-height: 1.5;
 }
 
 /* =========================================================
-   АДАПТАЦІЯ ДЛЯ ПОРТРЕТНИХ МОБІЛЬНИХ (Vertical Mobile/Tablet)
+   АДАПТАЦІЯ ДЛЯ Мобільних (ПОРТРЕТ ТА ЛАНДСКЕЙП)
    ========================================================= */
-@media (max-width: 950px) and (orientation: portrait) {
+@media (max-width: 950px) {
   .wrap {
-    padding: 24px 16px; /* Менші відступи від країв екрану */
+    padding: 32px 16px; /* Менші відступи від країв екрану */
+    overflow-x: hidden; /* Захист від горизонтального скролу */
   }
 
   .container {
-    grid-template-columns: 1fr; /* Колонки одна під одною */
-    gap: 32px; /* Зменшений відступ між блоками */
+    /* FIX ЛАНДСКЕЙПУ: Завжди одна колонка, щоб не ламалася верстка */
+    grid-template-columns: 1fr; 
+    gap: 32px; 
+    padding: 16px 0;
   }
 
-  .logo {
-    margin-bottom: 24px;
+  .leftContent {
+    align-items: flex-start;
   }
+
+  .logoWrap {
+    margin-bottom: 24px;
+    gap: 8px;
+  }
+  .logoIcon { width: 28px; height: 28px; }
+  .logoText { font-size: 20px; }
 
   .mainTitle {
     font-size: 32px; /* Компактніший заголовок */
+    margin-bottom: 16px;
   }
 
   .desc {
     font-size: 16px;
+    margin-bottom: 16px;
   }
 
   .subDesc {
@@ -204,110 +223,36 @@
 
   .startBtn {
     width: 100%; /* Кнопка на всю ширину мобільного */
+    padding: 14px 32px;
+    font-size: 16px;
   }
 
   .rightContent {
     padding: 24px; /* Компактні відступи всередині картки */
-    border-radius: 20px;
+    border-radius: 24px;
   }
 
   .featuresTitle {
     font-size: 22px;
+    margin-bottom: 24px;
   }
+
+  .featureCards { gap: 12px; }
 
   .card {
     padding: 16px;
     gap: 16px;
-  }
-}
-
-/* =========================================================
-   УЛЬТРА-КОМПАКТНА АДАПТАЦІЯ ДЛЯ ЛАНДСКЕЙПУ (Landscape Mobile)
-   ========================================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .wrap {
-    padding: 12px 20px; /* Мінімальні відступи по краях */
-    height: 100vh;
-    overflow-y: auto; /* Дозволяємо скрол тільки якщо екран супер-малий */
-  }
-
-  .container {
-    grid-template-columns: 1fr 1fr; /* Зберігаємо 2 колонки */
-    gap: 20px; /* Мінімізуємо відстань між колонками */
-    align-items: center; /* Центруємо по вертикалі */
-  }
-
-  /* ЛІВА КОЛОНКА - УЛЬТРА-КОМПАКТ */
-  .logo {
-    font-size: 18px; /* Супер-менші шрифти */
-    margin-bottom: 12px;
-  }
-
-  .logoIcon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .mainTitle {
-    font-size: 24px; /* Стислий заголовок */
-    margin-bottom: 12px;
-  }
-
-  .desc {
-    font-size: 13px; /* Дуже малий шрифт */
-    margin-bottom: 12px;
-    line-height: 1.4;
-  }
-
-  .subDesc {
-    font-size: 12px;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-
-  .startBtn {
-    padding: 10px 24px; /* Компактна кнопка */
-    font-size: 14px;
-    border-radius: 8px;
-  }
-
-  /* ПРАВА КОЛОНКА - УЛЬТРА-КОМПАКТ */
-  .rightContent {
-    padding: 16px; /* Мінімальні внутрішні відступи */
-    border-radius: 16px;
-  }
-
-  .featuresTitle {
-    font-size: 16px; /* Компактний заголовок */
-    margin-bottom: 12px;
-  }
-
-  .featureCards {
-    gap: 8px; /* Мінімальна відстань між картками */
-  }
-
-  .card {
-    padding: 10px 12px; /* Дуже стислі картки */
-    gap: 12px;
     border-radius: 12px;
   }
+  .cardIconWrap { width: 44px; height: 44px; }
+  .cardIcon { width: 22px; height: 22px; }
+  .cardTitle { font-size: 16px; }
+  .cardDesc { font-size: 13px; }
+}
 
-  .cardIconWrap {
-    width: 32px; /* Зменшений розмір фону іконки */
-    height: 32px;
-    border-radius: 8px;
-  }
-
-  .cardIcon {
-    width: 16px; /* Менші іконки */
-    height: 16px;
-  }
-
-  .cardTitle {
-    font-size: 14px; /* Малий заголовок картки */
-  }
-
-  .cardDesc {
-    font-size: 11px; /* Дуже малий опис */
+/* Фікс для дуже малих екранів */
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 28px;
   }
 }
