@@ -89,7 +89,7 @@
 }
 
 .changePasswordBtn {
-  background-color: #2C2C2C; /* Новий темний колір */
+  background-color: #2C2C2C; 
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
@@ -105,7 +105,7 @@
 }
 
 .faqBtn {
-  background-color: #2C2C2C; /* Новий темний колір */
+  background-color: #2C2C2C; 
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
@@ -136,8 +136,10 @@
   opacity: 0.9;
 }
 
-/* Адаптація під мобільні */
-@media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
+/* =========================================
+   Адаптація для планшетів та вертикальних мобільних
+   ========================================= */
+@media (max-width: 768px) {
   .profileHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -155,7 +157,8 @@
   .logoutBtn {
     display: block;
     width: 100%;
-    background-color: #2C2C2C; /* Новий темний колір */
+    /* Кнопка "Вийти" тепер помаранчева */
+    background-color: var(--accent-orange); 
     color: #FFFFFF;
     border: none;
     border-radius: 12px;
@@ -165,7 +168,6 @@
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
-    margin-top: 12px;
   }
 
   .logoutBtn:hover {
@@ -180,7 +182,7 @@
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
     color: var(--text-main);
     font-size: 16px;
     font-weight: 700;
@@ -217,5 +219,97 @@
 
   .toggle-switch.active .toggle-knob {
     transform: translateX(20px);
+  }
+}
+
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .wrap {
+    padding: 12px 20px;
+    height: 100vh;
+    overflow-y: auto; /* Дозволяємо скрол тільки всередині сторінки */
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .profileHeader {
+    /* Робимо аватарку та текст в один рядок для економії місця */
+    flex-direction: row; 
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .userInfo {
+    gap: 2px;
+  }
+
+  .userName {
+    font-size: 20px;
+  }
+
+  .editIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .userEmail {
+    font-size: 13px;
+  }
+
+  .controlsRow {
+    gap: 8px; /* Зменшуємо відстань між кнопками */
+    max-width: 100%;
+  }
+
+  /* Загальні стилі для всіх кнопок у ландшафті */
+  .changePasswordBtn, 
+  .faqBtn, 
+  .deleteBtn, 
+  .logoutBtn, 
+  .themeToggleMobile {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .logoutBtn {
+    display: block;
+    background-color: var(--accent-orange);
+    color: #FFFFFF;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .themeToggleMobile {
+    display: flex;
+    margin-bottom: 0;
+  }
+
+  .toggle-switch {
+    width: 44px;
+    height: 26px;
+  }
+
+  .toggle-knob {
+    width: 22px;
+    height: 22px;
+  }
+
+  .toggle-switch.active .toggle-knob {
+    transform: translateX(18px);
   }
 }

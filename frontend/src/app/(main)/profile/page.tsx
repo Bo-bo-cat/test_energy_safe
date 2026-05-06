@@ -123,12 +123,14 @@ export default function ProfilePage() {
           FAQ
         </button>
 
-        <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
-          Видалити аккаунт
-        </button>
-
+        {/* Кнопка "Вийти" піднята вище та тепер помаранчева */}
         <button className={styles.logoutBtn} onClick={handleLogout}>
           Вийти з акаунту
+        </button>
+
+        {/* Кнопка "Видалити" в самому низу */}
+        <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
+          Видалити аккаунт
         </button>
       </div>
 
