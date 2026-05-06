@@ -118,7 +118,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* ПРИБРАНО GAP: 8px, щоб список торкався плашки */
 .category-group { 
   display: flex; 
   flex-direction: column; 
@@ -135,10 +134,9 @@
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
-  z-index: 2; /* Щоб рамка була поверх списку */
+  z-index: 2; 
 }
 
-/* Коли список відкритий — робимо нижні кути плашки рівними */
 .category-header.expanded {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -172,8 +170,8 @@
 .dropdown-container {
   background-color: var(--bg-card-inner); 
   border: 1px solid var(--border-color);
-  border-top: none; /* Відключаємо верхню рамку, щоб не було подвійної лінії з хедером */
-  border-radius: 0 0 12px 12px; /* Кути закруглені лише знизу */
+  border-top: none; 
+  border-radius: 0 0 12px 12px; 
   padding: 10px;
   position: relative;
   z-index: 1;
@@ -181,7 +179,6 @@
   animation: slideDown 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* Анімація плавного випадання */
 @keyframes slideDown {
   0% {
     opacity: 0;
@@ -332,12 +329,15 @@
 
   .top-section {
     margin-bottom: 0;
-    row-gap: 8px;
-    grid-template-columns: auto auto;
+    row-gap: 10px;
+    column-gap: 16px; /* Додали відступ між заголовком і кнопкою */
+    justify-content: flex-start;
+    grid-template-columns: auto auto; /* Кнопка акуратно притискається до заголовка */
     grid-template-areas:
       "title button"
       "filters filters";
     flex: 1;
+    align-items: flex-start; /* ВАЖЛИВО: вирівнюємо по верхньому краю */
   }
 
   .summary-card {
@@ -346,8 +346,18 @@
     flex-shrink: 0;
   }
 
-  .title { font-size: 20px; }
-  .add-btn { padding: 6px 12px; font-size: 13px; height: fit-content; }
+  .title { 
+    font-size: 20px; 
+    padding-top: 2px; /* Візуальний баланс тексту відносно кнопки */
+  }
+  
+  .add-btn { 
+    padding: 6px 12px; 
+    font-size: 13px; 
+    height: fit-content; 
+    margin-top: 4px; /* ВАЖЛИВО: гарантуємо, що кнопка ніколи не вилізе вище тексту */
+  }
+
   .filter-chip { width: 70px; font-size: 12px; padding: 6px 0; }
   .icon-chip { width: 44px; }
   .summary-label { font-size: 11px; margin-bottom: 4px; }
