@@ -85,7 +85,6 @@ export default function DashboardPage() {
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
   const safePercent = Math.min(Math.round(loadPercent), 100);
 
-  // --- ЗОЛОТА СЕРЕДИНА РОЗМІРІВ ГРАФІКА ---
   const radius = 90; 
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
@@ -109,13 +108,14 @@ export default function DashboardPage() {
             
             <div className={styles.donutWrapper}>
               <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
-                <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--border-color)" strokeWidth="20" strokeLinecap="round" />
+                {/* Змінили strokeLinecap на "butt", щоб краї були ПРЯМИМИ */}
+                <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--border-color)" strokeWidth="20" strokeLinecap="butt" />
                 <path 
                   d="M 20 110 A 90 90 0 0 1 200 110" 
                   fill="none" 
                   stroke={progressColor} 
                   strokeWidth="20" 
-                  strokeLinecap="round"
+                  strokeLinecap="butt"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   style={{ transition: 'stroke-dashoffset 0.8s ease-in-out' }}

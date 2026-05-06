@@ -48,7 +48,7 @@
   flex: 1;
 }
 
-/* --- ЗОЛОТА СЕРЕДИНА ДЛЯ ГРАФІКА --- */
+/* --- ГРАФІК --- */
 .donutWrapper {
   position: relative;
   width: 220px; 
@@ -66,7 +66,7 @@
 
 .donutText {
   position: absolute;
-  bottom: 2px; /* Збалансований відступ */
+  bottom: 2px; 
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -74,7 +74,7 @@
 }
 
 .donutPercent {
-  font-size: 48px; /* Акуратний великий розмір */
+  font-size: 48px; 
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
@@ -302,7 +302,6 @@
     gap: 32px;
   }
   
-  /* Зменшуємо графік на телефонах */
   .donutWrapper {
     width: 180px;
     height: 100px;
@@ -346,6 +345,7 @@
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
+   (Виправлено проблему з наїздом графіка)
    ========================================= */
 
 @media (max-width: 950px) and (orientation: landscape) {
@@ -373,9 +373,20 @@
     gap: 16px;
   }
 
+  /* Замість проблемного transform: scale() просто зменшуємо розмір блоку.
+     SVG автоматично підлаштується під цей розмір, не ламаючи верстку! */
   .donutWrapper {
-    transform: scale(0.65);
-    margin: -15px 0; 
+    width: 150px; 
+    height: 85px; 
+  }
+
+  .donutPercent {
+    font-size: 32px; 
+  }
+
+  .donutLabel {
+    font-size: 10px;
+    margin-top: 4px;
   }
 
   .statBoxOutline { padding: 8px; }
