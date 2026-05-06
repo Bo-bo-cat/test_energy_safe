@@ -3,20 +3,16 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Імпортуємо твої нові іконки
-import { CameraIcon } from '../../components/icons/Camera';
-import { CalcIcon } from '../../components/icons/Calc';
-import { ScenarioIcon } from '../../components/icons/Scenario';
-import { SystemIcon } from '../../components/icons/System';
+import { CameraIcon } from '../../../components/icons/Camera_2';
+import { CalcIcon } from '../../../components/icons/Calc';
+import { ScenarioIcon } from '../../../components/icons/Scenario';
+import { SystemIcon } from '../../../components/icons/System';
 
-// Допоміжна функція для очищення назви моделі
 const cleanModelName = (name: string) => {
   if (!name) return 'Оберіть систему';
-  // Якщо в назві є тире, беремо частину після нього
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
-  // Інакше повертаємо як є, але прибираємо "ДБЖ - " якщо воно там застрягло
   return name.replace('ДБЖ - ', '').trim();
 };
 
@@ -26,7 +22,6 @@ export default function DashboardPage() {
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Обраний сценарій
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,7 +48,7 @@ export default function DashboardPage() {
       const scens = Array.isArray(dataScen) ? dataScen : [];
       setScenarios(scens);
       if (scens.length > 0) {
-        setActiveScenarioId(scens[0].id); // Робимо перший сценарій активним
+        setActiveScenarioId(scens[0].id); 
       }
 
       setDevices(Array.isArray(dataDev) ? dataDev : (dataDev.data || []));
@@ -64,44 +59,35 @@ export default function DashboardPage() {
     }
   };
 
-  // 1. Отримуємо дані активного сценарію
   const activeScenario = scenarios.find(s => s.id === activeScenarioId) || null;
   const loadWatts = activeScenario ? (activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
   const autonomy = activeScenario ? (activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
   
-  // 2. Визначаємо ДБЖ, яке належить до цього сценарію
   let displaySystem = null;
   
   if (activeScenario) {
-    // ОСЬ ТУТ БУЛА ПОМИЛКА: Тепер ми чітко шукаємо selectedSystemId
     const linkedSystemId = activeScenario.selectedSystemId || activeScenario.systemId;
-    
     if (linkedSystemId) {
       displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
     }
   }
 
-  // Якщо ДБЖ не знайдено (або сценарій старий), беремо дефолтне
   if (!displaySystem && systems.length > 0) {
     displaySystem = systems.find(s => s.selected_for_calculation === true) || systems[0];
   }
 
-  // 3. Формуємо красиві змінні для відображення ДБЖ
   const rawSystemName = displaySystem ? (displaySystem.model || displaySystem.name || 'Оберіть систему') : 'Оберіть систему';
   const systemName = cleanModelName(rawSystemName);
   const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
   const systemBattery = displaySystem ? (displaySystem.battery || 'Невідомо') : 'Невідомо';
 
-  // Прогрес у відсотках (обмежено 100%)
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
   const safePercent = Math.min(Math.round(loadPercent), 100);
 
-  // Налаштування для SVG напівкола
   const radius = 80;
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  // Колір прогресу
   let progressColor = '#FF9500'; 
   if (safePercent > 90) progressColor = '#FF2D55'; 
 
@@ -115,12 +101,10 @@ export default function DashboardPage() {
       {/* ВЕРХНІЙ РЯД */}
       <div className={styles.topGrid}>
         
-        {/* Картка Статусу */}
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Статус системи</h2>
           <div className={styles.statusContent}>
             
-            {/* SVG Напівколо */}
             <div className={styles.donutWrapper}>
               <svg width="200" height="100" viewBox="0 0 200 100">
                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border-color)" strokeWidth="16" strokeLinecap="round" />
@@ -141,7 +125,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Статистика справа */}
             <div className={styles.statusStats}>
               <div className={styles.statBoxOutline}>
                 <div className={styles.statBoxOutlineValue}>{loadWatts}</div>
@@ -164,9 +147,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Картка ДБЖ */}
         <div className={styles.card}>
-          {/* Прибрали "ДБЖ - ", тепер тут просто чиста назва */}
           <h2 className={styles.cardTitle}>{systemName}</h2>
           <div className={styles.upsSpecs}>
             <div className={styles.upsRow}>
@@ -190,45 +171,47 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* СЕРЕДНІЙ РЯД */}
+      {/* СЕРЕДНІЙ РЯД (РОЗДІЛЕНО НА 2 БЛОКИ) */}
       <div className={styles.middleFlex}>
         
-        <Link href="/devices" className={styles.actionBtn}>
-          <CameraIcon className={styles.actionIcon} />
-          <span className={styles.actionText}>Додати прилад</span>
-        </Link>
-        
-        <Link href="/calculator" className={styles.actionBtn}>
-          <CalcIcon className={styles.actionIcon} />
-          <span className={styles.actionText}>Розрахувати</span>
-        </Link>
-
-        <Link href="/scenarios" className={styles.actionBtn}>
-          <ScenarioIcon className={styles.actionIcon} />
-          <span className={styles.actionText}>Сценарії</span>
-        </Link>
-
-        <Link href="/picker" className={styles.actionBtn}>
-          <SystemIcon className={styles.actionIcon} />
-          <span className={styles.actionText}>Підбір системи</span>
-        </Link>
-
-        {/* Статистика */}
-        <div className={styles.smallStatBox}>
-          <div className={styles.smallStatValue}>{devices.length}</div>
-          <div className={styles.smallStatLabel}>Приладів<br/>зареєстровано</div>
+        {/* Блок 1: Кнопки дій */}
+        <div className={styles.actionsGroup}>
+          <Link href="/devices" className={styles.actionBtn}>
+            <CameraIcon className={styles.actionIcon} />
+            <span className={styles.actionText}>Додати прилад</span>
+          </Link>
+          <Link href="/calculator" className={styles.actionBtn}>
+            <CalcIcon className={styles.actionIcon} />
+            <span className={styles.actionText}>Розрахувати</span>
+          </Link>
+          <Link href="/scenarios" className={styles.actionBtn}>
+            <ScenarioIcon className={styles.actionIcon} />
+            <span className={styles.actionText}>Сценарії</span>
+          </Link>
+          <Link href="/picker" className={styles.actionBtn}>
+            <SystemIcon className={styles.actionIcon} />
+            <span className={styles.actionText}>Підбір системи</span>
+          </Link>
         </div>
-        <div className={styles.smallStatBox}>
-          <div className={styles.smallStatValue}>{scenarios.length}</div>
-          <div className={styles.smallStatLabel}>Сценарії<br/>активних</div>
-        </div>
-        <div className={styles.smallStatBox}>
-          <div className={styles.smallStatValue}>
-            {devices.length > 0 && activeScenario?.selectedDeviceIds 
-              ? Math.round((activeScenario.selectedDeviceIds.length / devices.length) * 100) 
-              : 0}%
+
+        {/* Блок 2: Дані (Статистика) */}
+        <div className={styles.statsGroup}>
+          <div className={styles.smallStatBox}>
+            <div className={styles.smallStatValue}>{devices.length}</div>
+            <div className={styles.smallStatLabel}>Приладів<br/>зареєстровано</div>
           </div>
-          <div className={styles.smallStatLabel}>Приладів<br/>включено</div>
+          <div className={styles.smallStatBox}>
+            <div className={styles.smallStatValue}>{scenarios.length}</div>
+            <div className={styles.smallStatLabel}>Сценарії<br/>активних</div>
+          </div>
+          <div className={styles.smallStatBox}>
+            <div className={styles.smallStatValue}>
+              {devices.length > 0 && activeScenario?.selectedDeviceIds 
+                ? Math.round((activeScenario.selectedDeviceIds.length / devices.length) * 100) 
+                : 0}%
+            </div>
+            <div className={styles.smallStatLabel}>Приладів<br/>включено</div>
+          </div>
         </div>
 
       </div>
