@@ -306,14 +306,13 @@
 /* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    /* Додано відступи від сайдбару та екрану */
     padding: 12px 20px; 
     height: 100vh;
     overflow-y: auto;
   }
 
   .pageTitle {
-    font-size: 20px; /* Компактний заголовок */
+    font-size: 20px; 
     margin-bottom: 12px;
   }
 
@@ -327,90 +326,97 @@
   }
 
   .sectionTitle {
-    font-size: 18px; /* Зменшили заголовок поля вводу */
+    font-size: 18px; 
     margin-bottom: 12px;
   }
 
   .inputRow {
     flex-direction: row;
     gap: 12px;
-    margin-bottom: 24px; /* Менший відступ знизу */
+    margin-bottom: 24px; 
   }
 
   .addInput {
-    padding: 10px 16px;
+    padding: 8px 14px;
     font-size: 14px;
     border-radius: 10px;
   }
 
   .addBtn {
     width: auto;
-    padding: 0 20px;
-    font-size: 14px;
+    padding: 0 16px;
+    font-size: 13px;
     border-radius: 10px;
   }
 
   .grid {
-    /* Щільніша сітка для горизонтального режиму */
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
     margin-bottom: 24px;
   }
 
   .card {
-    padding: 16px; /* Компактна картка */
+    padding: 12px 14px; /* Ультра-компактні відступи картки */
     border-radius: 12px;
   }
 
   .cardHeader {
-    padding-bottom: 12px;
+    padding-bottom: 8px;
     margin-bottom: 0;
   }
 
   .cardTitle {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .actionIconOrange {
-    width: 20px;
-    height: 20px;
+    width: 18px; /* Менша іконка кошика */
+    height: 18px;
   }
 
   .plusIconTop {
-    font-size: 24px;
+    font-size: 20px;
   }
 
+  /* ГОЛОВНА ЗМІНА: Характеристики в один рядок */
   .specRow {
-    padding: 8px 0;
+    flex-direction: row; /* Назва і значення на одній лінії */
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0; /* Мінімальні вертикальні відступи */
+    gap: 8px;
   }
 
   .specLabel {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .specValue {
-    font-size: 12px;
-    min-height: 14px;
+    font-size: 11px;
+    min-height: auto;
+    text-align: right;
+    max-width: 65%; /* Довгий текст буде переноситися праворуч, а не падати під низ */
   }
 
   .calcRow {
-    padding-top: 12px;
+    padding-top: 8px;
   }
 
   .calcLabel {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .hintBox {
-    padding: 16px;
-    margin-top: 16px;
+    padding: 12px 16px;
+    margin-top: 12px;
   }
 
   .hintTitle {
-    font-size: 14px;
+    font-size: 13px;
+    margin-bottom: 2px;
   }
 
   .hintText {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
