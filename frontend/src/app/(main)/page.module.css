@@ -4,7 +4,7 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 20px 24px;
+  padding: 20px 24px; 
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   box-sizing: border-box;
@@ -19,24 +19,24 @@
 .topGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 16px; 
+  margin-bottom: 16px; 
 }
 
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 16px 20px;
+  border-radius: 16px; 
+  padding: 16px 20px; 
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
 }
 
 .cardTitle {
-  font-size: 18px;
+  font-size: 18px; 
   font-weight: 800;
-  margin-bottom: 16px;
+  margin-bottom: 16px; 
   color: var(--text-main);
 }
 
@@ -44,14 +44,14 @@
   display: flex;
   flex-direction: row; 
   align-items: center;
-  gap: 32px;
+  gap: 32px; 
   flex: 1;
 }
 
 /* ГРАФІК (БУБЛИК) */
 .donutWrapper {
   position: relative;
-  width: 160px;
+  width: 160px; 
   height: 90px;
   display: flex;
   flex-direction: column;
@@ -77,7 +77,7 @@
 }
 
 .donutPercent {
-  font-size: 32px;
+  font-size: 32px; 
   font-weight: 800;
   line-height: 1;
   color: var(--text-main);
@@ -101,7 +101,7 @@
   flex: 1;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px;
+  padding: 12px; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,7 +110,7 @@
 }
 
 .statBoxOutlineValue {
-  font-size: 20px;
+  font-size: 20px; 
   font-weight: 800;
   color: var(--accent-orange);
   margin-bottom: 4px;
@@ -134,7 +134,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 6px 0; 
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -154,17 +154,17 @@
   color: var(--text-main);
 }
 
-/* --- СЕРЕДНІЙ РЯД --- */
+/* --- СЕРЕДНІЙ РЯД (Швидкі дії + Статистика) --- */
 .middleFlex {
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 16px; 
+  margin-bottom: 20px; 
   width: 100%;
 }
 
 .actionsGroup, .statsGroup {
   display: flex;
-  gap: 12px;
+  gap: 12px; 
   flex: 1;
 }
 
@@ -173,7 +173,7 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px;
+  padding: 12px; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,7 +206,7 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px;
+  padding: 12px; 
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -216,7 +216,7 @@
 }
 
 .smallStatValue {
-  font-size: 22px;
+  font-size: 22px; 
   font-weight: 800;
   color: var(--accent-orange);
 }
@@ -230,16 +230,16 @@
 
 /* --- НИЖНІЙ РЯД (Сценарії) --- */
 .sectionTitle {
-  font-size: 18px;
+  font-size: 18px; 
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 12px;
+  margin-bottom: 12px; 
 }
 
 .scenariosFlex {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 10px; 
   width: 100%;
 }
 
@@ -247,7 +247,7 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 10px 16px;
+  padding: 10px 16px; 
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
@@ -275,14 +275,14 @@
 
 /* --- ПРИЛАДИ В СЦЕНАРІЇ --- */
 .activeDevicesWrapper {
-  margin-top: 20px;
+  margin-top: 20px; 
 }
 
 .activeDevicesTitle {
-  font-size: 15px;
+  font-size: 15px; 
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 12px; 
 }
 
 .activeDevicesGrid {
@@ -295,7 +295,7 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: 12px 14px; 
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -312,7 +312,7 @@
 }
 
 .truncateText {
-  font-size: 13px;
+  font-size: 13px; 
   font-weight: 700;
   color: var(--text-main);
   white-space: nowrap;
@@ -348,14 +348,31 @@
     padding-bottom: 120px;
     padding-left: 16px;
     padding-right: 16px;
+    overflow-x: hidden; 
   }
   
+  /* 1. КАРУСЕЛЬ для "Статус системи" та "ДБЖ" */
   .topGrid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Для Firefox */
+    gap: 12px;
+    margin-bottom: 16px;
+    /* Від'ємні відступи для того, щоб карусель доходила до країв екрану */
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .topGrid::-webkit-scrollbar { display: none; } /* Для Chrome/Safari */
+
+  .card {
+    flex: 0 0 88%; /* Картка займає 88% ширини екрану, щоб було видно наступну */
+    scroll-snap-align: center;
   }
 
-  /* 1. Статус системи: Графік зліва, 3 блоки статистики вертикально справа */
   .statusContent {
     display: flex;
     flex-direction: row; 
@@ -377,7 +394,7 @@
 
   .statusStats { 
     display: flex;
-    flex-direction: column; /* Вертикальне розташування */
+    flex-direction: column; /* Вертикальне розташування статистики */
     gap: 8px;
     flex: 1; 
   }
