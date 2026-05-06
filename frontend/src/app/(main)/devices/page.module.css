@@ -322,22 +322,21 @@
   .header-container {
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start; /* ВАЖЛИВО: Вирівнюємо лівий блок і плашку статистики по верхньому краю */
     margin-bottom: 12px;
     gap: 16px;
   }
 
   .top-section {
     margin-bottom: 0;
-    row-gap: 10px;
-    column-gap: 16px; /* Додали відступ між заголовком і кнопкою */
-    justify-content: flex-start;
-    grid-template-columns: auto auto; /* Кнопка акуратно притискається до заголовка */
+    row-gap: 8px;
+    grid-template-columns: 1fr; /* ВАЖЛИВО: Ставимо все в одну колонку */
     grid-template-areas:
-      "title button"
-      "filters filters";
+      "title"
+      "filters"
+      "button"; /* Тепер кнопка строго під плашками (фільтрами) */
     flex: 1;
-    align-items: flex-start; /* ВАЖЛИВО: вирівнюємо по верхньому краю */
+    align-items: flex-start; 
   }
 
   .summary-card {
@@ -348,14 +347,14 @@
 
   .title { 
     font-size: 20px; 
-    padding-top: 2px; /* Візуальний баланс тексту відносно кнопки */
+    padding-top: 0; 
   }
   
   .add-btn { 
-    padding: 6px 12px; 
+    padding: 6px 16px; 
     font-size: 13px; 
     height: fit-content; 
-    margin-top: 4px; /* ВАЖЛИВО: гарантуємо, що кнопка ніколи не вилізе вище тексту */
+    margin-top: 0; 
   }
 
   .filter-chip { width: 70px; font-size: 12px; padding: 6px 0; }
