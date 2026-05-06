@@ -500,7 +500,7 @@
     flex-direction: row;
     gap: 16px; 
     min-height: 0;
-    align-items: flex-end; /* Вирівнюємо низ правої плашки по низу каруселі */
+    align-items: flex-start;
     padding-bottom: 8px;
   }
 
@@ -534,11 +534,13 @@
     flex-direction: row;
     overflow-x: auto;
     gap: 12px;
-    padding: 4px 0;
+    padding: 4px 0 12px 0;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     width: 100%;
-    
+    /* М'якший градієнт: збільшена зона до 15% для дуже плавного переходу */
+    mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
@@ -557,13 +559,13 @@
   .spec-label { font-size: 9px; }
   .spec-value { font-size: 10px; }
 
-  /* ПРАВА ПЛАШКА (Компактна) */
+  /* ПРАВА ПЛАШКА */
   .summary-panel {
     width: 260px;
     flex-shrink: 0;
     position: static; 
     height: auto; 
-    max-height: 100%;
+    max-height: calc(100% - 12px);
     padding: 14px;
     display: flex;
     flex-direction: column;
@@ -571,6 +573,7 @@
     border-radius: 16px;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
+    margin-top: 0; 
   }
 
   .summary-title { font-size: 15px; margin-bottom: 4px; text-align: center; }
