@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import styles from './page.module.css';
 
-// Імпорти ваших іконок
 import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
@@ -13,37 +12,21 @@ export default function LandingPage() {
     <div className={styles.wrap}>
       <div className={styles.container}>
         
-        {/* ЛІВА ЧАСТИНА: Текст та заклик до дії */}
-        <div className={styles.leftContent}>
-          <div className={styles.logoWrap}>
-            <LightningIcon className={styles.logoIcon} />
-            <span className={styles.logoText}>Energy Safe</span>
-          </div>
-
-          <h1 className={styles.mainTitle}>
-            Плануйте енергозабезпечення<br />
-            <span className={styles.highlight}>без складних розрахунків</span>
-          </h1>
-
-          <p className={styles.desc}>
-            Наш застосунок допомагає швидко оцінити енергоспоживання,
-            підібрати систему резервного живлення та зберігати сценарії.
-          </p>
-
-          <p className={styles.subDesc}>
-            Для користувача — простий інструмент.<br />
-            Для бізнесу — швидке прийняття рішень без ручних розрахунків.
-          </p>
-
-          <Link href="/auth?mode=register" className={styles.startBtn}>
-            Почати
-          </Link>
+        {/* 1. Логотип */}
+        <div className={styles.logoWrap}>
+          <LightningIcon className={styles.logoIcon} />
+          <span className={styles.logoText}>Energy Safe</span>
         </div>
 
-        {/* ПРАВА ЧАСТИНА: Картки можливостей */}
+        {/* 2. Заголовок */}
+        <h1 className={styles.mainTitle}>
+          Плануйте енергозабезпечення<br />
+          <span className={styles.highlight}>без складних розрахунків</span>
+        </h1>
+
+        {/* 3. Що можна робити (Картки) */}
         <div className={styles.rightContent}>
           <h2 className={styles.featuresTitle}>Що можна зробити?</h2>
-
           <div className={styles.featureCards}>
             <div className={styles.card}>
               <div className={styles.cardIconWrap}>
@@ -76,6 +59,17 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
+
+        {/* 4. Короткий опис */}
+        <p className={styles.desc}>
+          Наш застосунок допомагає швидко оцінити енергоспоживання,
+          підібрати систему резервного живлення та зберігати сценарії.
+        </p>
+
+        {/* 5. Кнопка "Почати" */}
+        <Link href="/auth?mode=register" className={styles.startBtn}>
+          Почати
+        </Link>
 
       </div>
     </div>
