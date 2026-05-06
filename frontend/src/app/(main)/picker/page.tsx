@@ -6,6 +6,7 @@ import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { AlertModal } from '../../../components/AlertModal';
+import { DecisionModal } from '../../../components/DecisionModal';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,6 +27,9 @@ export default function SystemsPage() {
   
   // Стейт для алерту успішного додавання
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
+  // Стейт для модалки підтвердження видалення
+  const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMySystems();
@@ -113,7 +117,13 @@ export default function SystemsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const confirmDelete = async () => {
+    if (!systemToDelete) return;
+    
+    const id = systemToDelete;
+    setSystemToDelete(null); // Закриваємо модалку
+    
+    // Оновлюємо UI миттєво
     setSystems(prev => prev.filter(s => s.id !== id));
     
     const token = localStorage.getItem('access_token');
@@ -126,6 +136,7 @@ export default function SystemsPage() {
       });
     } catch (err) { 
       console.error('Помилка видалення:', err); 
+      fetchMySystems(); // Відкочуємо зміни при помилці
     }
   };
 
@@ -206,7 +217,7 @@ export default function SystemsPage() {
               
               <div className={styles.cardActions}>
                 {tab === 'my' ? (
-                  <button className={styles.iconBtn} onClick={() => handleDelete(item.id)}>
+                  <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
                     <DeleteIcon className={styles.actionIconOrange} />
                   </button>
                 ) : (
@@ -264,6 +275,14 @@ export default function SystemsPage() {
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         title="Додано"
+      />
+
+      {/* Модалка підтвердження видалення */}
+      <DecisionModal 
+        isOpen={systemToDelete !== null}
+        onClose={() => setSystemToDelete(null)}
+        onConfirm={confirmDelete}
+        title="Видалити систему?"
       />
     </div>
   );
