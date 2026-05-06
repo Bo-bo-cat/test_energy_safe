@@ -537,9 +537,6 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     width: 100%;
-    /* М'якший градієнт: збільшена зона до 15% для дуже плавного переходу */
-    mask-image: linear-gradient(to right, transparent 0%, black 2%, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 2%, black 85%, transparent 100%);
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
