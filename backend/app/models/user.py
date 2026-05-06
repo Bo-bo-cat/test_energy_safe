@@ -40,3 +40,16 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user_id: str
     user_name: str
+
+
+class UserProfileResponse(BaseModel):
+    id: str
+    email: str
+    name: str
+    initials: str
+    theme: Optional[str] = None
+
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str
+    new_password: str = Field(..., min_length=4)

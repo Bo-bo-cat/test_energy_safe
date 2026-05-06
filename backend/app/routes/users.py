@@ -5,7 +5,7 @@ from bson.errors import InvalidId
 import bcrypt
 
 from app.database import get_database
-from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse
+from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse, UserProfileResponse, ChangePasswordRequest
 from app.auth import create_access_token, get_current_user_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -71,8 +71,36 @@ async def create_user(payload: UserCreate):
     )
 
 
+@router.get("/me", response_model=UserProfileResponse)
+async def get_my_profile(user_id: str = Depends(get_current_user_id)):
+    db = get_database()
+
+    try:
+        oid = ObjectId(user_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
+
+    doc = await db.users.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+
+    parts = doc["name"].split()
+    initials = "".join(p[0].upper() for p in parts[:2] if p)
+
+    return UserProfileResponse(
+        id=str(doc["_id"]),
+        email=doc["email"],
+        name=doc["name"],
+        initials=initials,
+        theme=doc.get("theme"),
+    )
+
+
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user(user_id: str):
+async def get_user(user_id: str, current_user_id: str = Depends(get_current_user_id)):
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
     db = get_database()
 
     try:
@@ -85,6 +113,25 @@ async def get_user(user_id: str):
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
     return _serialize_user(doc)
+
+
+@router.patch("/me/password", status_code=204)
+async def change_password(payload: ChangePasswordRequest, user_id: str = Depends(get_current_user_id)):
+    db = get_database()
+
+    try:
+        oid = ObjectId(user_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
+
+    doc = await db.users.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+
+    if not _verify_password(payload.old_password, doc.get("password_hash", "")):
+        raise HTTPException(status_code=400, detail="Невірний поточний пароль")
+
+    await db.users.update_one({"_id": oid}, {"$set": {"password_hash": _hash_password(payload.new_password)}})
 
 
 @router.delete("/me", status_code=204)

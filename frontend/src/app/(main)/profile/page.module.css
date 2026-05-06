@@ -106,6 +106,172 @@
   transform: scale(0.98);
 }
 
+.changePasswordBtn {
+  background-color: transparent;
+  color: var(--accent-orange);
+  border: 2px solid var(--accent-orange);
+  border-radius: 12px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.changePasswordBtn:hover {
+  background-color: var(--accent-orange);
+  color: #fff;
+}
+
+.changePasswordBtn:active {
+  transform: scale(0.98);
+}
+
+.faqBtn {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.1s;
+  width: 100%;
+}
+
+.faqBtn:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.faqBtn:active {
+  transform: scale(0.98);
+}
+
+/* Модальне вікно зміни пароля */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.passwordModal {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInput {
+  width: 100%;
+  padding: 14px 48px 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.passwordInput:focus {
+  border-color: var(--accent-orange);
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.eyeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.errorMsg {
+  color: #FF3B30;
+  font-size: 14px;
+  margin: 0;
+}
+
+.successMsg {
+  color: #34C759;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.confirmBtn {
+  flex: 1;
+  background-color: var(--accent-orange);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.confirmBtn:hover {
+  opacity: 0.9;
+}
+
+.cancelBtn {
+  flex: 1;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cancelBtn:hover {
+  background-color: var(--bg-card-inner);
+}
+
 /* Адаптація під мобільні (вертикальні + горизонтальні) */
 @media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
   .profileHeader {
