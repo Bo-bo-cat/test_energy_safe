@@ -141,8 +141,8 @@
 }
 
 .changePasswordBtn, .faqBtn {
-  background-color: #2C2C2C; 
-  color: #FFFFFF;
+  background-color: var(--text-main); /* Змінна замість #2C2C2C */
+  color: var(--bg-main);              /* Змінна замість #FFFFFF */
   border: none;
   border-radius: 12px;
   padding: 16px;
