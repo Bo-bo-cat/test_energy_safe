@@ -310,7 +310,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px; /* Використовуємо gap замість margin */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0; /* Запобігає розтягуванню картки */
 }
 
 .activeDeviceCard:hover {
@@ -319,16 +321,11 @@
 }
 
 .activeDeviceName {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-right: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1; /* Займає весь вільний простір зліва */
+  min-width: 0; /* Критично важливо для роботи ellipsis у flex-контейнері */
 }
 
 .qtyBadge {
@@ -338,13 +335,14 @@
   padding: 2px 6px;
   border-radius: 6px;
   font-weight: 800;
+  flex-shrink: 0; /* Щоб бейдж ніколи не стискався */
 }
 
 .activeDevicePower {
   font-size: 14px;
   font-weight: 800;
   color: var(--accent-orange);
-  flex-shrink: 0;
+  flex-shrink: 0; /* Щоб потужність ніколи не стискалась */
 }
 
 /* =========================================

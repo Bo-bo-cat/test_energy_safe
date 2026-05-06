@@ -259,7 +259,7 @@ export default function DashboardPage() {
                   <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
                     <div className={styles.activeDeviceName} title={deviceName}>
                       {qty > 1 ? <span className={styles.qtyBadge}>{qty}x</span> : null}
-                      {deviceName}
+                      <span className={styles.truncateText}>{deviceName}</span>
                     </div>
                     <div className={styles.activeDevicePower}>{power * qty} Вт</div>
                   </div>
@@ -274,4 +274,4 @@ export default function DashboardPage() {
 
     </div>
   );
-}
+} 
