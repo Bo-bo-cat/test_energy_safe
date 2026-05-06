@@ -304,7 +304,6 @@
     gap: 12px; 
   }
 
-  /* --- ЗБЕРЕЖЕНО: Довгі назви переносяться --- */
   .item-name {
     width: 100%;
     white-space: normal;
@@ -312,7 +311,6 @@
     line-height: 1.3;
   }
   
-  /* --- ЗБЕРЕЖЕНО: Кнопки падають під характеристики --- */
   .item-controls { 
     width: 100%; 
     flex-direction: column; 
@@ -352,18 +350,18 @@
     gap: 16px;
   }
 
-  /* --- ВИПРАВЛЕНО: Жорстка колонка (flex-column) для лівої частини --- */
   .top-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Усе притиснуто до лівого краю */
-    gap: 10px; /* Відстань між заголовком, фільтрами та кнопкою */
+    align-items: flex-start; 
+    gap: 10px; 
     margin-bottom: 0;
     flex: 1;
   }
 
   .summary-card {
     margin-bottom: 0;
+    margin-top: 8px; /* ВИПРАВЛЕНО: Опускаємо плашку статистики */
     padding: 10px 16px;
     flex-shrink: 0;
   }
@@ -412,7 +410,6 @@
     gap: 12px;
   }
   
-  /* Дозволяємо перенос тексту і в ландшафті, якщо він дуже довгий */
   .item-name { 
     font-size: 14px; 
     white-space: normal;
