@@ -1,9 +1,12 @@
+/* src/app/(main)/faq/page.module.css */
+
 .wrap {
   width: 100%;
   max-width: 800px;
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
+  box-sizing: border-box;
 }
 
 .title {
@@ -52,6 +55,7 @@
   font-weight: 700;
   color: var(--text-main);
   transition: color 0.2s;
+  font-family: inherit;
 }
 
 .question:hover {
@@ -80,9 +84,25 @@
   line-height: 1.6;
 }
 
-@media (max-width: 768px) {
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ Мобільних (Вертикально)
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+  .wrap {
+    padding-top: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 120px;
+  }
+
   .title {
     font-size: 28px;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 24px;
   }
 
   .question {
@@ -92,5 +112,52 @@
 
   .answer {
     padding: 0 18px 16px;
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .wrap {
+    padding: 12px 20px; /* Стандартні відступи від країв */
+    height: 100vh;
+    overflow-y: auto; /* Дозволяємо скрол всередині */
+  }
+
+  .title {
+    font-size: 20px; /* Менший заголовок */
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    font-size: 13px; /* Менший підзаголовок */
+    margin-bottom: 16px; /* Зменшений відступ до списку */
+  }
+
+  .list {
+    gap: 8px; /* Менша відстань між питаннями */
+    padding-bottom: 24px;
+  }
+
+  .item {
+    border-radius: 12px; /* Менше закруглення */
+  }
+
+  .question {
+    font-size: 14px; /* Менший шрифт питання */
+    padding: 12px 16px; /* Менші внутрішні відступи */
+  }
+
+  .chevron {
+    width: 16px; /* Менша іконка стрілочки */
+    height: 16px;
+  }
+
+  .answer {
+    padding: 0 16px 12px; /* Менші внутрішні відступи */
+    font-size: 13px; /* Менший шрифт відповіді */
+    line-height: 1.4; /* Щільніший текст */
   }
 }
