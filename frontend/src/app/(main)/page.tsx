@@ -249,15 +249,17 @@ export default function DashboardPage() {
           {activeDevices.length > 0 ? (
             <div className={styles.activeDevicesGrid}>
               {activeDevices.map(dev => {
-                // Якщо в сценарії є кількість (deviceQuantities), показуємо її
                 const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
                 const power = dev.powerWatts || dev.power_watts || dev.power || 0;
                 
+                // ВАЖЛИВО: Оновлено логіку отримання імені приладу
+                const deviceName = dev.model_name || dev.name || dev.model || 'Прилад';
+                
                 return (
                   <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
-                    <div className={styles.activeDeviceName} title={dev.name}>
+                    <div className={styles.activeDeviceName} title={deviceName}>
                       {qty > 1 ? <span className={styles.qtyBadge}>{qty}x</span> : null}
-                      {dev.name || 'Прилад'}
+                      {deviceName}
                     </div>
                     <div className={styles.activeDevicePower}>{power * qty} Вт</div>
                   </div>
