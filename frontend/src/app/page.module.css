@@ -6,10 +6,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-main, #0F0F0F); /* Темний фон сайту */
-  color: var(--text-main, #FFFFFF);
+  background-color: #0F0F0F; /* Темний фон Energy Safe */
+  color: #FFFFFF;
   font-family: 'Inter', sans-serif;
   padding: 24px;
+  box-sizing: border-box;
+}
+
+.wrap * {
+  box-sizing: border-box;
 }
 
 .container {
@@ -17,7 +22,7 @@
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  gap: 40px; /* Зменшено від десктопу для компактності */
   align-items: center;
 }
 
@@ -32,15 +37,18 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent-orange, #FF6B00);
+  color: #FF6B00; /* Помаранчевий Energy Safe */
   font-size: 24px;
   font-weight: 900;
   margin-bottom: 32px;
 }
 
+/* Налаштування для вашої LightningIcon */
 .logoIcon {
   width: 28px;
   height: 28px;
+  /* Переконуємося, що SVG приймає колір помаранчевого батька */
+  color: currentColor; 
 }
 
 .mainTitle {
@@ -48,17 +56,17 @@
   font-weight: 900;
   line-height: 1.1;
   margin-bottom: 24px;
-  color: var(--text-main, #FFFFFF);
+  color: #FFFFFF;
 }
 
 .highlight {
-  color: var(--accent-orange, #FF6B00);
+  color: #FF6B00;
 }
 
 .desc {
   font-size: 18px;
   line-height: 1.6;
-  color: var(--text-muted, #A0A0A0);
+  color: #A0A0A0; /* var(--text-muted) */
   margin-bottom: 24px;
   max-width: 500px;
 }
@@ -66,15 +74,15 @@
 .subDesc {
   font-size: 16px;
   line-height: 1.6;
-  color: #737373;
+  color: #737373; /* Трохи темніший текст */
   margin-bottom: 40px;
   max-width: 500px;
   padding-left: 16px;
-  border-left: 3px solid var(--accent-orange, #FF6B00);
+  border-left: 3px solid #FF6B00;
 }
 
 .startBtn {
-  background-color: var(--accent-orange, #FF6B00);
+  background-color: #FF6B00;
   color: #FFFFFF;
   text-decoration: none;
   padding: 16px 40px;
@@ -94,8 +102,8 @@
 
 /* --- ПРАВА ЧАСТИНА --- */
 .rightContent {
-  background-color: var(--bg-card, #1A1A1A);
-  border: 1px solid var(--border-color, #2C2C2C);
+  background-color: #1A1A1A; /* var(--bg-card) */
+  border: 1px solid #2C2C2C; /* var(--border-color) */
   border-radius: 24px;
   padding: 40px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
@@ -105,7 +113,7 @@
   font-size: 28px;
   font-weight: 800;
   margin-bottom: 24px;
-  color: var(--text-main, #FFFFFF);
+  color: #FFFFFF;
 }
 
 .featureCards {
@@ -115,8 +123,8 @@
 }
 
 .card {
-  background-color: var(--bg-card-inner, #242424);
-  border: 1px solid var(--border-color, #2C2C2C);
+  background-color: #242424; /* var(--bg-card-inner) */
+  border: 1px solid #2C2C2C;
   padding: 20px;
   border-radius: 16px;
   display: flex;
@@ -126,15 +134,16 @@
 }
 
 .card:hover {
-  border-color: var(--accent-orange, #FF6B00);
+  border-color: #FF6B00;
   transform: translateX(4px);
 }
 
 .cardIconWrap {
   width: 48px;
   height: 48px;
-  background-color: rgba(255, 107, 0, 0.1);
-  color: var(--accent-orange, #FF6B00);
+  /* Напівпрозорий помаранчевий фон для іконок */
+  background-color: rgba(255, 107, 0, 0.1); 
+  color: #FF6B00;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -142,59 +151,163 @@
   flex-shrink: 0;
 }
 
+/* Налаштування для imported іконок (Calc, System, Scenario) */
 .cardIcon {
   width: 24px;
   height: 24px;
+  /* Переконуємося, що SVG приймає помаранчевий колір */
+  color: currentColor; 
 }
 
 .cardTitle {
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 4px;
-  color: var(--text-main, #FFFFFF);
+  color: #FFFFFF;
 }
 
 .cardDesc {
   font-size: 14px;
-  color: var(--text-muted, #A0A0A0);
+  color: #A0A0A0;
   line-height: 1.4;
 }
 
-/* =========================================
-   АДАПТАЦІЯ ДЛЯ Мобільних і Планшетів
-   ========================================= */
-@media (max-width: 950px) {
+/* =========================================================
+   АДАПТАЦІЯ ДЛЯ ПОРТРЕТНИХ МОБІЛЬНИХ (Vertical Mobile/Tablet)
+   ========================================================= */
+@media (max-width: 950px) and (orientation: portrait) {
+  .wrap {
+    padding: 24px 16px; /* Менші відступи від країв екрану */
+  }
+
   .container {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 20px 0;
+    grid-template-columns: 1fr; /* Колонки одна під одною */
+    gap: 32px; /* Зменшений відступ між блоками */
+  }
+
+  .logo {
+    margin-bottom: 24px;
   }
 
   .mainTitle {
-    font-size: 36px;
+    font-size: 32px; /* Компактніший заголовок */
   }
 
   .desc {
     font-size: 16px;
   }
 
-  .rightContent {
-    padding: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .mainTitle {
-    font-size: 32px;
+  .subDesc {
+    margin-bottom: 32px;
+    font-size: 15px;
   }
 
   .startBtn {
-    width: 100%;
+    width: 100%; /* Кнопка на всю ширину мобільного */
+  }
+
+  .rightContent {
+    padding: 24px; /* Компактні відступи всередині картки */
+    border-radius: 20px;
+  }
+
+  .featuresTitle {
+    font-size: 22px;
   }
 
   .card {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+/* =========================================================
+   УЛЬТРА-КОМПАКТНА АДАПТАЦІЯ ДЛЯ ЛАНДСКЕЙПУ (Landscape Mobile)
+   ========================================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .wrap {
+    padding: 12px 20px; /* Мінімальні відступи по краях */
+    height: 100vh;
+    overflow-y: auto; /* Дозволяємо скрол тільки якщо екран супер-малий */
+  }
+
+  .container {
+    grid-template-columns: 1fr 1fr; /* Зберігаємо 2 колонки */
+    gap: 20px; /* Мінімізуємо відстань між колонками */
+    align-items: center; /* Центруємо по вертикалі */
+  }
+
+  /* ЛІВА КОЛОНКА - УЛЬТРА-КОМПАКТ */
+  .logo {
+    font-size: 18px; /* Супер-менші шрифти */
+    margin-bottom: 12px;
+  }
+
+  .logoIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mainTitle {
+    font-size: 24px; /* Стислий заголовок */
+    margin-bottom: 12px;
+  }
+
+  .desc {
+    font-size: 13px; /* Дуже малий шрифт */
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .subDesc {
+    font-size: 12px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .startBtn {
+    padding: 10px 24px; /* Компактна кнопка */
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  /* ПРАВА КОЛОНКА - УЛЬТРА-КОМПАКТ */
+  .rightContent {
+    padding: 16px; /* Мінімальні внутрішні відступи */
+    border-radius: 16px;
+  }
+
+  .featuresTitle {
+    font-size: 16px; /* Компактний заголовок */
+    margin-bottom: 12px;
+  }
+
+  .featureCards {
+    gap: 8px; /* Мінімальна відстань між картками */
+  }
+
+  .card {
+    padding: 10px 12px; /* Дуже стислі картки */
     gap: 12px;
+    border-radius: 12px;
+  }
+
+  .cardIconWrap {
+    width: 32px; /* Зменшений розмір фону іконки */
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .cardIcon {
+    width: 16px; /* Менші іконки */
+    height: 16px;
+  }
+
+  .cardTitle {
+    font-size: 14px; /* Малий заголовок картки */
+  }
+
+  .cardDesc {
+    font-size: 11px; /* Дуже малий опис */
   }
 }
