@@ -131,68 +131,58 @@
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
-   НАДІЙНА FLEXBOX СІТКА
+   Робимо її як "міні-десктоп", рівномірно заповнюючи екран
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .page { 
-    flex-direction: row; 
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    align-content: flex-start;
-    padding: 16px 24px; 
-    gap: 16px 0; /* 16px між рядками */
+    flex-direction: column; 
+    justify-content: center; /* Центруємо весь контент по вертикалі */
+    padding: 20px 32px; 
   }
   
-  /* Заголовок займає 100% і стоїть нагорі */
   .title { 
     width: 100%;
-    font-size: 22px; 
-    margin: 0; 
-    text-align: left;
-    line-height: 1;
+    font-size: 28px; 
+    margin: 0 0 20px; 
+    text-align: center; /* Заголовок по центру, як на десктопі */
   }
 
-  /* Ліва колонка (Кнопки) */
   .cards {
-    width: 48%; /* Менше 50%, щоб залишився відступ */
-    margin: 0;
-    flex-direction: column; 
-    gap: 12px; 
+    flex-direction: row; /* Повертаємо кнопки в один ряд */
+    gap: 20px; 
+    width: 100%;
+    max-width: 800px; /* Дозволяємо їм розтягнутись */
+    margin: 0 auto 20px;
   }
 
   .card {
-    width: 100%;
-    max-width: none;
-    aspect-ratio: auto; 
+    aspect-ratio: auto; /* Відключаємо жорсткі квадратні пропорції */
     height: auto; 
-    padding: 12px 16px;
+    padding: 16px 20px;
   }
 
   .card-inner { 
-    flex-direction: row; 
-    gap: 16px; 
-    align-items: center;
-    justify-content: flex-start; /* Вирівнюємо до лівого краю */
+    flex-direction: column; /* Іконка залишається НАД текстом */
+    gap: 12px; 
+    justify-content: center;
   }
 
   .card-title { 
-    font-size: 15px; 
+    font-size: 18px; 
     margin: 0;
-    text-align: left;
   } 
 
-  .icon-camera { width: 28px; height: 22px; flex-shrink: 0; }
-  .icon-pencil { width: 24px; height: 24px; flex-shrink: 0; }
+  /* Зменшуємо іконки, щоб зекономити висоту */
+  .icon-camera { width: 54px; height: 42px; flex-shrink: 0; }
+  .icon-pencil { width: 42px; height: 42px; flex-shrink: 0; }
 
-  /* Права колонка (Підказка) */
   .hint { 
-    width: 48%; 
-    margin: 0;
-    padding: 16px; 
-    height: fit-content;
+    width: 100%;
+    max-width: 800px; 
+    margin: 0 auto;
+    padding: 12px 24px; 
   }
   
-  .hint-title { font-size: 15px; margin-bottom: 6px; }
-  .hint-text { font-size: 13px; line-height: 1.4; }
+  .hint-title { font-size: 16px; margin-bottom: 4px; }
+  .hint-text { font-size: 14px; line-height: 1.3; }
 }
