@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-// Правильні імпорти твоїх іконок
 import { CameraIcon } from '../../components/icons/Camera';
 import { CalcIcon } from '../../components/icons/Calc';
 import { ScenarioIcon } from '../../components/icons/Scenario';
@@ -92,6 +91,11 @@ export default function DashboardPage() {
   let progressColor = '#FF9500'; 
   if (safePercent > 90) progressColor = '#FF2D55'; 
 
+  // Знаходимо прилади, що входять до активного сценарію
+  const activeDevices = activeScenario && activeScenario.selectedDeviceIds
+    ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
+    : [];
+
   if (isLoading) {
     return <div className={styles.wrap}><p style={{ color: 'var(--text-muted)' }}>Завантаження...</p></div>;
   }
@@ -108,7 +112,6 @@ export default function DashboardPage() {
             
             <div className={styles.donutWrapper}>
               <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
-                {/* Змінили strokeLinecap на "butt", щоб краї були ПРЯМИМИ */}
                 <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--border-color)" strokeWidth="20" strokeLinecap="butt" />
                 <path 
                   d="M 20 110 A 90 90 0 0 1 200 110" 
@@ -216,7 +219,7 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* НИЖНІЙ РЯД */}
+      {/* НИЖНІЙ РЯД: Сценарії */}
       <h2 className={styles.sectionTitle}>Ваші сценарії</h2>
       <div className={styles.scenariosFlex}>
         {scenarios.length > 0 ? (
@@ -238,6 +241,34 @@ export default function DashboardPage() {
           <p style={{ color: 'var(--text-muted)' }}>У вас ще немає збережених сценаріїв.</p>
         )}
       </div>
+
+      {/* НОВИЙ БЛОК: Прилади у вибраному сценарії */}
+      {activeScenario && (
+        <div className={styles.activeDevicesWrapper}>
+          <h3 className={styles.activeDevicesTitle}>Прилади у сценарії:</h3>
+          {activeDevices.length > 0 ? (
+            <div className={styles.activeDevicesGrid}>
+              {activeDevices.map(dev => {
+                // Якщо в сценарії є кількість (deviceQuantities), показуємо її
+                const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
+                const power = dev.powerWatts || dev.power_watts || dev.power || 0;
+                
+                return (
+                  <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
+                    <div className={styles.activeDeviceName} title={dev.name}>
+                      {qty > 1 ? <span className={styles.qtyBadge}>{qty}x</span> : null}
+                      {dev.name || 'Прилад'}
+                    </div>
+                    <div className={styles.activeDevicePower}>{power * qty} Вт</div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>У цьому сценарії немає обраних приладів.</p>
+          )}
+        </div>
+      )}
 
     </div>
   );

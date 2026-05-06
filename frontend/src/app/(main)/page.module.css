@@ -282,6 +282,108 @@
   height: 20px;
   flex-shrink: 0;
 }
+/* =========================================
+   НОВИЙ БЛОК: ПРИЛАДИ У СЦЕНАРІЇ
+   ========================================= */
+.activeDevicesWrapper {
+  margin-top: 32px;
+}
+
+.activeDevicesTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.activeDevicesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.activeDeviceCard {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.activeDeviceCard:hover {
+  border-color: var(--text-muted);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.activeDeviceName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qtyBadge {
+  background-color: var(--text-muted);
+  color: var(--bg-main);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 800;
+}
+
+.activeDevicePower {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  flex-shrink: 0;
+}
+
+/* =========================================
+   АДАПТАЦІЯ НОВОГО БЛОКУ ДЛЯ ЛАНДШАФТУ
+   (Додай всередину існуючого @media для landscape, 
+   або залиш тут в кінці файлу)
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .activeDevicesWrapper {
+    margin-top: 20px;
+    padding-bottom: 12px;
+  }
+  .activeDevicesTitle {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .activeDevicesGrid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+    scrollbar-width: none; /* Для Firefox */
+  }
+  .activeDevicesGrid::-webkit-scrollbar {
+    display: none; /* Для Chrome/Safari */
+  }
+  .activeDeviceCard {
+    width: 180px; /* Фіксована ширина для скролу */
+    flex-shrink: 0;
+    padding: 12px;
+  }
+  .activeDeviceName {
+    font-size: 13px;
+  }
+  .activeDevicePower {
+    font-size: 13px;
+  }
+}
 
 /* =========================================
    АДАПТАЦІЯ (МОБІЛЬНІ ВЕРТИКАЛЬНІ)
