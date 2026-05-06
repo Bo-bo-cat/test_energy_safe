@@ -253,10 +253,13 @@
   }
 }
 
-@media (max-width: 768px) {
+/* Мобільні телефони (Вертикально) */
+@media (max-width: 768px) and (orientation: portrait) {
   .wrap {
     padding-top: 16px;
     padding-bottom: 120px; 
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .pageTitle {
@@ -300,21 +303,114 @@
   }
 }
 
-@media (max-width: 900px) and (orientation: landscape) {
+/* Мобільні телефони (Горизонтально / Landscape) */
+@media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding-bottom: 90px;
+    /* Додано відступи від сайдбару та екрану */
+    padding: 12px 20px; 
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .pageTitle {
+    font-size: 20px; /* Компактний заголовок */
+    margin-bottom: 12px;
+  }
+
+  .tabs {
+    margin-bottom: 16px;
+  }
+
+  .tabBtn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .sectionTitle {
+    font-size: 18px; /* Зменшили заголовок поля вводу */
+    margin-bottom: 12px;
   }
 
   .inputRow {
     flex-direction: row;
+    gap: 12px;
+    margin-bottom: 24px; /* Менший відступ знизу */
+  }
+
+  .addInput {
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 10px;
   }
 
   .addBtn {
     width: auto;
-    padding: 0 24px;
+    padding: 0 20px;
+    font-size: 14px;
+    border-radius: 10px;
   }
 
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    /* Щільніша сітка для горизонтального режиму */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    padding: 16px; /* Компактна картка */
+    border-radius: 12px;
+  }
+
+  .cardHeader {
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .actionIconOrange {
+    width: 20px;
+    height: 20px;
+  }
+
+  .plusIconTop {
+    font-size: 24px;
+  }
+
+  .specRow {
+    padding: 8px 0;
+  }
+
+  .specLabel {
+    font-size: 10px;
+  }
+
+  .specValue {
+    font-size: 12px;
+    min-height: 14px;
+  }
+
+  .calcRow {
+    padding-top: 12px;
+  }
+
+  .calcLabel {
+    font-size: 13px;
+  }
+
+  .hintBox {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .hintTitle {
+    font-size: 14px;
+  }
+
+  .hintText {
+    font-size: 12px;
   }
 }
