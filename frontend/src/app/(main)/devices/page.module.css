@@ -19,17 +19,20 @@
   grid-template-areas:
     "title title"
     "filters button";
-  row-gap: 14px;
+  /* Відступ від заголовка тепер контролюється єдиним класом .title */
   margin-bottom: 20px;
   align-items: center;
 }
 
+/* =========================================
+   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
+   ========================================= */
 .title {
   grid-area: title;
-  margin: 0;
-  font-size: 32px;
+  font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
+  margin: 0 0 24px 0;
   letter-spacing: -0.02em;
 }
 
@@ -263,7 +266,7 @@
 .plus-icon { font-size: 20px; line-height: 1; font-weight: 400; }
 
 /* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (Портрет)
    ========================================= */
 
 @media (max-width: 1024px) {
@@ -273,7 +276,6 @@
       "title"
       "filters"
       "button";
-    row-gap: 16px;
   }
   .add-btn { justify-content: center; }
 }
@@ -283,7 +285,14 @@
     padding-top: 16px;
     padding-bottom: 120px; 
   }
-  .title { font-size: 28px; }
+  
+  /* Уніфікований заголовок для портрету */
+  .title { 
+    font-size: 24px;
+    margin-bottom: 16px;
+    width: 100%;
+  }
+  
   .category-title { font-size: 18px; }
   
   .filters {
@@ -338,7 +347,6 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    /* Додаємо 20px по боках, щоб з'явився гарний відступ від сайдбару */
     padding: 12px 20px; 
   }
 
@@ -366,9 +374,11 @@
     flex-shrink: 0;
   }
 
+  /* Уніфікований заголовок для ландшафту */
   .title { 
     font-size: 20px; 
-    padding-top: 0; 
+    margin: 0 0 12px 0;
+    flex-shrink: 0;
     line-height: 1; 
   }
   
