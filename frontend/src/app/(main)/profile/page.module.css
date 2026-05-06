@@ -89,9 +89,9 @@
 }
 
 .changePasswordBtn {
-  background-color: transparent;
-  color: var(--accent-orange);
-  border: 1px solid var(--accent-orange);
+  background-color: #2C2C2C; /* Новий темний колір */
+  color: #FFFFFF;
+  border: none;
   border-radius: 12px;
   padding: 16px;
   font-size: 16px;
@@ -101,14 +101,13 @@
 }
 
 .changePasswordBtn:hover {
-  background-color: var(--accent-orange);
-  color: #FFFFFF;
+  opacity: 0.9;
 }
 
 .faqBtn {
-  background-color: var(--bg-card-inner);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+  background-color: #2C2C2C; /* Новий темний колір */
+  color: #FFFFFF;
+  border: none;
   border-radius: 12px;
   padding: 16px;
   font-size: 16px;
@@ -118,7 +117,7 @@
 }
 
 .faqBtn:hover {
-  border-color: var(--accent-orange);
+  opacity: 0.9;
 }
 
 .deleteBtn {
@@ -156,9 +155,9 @@
   .logoutBtn {
     display: block;
     width: 100%;
-    background-color: var(--bg-card);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
+    background-color: #2C2C2C; /* Новий темний колір */
+    color: #FFFFFF;
+    border: none;
     border-radius: 12px;
     padding: 16px;
     font-size: 16px;
@@ -167,6 +166,10 @@
     text-align: center;
     transition: all 0.2s;
     margin-top: 12px;
+  }
+
+  .logoutBtn:hover {
+    opacity: 0.9;
   }
 
   .themeToggleMobile {
