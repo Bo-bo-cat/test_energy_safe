@@ -357,19 +357,18 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Для Firefox */
+    scrollbar-width: none; 
     gap: 12px;
     margin-bottom: 16px;
-    /* Від'ємні відступи для того, щоб карусель доходила до країв екрану */
     margin-left: -16px;
     margin-right: -16px;
     padding-left: 16px;
     padding-right: 16px;
   }
-  .topGrid::-webkit-scrollbar { display: none; } /* Для Chrome/Safari */
+  .topGrid::-webkit-scrollbar { display: none; }
 
   .card {
-    flex: 0 0 88%; /* Картка займає 88% ширини екрану, щоб було видно наступну */
+    flex: 0 0 88%; 
     scroll-snap-align: center;
   }
 
@@ -394,7 +393,7 @@
 
   .statusStats { 
     display: flex;
-    flex-direction: column; /* Вертикальне розташування статистики */
+    flex-direction: column; 
     gap: 8px;
     flex: 1; 
   }
@@ -412,26 +411,38 @@
     font-size: 10px;
   }
 
-  /* 2 & 3. Середній ряд: сітка 2x2 та 1x3 */
+  /* 2. Середній ряд */
   .middleFlex { 
     flex-direction: column; 
     gap: 12px; 
   }
 
+  /* НОВЕ: Карусель для кнопок швидких дій */
   .actionsGroup {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Сітка 2x2 */
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
     gap: 12px;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
-
-  .statsGroup {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 блоки в один ряд */
-    gap: 8px;
-  }
+  .actionsGroup::-webkit-scrollbar { display: none; }
 
   .actionBtn {
-    padding: 12px 8px;
+    flex: 0 0 120px; /* Фіксована ширина кнопки в каруселі */
+    scroll-snap-align: start;
+    padding: 16px 8px;
+  }
+
+  /* 3. Три блоки статистики в один ряд */
+  .statsGroup {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px;
   }
 
   .smallStatBox {
