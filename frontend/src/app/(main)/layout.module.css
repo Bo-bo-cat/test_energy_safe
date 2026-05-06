@@ -261,16 +261,11 @@
     width: 72px; /* Стискаємо сайдбар до колонки іконок */
     padding: 16px 8px;
     align-items: center;
+    justify-content: center; /* Центруємо меню по вертикалі, якщо прибрали логотип */
   }
 
   .logo-container {
-    margin-bottom: 24px;
-    padding-left: 0;
-    justify-content: center;
-  }
-
-  .logo-text {
-    display: none; /* Ховаємо назву Energy Safe */
+    display: none; /* Повністю ховаємо логотип і блискавку */
   }
 
   .nav-menu {

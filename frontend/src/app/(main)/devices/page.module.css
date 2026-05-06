@@ -338,14 +338,13 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    /* Додаємо 20px по боках, щоб з'явився гарний відступ від сайдбару */
+    padding: 12px 20px; 
   }
 
   .header-container {
     flex-direction: row;
     justify-content: space-between;
-    /* ВИПРАВЛЕНО: Автоматично притискаємо плашку до нижнього краю лівого блоку */
     align-items: flex-end; 
     margin-bottom: 12px;
     gap: 16px;
@@ -362,7 +361,7 @@
 
   .summary-card {
     margin-bottom: 0;
-    margin-top: 0; /* Прибираємо жорсткий відступ */
+    margin-top: 0; 
     padding: 10px 16px;
     flex-shrink: 0;
   }
