@@ -1,213 +1,430 @@
-/* src/app/(main)/devices/add/manual/page.module.css */
+/* src/app/(main)/page.module.css */
 
-.page-wrapper {
+.wrap {
   width: 100%;
-  padding: 40px 108px 60px 108px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px 24px;
   font-family: 'Inter', sans-serif;
+  color: var(--text-main);
   box-sizing: border-box;
-  color: var(--text-main); /* Основний колір тексту для сторінки */
-  transition: color 0.3s ease;
+  overflow-x: clip; 
 }
 
-.title {
-  color: var(--accent-orange); /* Акцентний колір */
-  font-size: 36px;
-  font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 32px; 
-  letter-spacing: -0.02em;
+.wrap * {
+  box-sizing: border-box;
 }
 
-.form {
+/* --- ВЕРХНІЙ РЯД --- */
+.topGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
-.input-group {
+.cardTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-main);
+}
+
+.statusContent {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.label {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-main); /* Основний текст */
-}
-
-.input {
-  background-color: var(--bg-card); /* Фон інпуту */
-  border: 1px solid var(--border-color); /* Рамка інпуту */
-  border-radius: 10px;
-  padding: 14px 16px;
-  font-size: 16px; 
-  font-weight: 500;
-  color: var(--text-main); /* Текст усередині інпуту */
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
-  font-family: inherit;
-}
-
-.input::placeholder {
-  color: var(--text-muted); /* Плейсхолдер */
-  font-weight: 500;
-}
-
-.input:focus {
-  border-color: var(--accent-orange); /* Рамка при фокусі */
-  box-shadow: 0 0 0 3px rgba(255, 110, 0, 0.1);
-}
-
-/* Стиль для випадаючого списку */
-.select {
-  appearance: none; 
-  cursor: pointer;
-  /* Для кастомної стрілочки можна залишити чорну, або використати 'currentColor' в inline SVG, 
-     але для простоти поки залишаємо як є (може бути менш помітною на темному тлі, 
-     ідеально - замінити SVG на той, що бере колір з currentColor або використовувати React-компонент) */
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='8' viewBox='0 0 14 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%238E8E93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* Змінив колір стрілочки на сірий, щоб було видно і там, і там */
-  background-repeat: no-repeat;
-  background-position: right 16px center; 
-  padding-right: 40px;
-}
-
-.select:invalid {
-  color: var(--text-muted); 
-}
-
-.search-row {
-  display: flex;
-  gap: 10px;
-  align-items: stretch;
-}
-
-.search-row .input {
+  flex-direction: row; 
+  align-items: center;
+  gap: 50px; /* Трохи збільшили відступ між великим графіком і плашками */
   flex: 1;
 }
 
-.search-btn {
-  background-color: var(--text-main); /* Кнопка бере колір тексту (темна у світлій темі, світла у темній) */
-  color: var(--bg-main); /* Контрастний текст */
-  border: none;
-  border-radius: 10px;
-  padding: 14px 20px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity 0.2s ease; /* Використовуємо opacity для ховеру */
-  font-family: inherit;
+/* --- ЗБІЛЬШЕНИЙ ГРАФІК --- */
+.donutWrapper {
+  position: relative;
+  width: 260px; /* Збільшили з 200px */
+  height: 130px; /* Збільшили зі 100px */
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.search-btn:hover:not(:disabled) {
-  opacity: 0.8;
+.donutSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* Дозволяє товстим краям лінії не обрізатись контейнером */
 }
 
-.search-btn:disabled {
-  background-color: var(--border-color); /* Колір неактивної кнопки */
+.donutText {
+  position: absolute;
+  bottom: -4px; /* Опустили текст трохи нижче до краю дуги */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donutPercent {
+  font-size: 56px; /* ВЕЛИЧЕЗНИЙ відсоток як на макеті (було 40px) */
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.donutLabel {
+  font-size: 13px; /* Трохи збільшили підпис */
+  font-weight: 600;
   color: var(--text-muted);
-  cursor: not-allowed;
+  margin-top: 8px;
+}
+/* ------------------------ */
+
+.statusStats {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  height: 100%;
 }
 
-.error {
-  color: #e53935; /* Помилка завжди червона (можна винести в змінні, якщо є у дизайні) */
-  font-size: 14px;
+.statBoxOutline {
+  flex: 1;
+  background-color: var(--bg-main); 
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px 12px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  text-align: center;
+}
+
+.statBoxOutlineValue {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.statBoxOutlineLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Картка ДБЖ */
+.upsSpecs {
+  display: flex;
+  flex-direction: column;
+}
+
+.upsRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.upsRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.upsLabel {
+  font-size: 13px;
   font-weight: 500;
-  margin: 4px 0 0 0;
+  color: var(--text-muted);
 }
 
-.checkbox-group {
+.upsValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* --- СЕРЕДНІЙ РЯД --- */
+.middleFlex {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.actionsGroup {
+  display: flex;
+  flex: 4; 
+  gap: 16px;
+}
+
+.statsGroup {
+  display: flex;
+  flex: 3;
+  gap: 16px;
+}
+
+.actionBtn {
+  flex: 1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px; 
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.actionBtn:hover {
+  border-color: var(--accent-orange);
+  transform: translateY(-2px);
+}
+
+.actionIcon {
+  color: var(--text-main); 
+  width: 32px;
+  height: 32px;
+}
+
+.actionText {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.smallStatBox {
+  flex: 1;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; 
+  text-align: center;
+  gap: 8px;
+}
+
+.smallStatValue {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange); 
+  line-height: 1;
+}
+
+.smallStatLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+/* --- НИЖНІЙ РЯД (Сценарії) --- */
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+.scenariosFlex {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scenarioChip {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--accent-orange); /* Акцентний колір для чекбокса */
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 14px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
   cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+  justify-content: center;
 }
 
-.submit-btn {
-  background-color: var(--text-main); /* Так само як і кнопка пошуку */
-  color: var(--bg-main);
-  border: none;
-  border-radius: 10px;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  margin-top: 8px; 
-  font-family: inherit;
+.scenarioChip.active {
+  background-color: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #FFFFFF;
 }
 
-.submit-btn:hover:not(:disabled) {
-  opacity: 0.8;
+.scenarioChip:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 
-.submit-btn:disabled {
-  background-color: var(--border-color);
-  color: var(--text-muted);
-  cursor: not-allowed;
+.checkIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* =========================================
-   Адаптація для планшетів та мобільних
+   АДАПТАЦІЯ (МОБІЛЬНІ ВЕРТИКАЛЬНІ)
    ========================================= */
-@media (max-width: 950px) {
-  .page-wrapper {
-    padding: 32px 24px; 
-  }
 
-  .title {
-    font-size: 32px;
-    margin-bottom: 24px;
-  }
-
-  .form {
-    gap: 20px;
+@media (max-width: 1100px) {
+  .topGrid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* =========================================
-   Адаптація для ГОРИЗОНТАЛЬНОГО телефону
-   ========================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .page-wrapper {
-    padding: 16px 24px;
+@media (max-width: 768px) {
+  .wrap {
+    padding: 16px 16px 100px 16px;
+  }
+  .statusContent {
+    flex-direction: column; 
+    gap: 32px;
+  }
+  
+  /* Зменшуємо графік на телефонах */
+  .donutWrapper {
+    width: 200px;
+    height: 100px;
+  }
+  .donutPercent {
+    font-size: 40px;
+  }
+  .donutLabel {
+    font-size: 11px;
+  }
+  
+  .statusStats {
+    width: 100%;
+    flex-direction: row; 
+    gap: 8px;
+  }
+  .statBoxOutline {
+    padding: 16px 8px;
+  }
+  .statBoxOutlineValue { font-size: 20px; }
+  .statBoxOutlineLabel { font-size: 10px; }
+  
+  .middleFlex {
+    flex-direction: column; 
+    gap: 16px;
   }
 
-  .title {
-    font-size: 24px;
-    margin-bottom: 16px;
-  }
-
-  .form {
+  .actionsGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
-  .input-group {
-    gap: 6px;
+  .statsGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
-  .label {
-    font-size: 14px;
+  .statsGroup .smallStatBox:nth-child(3) {
+    grid-column: span 2;
   }
+}
 
-  .input {
-    padding: 10px 14px;
-    font-size: 14px;
-    border-radius: 8px;
+/* =========================================
+   ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
+   ========================================= */
+
+@media (max-width: 950px) and (orientation: landscape) {
+  .wrap {
+    padding: 12px 16px; 
   }
-
-  .submit-btn {
-    padding: 12px;
+  
+  .cardTitle, .sectionTitle {
     font-size: 16px;
-    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+
+  .topGrid {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .statusContent {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .donutWrapper {
+    transform: scale(0.55); /* Сильніше стискаємо новий великий графік для ландшафту */
+    margin: -30px 0; 
+  }
+
+  .statBoxOutline { padding: 8px; }
+  .statBoxOutlineValue { font-size: 18px; margin-bottom: 4px; }
+  .statBoxOutlineLabel { font-size: 10px; }
+
+  .upsRow { padding: 8px 0; }
+  .upsLabel { font-size: 11px; }
+  .upsValue { font-size: 12px; }
+
+  .middleFlex {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .middleFlex::-webkit-scrollbar { display: none; }
+  
+  .actionsGroup, .statsGroup {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    width: max-content; 
+    flex-shrink: 0;
+  }
+
+  .actionBtn, .smallStatBox {
+    width: 110px; 
+    flex-shrink: 0;
+    padding: 10px 8px;
+    border-radius: 12px;
+    gap: 4px;
+  }
+  
+  .actionIcon { width: 20px; height: 20px; }
+  .actionText { font-size: 11px; }
+  .smallStatValue { font-size: 20px; margin-bottom: 4px; }
+  .smallStatLabel { font-size: 9px; }
+
+  .scenarioChip {
+    padding: 8px 16px;
+    font-size: 13px;
+    min-width: 120px;
+    border-radius: 10px;
   }
 }
