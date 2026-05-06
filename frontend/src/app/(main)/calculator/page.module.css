@@ -545,7 +545,7 @@
 /* 📱 ГОРИЗОНТАЛЬНИЙ РЕЖИМ (ЛАНДШАФТ) - МАКСИМАЛЬНО КОМПАКТНИЙ */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding: 8px 16px;
+    padding: 12px 20px;
     height: 100vh; /* Фіксуємо висоту екрану */
     overflow: hidden; /* Вимикаємо загальний скролл сторінки */
     display: flex;
@@ -553,8 +553,8 @@
   }
 
   .title {
-    font-size: 18px; /* Сильно зменшений заголовок */
-    margin: 0 0 8px 0;
+    font-size: 20px; 
+    margin: 0 0 12px 0;
     flex-shrink: 0;
   }
 
@@ -562,7 +562,7 @@
     flex: 1; 
     display: flex;
     flex-direction: row; /* Дві колонки */
-    gap: 12px; /* Зменшений відступ між лівою і правою колонкою */
+    gap: 16px; 
     min-height: 0; /* Магія, щоб скрол працював усередині колонок */
   }
 
@@ -572,61 +572,73 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Скрол для лівої частини */
-    padding-right: 6px;
-    gap: 8px; /* Мінімальні проміжки між секціями */
+    padding-right: 8px;
+    gap: 12px; 
   }
 
-  /* Компактні фільтри "Усі, Дім, Офіс" */
-  .filters-row { gap: 6px; margin-bottom: 0; }
-  .filter-chip { padding: 4px 10px; font-size: 11px; }
+  .filters-row { gap: 8px; margin-bottom: 0; }
+  .filter-chip { padding: 6px 12px; font-size: 12px; }
   
-  /* Компактні іконки */
-  .icon-filters { gap: 6px; margin-top: -4px; }
-  .icon-chip { width: 30px; height: 30px; border-radius: 6px; }
-  .device-svg { width: 16px; height: 16px; }
+  .icon-filters { gap: 8px; margin-top: -6px; }
+  .icon-chip { width: 34px; height: 34px; border-radius: 8px; }
+  .device-svg { width: 18px; height: 18px; }
 
-  /* Компактний список приладів */
-  .device-list { gap: 6px; }
-  .device-item { padding: 6px 10px; border-radius: 8px; }
-  .device-name { font-size: 12px; }
-  .device-power { font-size: 11px; }
-  .checkbox { width: 16px; height: 16px; border-radius: 4px; }
-  .check-icon { width: 10px; height: 10px; }
+  .device-list { gap: 8px; }
+  .device-item { padding: 8px 12px; border-radius: 10px; }
+  .device-name { font-size: 14px; }
+  .device-power { font-size: 12px; }
+  .checkbox { width: 18px; height: 18px; border-radius: 4px; }
+  .check-icon { width: 12px; height: 12px; }
 
-  /* Компактна сітка ДБЖ */
+  /* Компактна сітка ДБЖ -> ПЕРЕТВОРЕНА НА КАРУСЕЛЬ */
   .systems-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 8px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    width: 100%;
   }
-  .system-card, .add-system-card { padding: 8px; border-radius: 10px; }
-  .system-title { font-size: 12px; margin-bottom: 6px; }
-  .system-spec { padding: 2px 0; }
-  .spec-label { font-size: 9px; }
-  .spec-value { font-size: 10px; }
-  .add-icon { font-size: 24px; margin-bottom: 2px; }
-  .add-system-card span:last-child { font-size: 11px !important; }
+  .systems-grid::-webkit-scrollbar { display: none; }
 
-  /* ПРАВА КОЛОНКА (Зафіксована) */
+  .system-card, .add-system-card { 
+    flex: 0 0 160px; /* Фіксована ширина карток у каруселі */
+    padding: 12px; 
+    border-radius: 12px; 
+    scroll-snap-align: start;
+    height: auto; 
+  }
+  .system-title { font-size: 14px; margin-bottom: 8px; }
+  .system-spec { padding: 3px 0; flex-direction: row; justify-content: space-between; align-items: center; border-bottom: none;}
+  .spec-label { font-size: 10px; }
+  .spec-value { font-size: 11px; }
+  .add-icon { font-size: 28px; margin-bottom: 4px; }
+  .add-system-card span:last-child { font-size: 12px !important; text-align: center; }
+
+  /* ПРАВА КОЛОНКА (Зафіксована, Центрована) */
   .summary-panel {
-    width: 240px; /* Дуже вузька плашка */
+    width: 260px; /* Адекватна ширина */
     flex-shrink: 0;
     position: static; 
     height: 100%;
-    padding: 12px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Розтягуємо результати по вертикалі */
-    border-radius: 12px;
+    justify-content: center; /* Замість space-between, щоб не було дірок */
+    gap: 12px; /* Фіксований відступ між блоками */
+    border-radius: 16px;
   }
 
-  .summary-title { font-size: 14px; margin-bottom: 8px; text-align: center; }
+  .summary-title { font-size: 16px; margin: 0; text-align: center; }
   
-  .stats-grid { gap: 4px; margin-bottom: 8px; }
-  .stat-box { padding: 6px 2px; border-radius: 8px; }
-  .stat-value { font-size: 16px; }
-  .stat-label { font-size: 9px; line-height: 1.1; }
+  .stats-grid { gap: 6px; margin: 0; }
+  .stat-box { padding: 8px 4px; border-radius: 8px; }
+  .stat-value { font-size: 18px; }
+  .stat-label { font-size: 10px; line-height: 1.1; }
   
-  .progress-container { margin-bottom: 12px; height: 6px; }
+  .progress-container { margin: 4px 0; height: 8px; }
   
-  .save-btn { padding: 8px; font-size: 12px; border-radius: 8px; height: 34px; }
+  .save-btn { padding: 10px; font-size: 14px; border-radius: 10px; height: 40px; margin-top: 4px; }
 }
