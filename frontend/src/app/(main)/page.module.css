@@ -8,7 +8,7 @@
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   box-sizing: border-box;
-  overflow-x: clip; /* Утримує все в рамках екрану, не ріже тіні всередині */
+  overflow-x: clip; 
 }
 
 .wrap * {
@@ -147,18 +147,15 @@
 /* --- СЕРЕДНІЙ РЯД (РОЗДІЛЕНИЙ НА ГРУПИ) --- */
 .middleFlex {
   display: flex;
-  flex-wrap: wrap; /* Дозволяє блокам падати один під одного на менших екранах */
   gap: 16px;
   margin-bottom: 32px;
-  /* ПРИБРАНО overflow-x: auto; тіні більше не ріжуться! */
 }
 
-/* Блок з кнопками (займає більше місця пропорційно) */
+/* Блок з кнопками */
 .actionsGroup {
   display: flex;
   flex: 4; 
   gap: 16px;
-  min-width: 300px;
 }
 
 /* Блок зі статистикою */
@@ -166,12 +163,10 @@
   display: flex;
   flex: 3;
   gap: 16px;
-  min-width: 250px;
 }
 
 .actionBtn {
   flex: 1;
-  min-width: 100px; 
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -208,7 +203,6 @@
 
 .smallStatBox {
   flex: 1;
-  min-width: 100px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -312,14 +306,34 @@
   .statBoxOutlineValue { font-size: 20px; }
   .statBoxOutlineLabel { font-size: 10px; }
   
-  .actionsGroup, .statsGroup {
-    flex-wrap: wrap; /* На вузьких екранах кнопки падають у 2 ряди */
+  .middleFlex {
+    flex-direction: column; /* Ставимо блоки дій і статистики один під одним */
+    gap: 16px;
+  }
+
+  /* Жорстка сітка 2x2 для кнопок дій */
+  .actionsGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Жорстка сітка 2x2 для статистики */
+  .statsGroup {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Робимо 3-тю плашку статистики на всю ширину, щоб не було дірки */
+  .statsGroup .smallStatBox:nth-child(3) {
+    grid-column: span 2;
   }
 }
 
 /* =========================================
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
-   Усе стискається, щоб поміститися на один екран
+   Абсолютний захист від "наїзду" елементів
    ========================================= */
 
 @media (max-width: 950px) and (orientation: landscape) {
@@ -347,16 +361,12 @@
     gap: 16px;
   }
 
-  /* Пропорційно зменшуємо графік за допомогою transform, 
-     щоб не зламати логіку малювання SVG */
   .donutWrapper {
     transform: scale(0.65);
     margin: -15px 0; 
   }
 
-  .statBoxOutline {
-    padding: 8px;
-  }
+  .statBoxOutline { padding: 8px; }
   .statBoxOutlineValue { font-size: 18px; margin-bottom: 4px; }
   .statBoxOutlineLabel { font-size: 10px; }
 
@@ -364,18 +374,30 @@
   .upsLabel { font-size: 11px; }
   .upsValue { font-size: 12px; }
 
+  /* Робимо середній ряд скрольованою стрічкою */
   .middleFlex {
-    gap: 8px;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 12px;
     margin-bottom: 12px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
   }
+  .middleFlex::-webkit-scrollbar { display: none; }
   
   .actionsGroup, .statsGroup {
+    display: flex;
+    flex-wrap: nowrap;
     gap: 8px;
+    width: max-content; /* Гарантує, що вони ніколи не стиснуться і не наїдуть */
+    flex-shrink: 0;
   }
 
-  /* Значно зменшуємо середні кнопки */
   .actionBtn, .smallStatBox {
-    padding: 8px;
+    width: 110px; /* Фіксована ширина для всіх плашок в горизонталі */
+    flex-shrink: 0;
+    padding: 10px 8px;
     border-radius: 12px;
     gap: 4px;
   }
