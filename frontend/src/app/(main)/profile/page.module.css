@@ -9,7 +9,6 @@
   transition: color 0.3s ease;
 }
 
-/* Ховаємо перемикач теми та логаут на десктопі */
 .logoutBtn, .themeToggleMobile {
   display: none; 
 }
@@ -18,7 +17,7 @@
   font-size: 36px;
   font-weight: 800;
   color: var(--accent-orange);
-  margin: 0 0 32px 0;
+  margin: 0 0 40px 0;
 }
 
 .profileHeader {
@@ -37,7 +36,7 @@
   justify-content: center;
   font-size: 40px;
   font-weight: 800;
-  color: #FFFFFF; /* Залишаємо білим, бо фон аватара кольоровий */
+  color: #FFFFFF; 
   text-transform: uppercase;
   user-select: none;
 }
@@ -45,13 +44,13 @@
 .userInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .userName {
@@ -65,6 +64,8 @@
   color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s;
+  width: 22px;
+  height: 22px;
 }
 
 .editIcon:hover {
@@ -72,17 +73,52 @@
 }
 
 .userEmail {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-muted);
   margin: 0;
 }
 
+/* Кнопки макету */
 .controlsRow {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 400px; /* Обмежуємо ширину кнопок */
+  width: 100%;
+  max-width: 400px; 
+}
+
+.changePasswordBtn {
+  background-color: transparent;
+  color: var(--accent-orange);
+  border: 1px solid var(--accent-orange);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.changePasswordBtn:hover {
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+}
+
+.faqBtn {
+  background-color: var(--bg-card-inner);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.faqBtn:hover {
+  border-color: var(--accent-orange);
 }
 
 .deleteBtn {
@@ -90,189 +126,18 @@
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
-  padding: 16px 40px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  width: 100%;
-}
-
-.deleteBtn:hover {
-  opacity: 0.9;
-}
-
-.deleteBtn:active {
-  transform: scale(0.98);
-}
-
-.changePasswordBtn {
-  background-color: transparent;
-  color: var(--accent-orange);
-  border: 2px solid var(--accent-orange);
-  border-radius: 12px;
-  padding: 16px 40px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, transform 0.1s;
-  width: 100%;
-}
-
-.changePasswordBtn:hover {
-  background-color: var(--accent-orange);
-  color: #fff;
-}
-
-.changePasswordBtn:active {
-  transform: scale(0.98);
-}
-
-.faqBtn {
-  background-color: transparent;
-  color: var(--text-main);
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px 40px;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, transform 0.1s;
-  width: 100%;
-}
-
-.faqBtn:hover {
-  border-color: var(--accent-orange);
-  color: var(--accent-orange);
-}
-
-.faqBtn:active {
-  transform: scale(0.98);
-}
-
-/* Модальне вікно зміни пароля */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.passwordModal {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 32px;
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modalTitle {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin: 0;
-}
-
-.inputWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.passwordInput {
-  width: 100%;
-  padding: 14px 48px 14px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-main);
-  color: var(--text-main);
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.passwordInput:focus {
-  border-color: var(--accent-orange);
-}
-
-.eyeBtn {
-  position: absolute;
-  right: 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-}
-
-.eyeIcon {
-  width: 20px;
-  height: 20px;
-}
-
-.errorMsg {
-  color: #FF3B30;
-  font-size: 14px;
-  margin: 0;
-}
-
-.successMsg {
-  color: #34C759;
-  font-size: 14px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.modalButtons {
-  display: flex;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.confirmBtn {
-  flex: 1;
-  background-color: var(--accent-orange);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
+  padding: 16px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
-.confirmBtn:hover {
+.deleteBtn:hover {
   opacity: 0.9;
 }
 
-.cancelBtn {
-  flex: 1;
-  background-color: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.cancelBtn:hover {
-  background-color: var(--bg-card-inner);
-}
-
-/* Адаптація під мобільні (вертикальні + горизонтальні) */
+/* Адаптація під мобільні */
 @media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
   .profileHeader {
     flex-direction: column;
@@ -285,31 +150,25 @@
   }
   
   .controlsRow {
-    width: 100%;
     max-width: 100%;
   }
 
-  /* Показуємо мобільні елементи */
   .logoutBtn {
     display: block;
     width: 100%;
-    background-color: var(--bg-card); /* Адаптивний фон */
+    background-color: var(--bg-card);
     color: var(--text-main);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     text-align: center;
-    transition: background-color 0.2s, border-color 0.3s;
+    transition: all 0.2s;
+    margin-top: 12px;
   }
 
-  .logoutBtn:active {
-    background-color: var(--bg-card-inner);
-  }
-
-  /* Мобільний перемикач теми */
   .themeToggleMobile {
     display: flex;
     align-items: center;
@@ -320,14 +179,13 @@
     border-radius: 12px;
     margin-bottom: 16px;
     color: var(--text-main);
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
+    transition: all 0.3s;
     user-select: none;
   }
 
-  /* Сам тумблер (копія з layout.module.css) */
   .toggle-switch {
     width: 51px;
     height: 31px;
