@@ -265,44 +265,77 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .page-wrapper {
-    padding: 16px 24px;
+    padding: 12px 24px;
+    height: 100vh; /* Фіксуємо висоту під екран */
+    overflow: hidden; /* Відключаємо скролл повністю */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Центруємо контент по вертикалі */
   }
 
   .title {
-    font-size: 24px;
-    margin-bottom: 16px;
+    font-size: 20px;
+    margin-bottom: 12px;
   }
 
+  /* ПЕРЕТВОРЮЄМО ФОРМУ НА СІТКУ 2x2 */
   .form {
-    gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px; /* Менші відступи */
+    align-items: end; /* Магія: вирівнює поля та кнопку по нижньому краю */
   }
 
   .input-group {
-    gap: 6px;
+    gap: 4px;
+    width: 100%;
   }
 
   .label {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .input {
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
     border-radius: 8px;
+    height: 36px; /* Фіксована висота економить місце */
   }
   
+  .search-btn {
+    padding: 0 12px;
+    font-size: 13px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .custom-select-dropdown {
+    max-height: 120px; /* Зменшуємо дроп-даун */
+  }
+
   .custom-select-item {
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .add-startup-btn {
+    font-size: 13px;
+    height: 36px;
+    margin-top: 0;
+    display: flex;
+    align-items: center; /* Вирівнює текст кнопки з інпутом сусідньої колонки */
   }
 
   .submit-btn {
-    padding: 12px;
-    font-size: 16px;
+    grid-column: 1 / -1; /* Змушує кнопку зберегти розтягнутись на 2 колонки */
+    padding: 10px;
+    font-size: 14px;
     margin-top: 4px;
+    height: 40px;
   }
   
-  .add-startup-btn {
-    font-size: 14px;
+  .error {
+    font-size: 11px;
+    margin: 2px 0 0 0;
   }
 }
