@@ -49,7 +49,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   };
 
   const navItems = [
-    { href: '/', label: 'Головна', Icon: HomeIcon },
+    { href: '/dashboard', label: 'Головна', Icon: HomeIcon },
     { href: '/devices', label: 'Прилади', Icon: DeviceIcon },
     { href: '/calculator', label: 'Розрахунок', Icon: CalcIcon },
     { href: '/scenarios', label: 'Сценарії', Icon: ScenarioIcon },

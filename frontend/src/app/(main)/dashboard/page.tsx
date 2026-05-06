@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
-import { CameraIcon } from '../../components/icons/Camera';
-import { CalcIcon } from '../../components/icons/Calc';
-import { ScenarioIcon } from '../../components/icons/Scenario';
-import { SystemIcon } from '../../components/icons/System';
+import { CameraIcon } from '../../../components/icons/Camera';
+import { CalcIcon } from '../../../components/icons/Calc';
+import { ScenarioIcon } from '../../../components/icons/Scenario';
+import { SystemIcon } from '../../../components/icons/System';
 
 const cleanModelName = (name: string) => {
   if (!name) return 'Оберіть систему';
