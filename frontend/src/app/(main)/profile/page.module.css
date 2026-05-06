@@ -7,11 +7,24 @@
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
   transition: color 0.3s ease;
+  box-sizing: border-box;
 }
 
 /* Ховаємо мобільні кнопки на десктопі */
 .logoutBtn, .themeToggleMobile {
   display: none; 
+}
+
+/* =========================================
+   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
+   ========================================= */
+.title {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin: 0 0 24px 0;
+  letter-spacing: -0.02em;
+  text-align: left;
 }
 
 /* =========================================
@@ -66,13 +79,6 @@
 /* =========================================
    ОСНОВНІ СТИЛІ ПРОФІЛЮ
    ========================================= */
-.title {
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  margin: 0 0 40px 0;
-}
-
 .profileHeader {
   display: flex;
   align-items: center;
@@ -141,8 +147,8 @@
 }
 
 .changePasswordBtn, .faqBtn {
-  background-color: var(--text-main); /* Змінна замість #2C2C2C */
-  color: var(--bg-main);              /* Змінна замість #FFFFFF */
+  background-color: var(--text-main); 
+  color: var(--bg-main);              
   border: none;
   border-radius: 12px;
   padding: 16px;
@@ -175,7 +181,21 @@
 /* =========================================
    Адаптація для планшетів та вертикальних мобільних
    ========================================= */
-@media (max-width: 768px) {
+@media (max-width: 768px) and (orientation: portrait) {
+  .wrap {
+    padding-top: 16px;
+    padding-bottom: 120px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Уніфікований заголовок для портрету */
+  .title {
+    font-size: 24px;
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
   .profileHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -225,9 +245,11 @@
     overflow-y: auto; 
   }
 
+  /* Уніфікований заголовок для ландшафту */
   .title {
-    font-size: 20px;
-    margin-bottom: 12px;
+    font-size: 20px; 
+    margin: 0 0 12px 0;
+    flex-shrink: 0;
   }
 
   .profileHeader {

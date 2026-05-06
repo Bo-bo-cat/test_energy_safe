@@ -172,7 +172,7 @@ export default function SystemsPage() {
 
   return (
     <div className={styles.wrap}>
-      <h1 className={styles.pageTitle}>
+      <h1 className={styles.title}>
         {tab === 'my' ? 'Система' : 'Рекомендовані системи'}
       </h1>
 

@@ -16,17 +16,17 @@
 }
 
 /* =========================================
-   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
+   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ЦЕНТР)
    ========================================= */
 .title {
   width: 100%;
-  max-width: 900px; /* Вирівнюємо по ширині карток нижче */
+  max-width: 900px; 
+  margin: 0 auto 32px auto; /* Відцентровано відносно сторінки */
   font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
-  margin: 0 0 24px 0;
   letter-spacing: -0.02em;
-  text-align: left; /* Примусово лівий край для консистентності */
+  text-align: center; /* Специфічний нюанс для цієї сторінки */
 }
 
 .cards {
@@ -118,8 +118,8 @@
   /* Уніфікований заголовок для портрету */
   .title { 
     font-size: 24px; 
-    margin-bottom: 16px; 
-    width: 100%;
+    margin-bottom: 24px; 
+    text-align: center;
   }
 
   .cards {
@@ -157,11 +157,10 @@
   
   /* Уніфікований заголовок для ландшафту */
   .title { 
-    width: 100%;
     font-size: 20px; 
-    margin: 0 0 12px 0; 
+    margin: 0 auto 16px auto; 
     flex-shrink: 0;
-    text-align: left; 
+    text-align: center; 
   }
 
   .cards {

@@ -9,17 +9,23 @@
   box-sizing: border-box;
 }
 
+/* =========================================
+   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
+   ========================================= */
 .title {
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
-  margin: 0 0 8px 0;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.02em;
+  text-align: left;
 }
 
 .subtitle {
   font-size: 16px;
   color: var(--text-muted);
-  margin: 0 0 32px 0;
+  /* Компенсуємо відступ від нового заголовка, щоб текст був ближче */
+  margin: -12px 0 32px 0; 
 }
 
 .list {
@@ -95,13 +101,16 @@
     padding-bottom: 120px;
   }
 
+  /* Уніфікований заголовок для портрету */
   .title {
-    font-size: 28px;
-    margin-bottom: 4px;
+    font-size: 24px;
+    margin-bottom: 16px;
+    width: 100%;
   }
 
   .subtitle {
     font-size: 14px;
+    margin-top: -8px;
     margin-bottom: 24px;
   }
 
@@ -121,43 +130,46 @@
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
-    padding: 12px 20px; /* Стандартні відступи від країв */
+    padding: 12px 20px; 
     height: 100vh;
-    overflow-y: auto; /* Дозволяємо скрол всередині */
+    overflow-y: auto; 
   }
 
+  /* Уніфікований заголовок для ландшафту */
   .title {
-    font-size: 20px; /* Менший заголовок */
-    margin-bottom: 4px;
+    font-size: 20px; 
+    margin: 0 0 12px 0;
+    flex-shrink: 0;
   }
 
   .subtitle {
-    font-size: 13px; /* Менший підзаголовок */
-    margin-bottom: 16px; /* Зменшений відступ до списку */
+    font-size: 13px; 
+    margin-top: -6px;
+    margin-bottom: 16px; 
   }
 
   .list {
-    gap: 8px; /* Менша відстань між питаннями */
+    gap: 8px; 
     padding-bottom: 24px;
   }
 
   .item {
-    border-radius: 12px; /* Менше закруглення */
+    border-radius: 12px; 
   }
 
   .question {
-    font-size: 14px; /* Менший шрифт питання */
-    padding: 12px 16px; /* Менші внутрішні відступи */
+    font-size: 14px; 
+    padding: 12px 16px; 
   }
 
   .chevron {
-    width: 16px; /* Менша іконка стрілочки */
+    width: 16px; 
     height: 16px;
   }
 
   .answer {
-    padding: 0 16px 12px; /* Менші внутрішні відступи */
-    font-size: 13px; /* Менший шрифт відповіді */
-    line-height: 1.4; /* Щільніший текст */
+    padding: 0 16px 12px; 
+    font-size: 13px; 
+    line-height: 1.4; 
   }
 }

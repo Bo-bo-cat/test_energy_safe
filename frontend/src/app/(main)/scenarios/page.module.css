@@ -6,14 +6,19 @@
   padding-top: 32px;
   font-family: 'Inter', sans-serif;
   color: var(--text-main);
+  box-sizing: border-box;
 }
 
+/* =========================================
+   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
+   ========================================= */
 .title {
   font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
-  margin: 0 0 40px 0;
+  margin: 0 0 24px 0;
   letter-spacing: -0.02em;
+  text-align: left;
 }
 
 /* Сітка карток */
@@ -165,13 +170,19 @@
    ========================================= */
 @media (max-width: 768px) and (orientation: portrait) {
   .wrap {
+    padding-top: 16px;
+    padding-bottom: 120px; /* Місце для нижнього меню */
     padding-left: 16px;
     padding-right: 16px;
   }
+  
+  /* Уніфікований заголовок для портрету */
   .title {
-    font-size: 32px;
-    margin-bottom: 24px;
+    font-size: 24px;
+    margin-bottom: 16px;
+    width: 100%;
   }
+  
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -184,16 +195,16 @@
 @media (max-width: 950px) and (orientation: landscape) {
   .wrap {
     padding: 12px 20px; 
-    /* Додаємо фіксовану висоту і внутрішній скролл, щоб сторінка не розтягувалася глобально */
     height: 100vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
   }
 
+  /* Уніфікований заголовок для ландшафту */
   .title {
     font-size: 20px; 
-    margin-bottom: 12px;
+    margin: 0 0 12px 0;
     flex-shrink: 0;
   }
 
@@ -205,15 +216,15 @@
 
   .card {
     padding: 12px 16px;
-    min-height: auto; /* Дозволяємо картці бути меншою */
+    min-height: auto; 
     border-radius: 12px;
-    gap: 12px; /* Відстань між верхом і низом картки */
+    gap: 12px; 
   }
 
   .cardHeader {
-    margin-bottom: 0; /* Прибираємо великий відступ */
+    margin-bottom: 0; 
     gap: 8px;
-    align-items: center; /* Центруємо назву і кнопки */
+    align-items: center; 
   }
 
   .cardTitle {
@@ -238,11 +249,11 @@
 
   .statsRow {
     margin-bottom: 8px;
-    font-size: 10px; /* Сильно зменшуємо пояснювальний текст */
+    font-size: 10px; 
   }
 
   .statValue {
-    font-size: 14px; /* Зменшуємо цифри */
+    font-size: 14px; 
   }
 
   .progressContainer {
@@ -254,9 +265,8 @@
     border-radius: 3px;
   }
 
-  /* Зменшуємо картку "Додати" */
   .addCard {
-    min-height: 100px; /* Робимо її співрозмірною до інших */
+    min-height: 100px; 
     gap: 8px;
   }
 
