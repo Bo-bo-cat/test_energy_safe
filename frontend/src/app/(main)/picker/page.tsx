@@ -27,6 +27,8 @@ export default function SystemsPage() {
   
   // Стейт для алерту успішного додавання
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // НОВЕ: Стейт-ключ для примусового перезапуску анімації алерту
+  const [alertKey, setAlertKey] = useState(0); 
   
   // Стейт для модалки підтвердження видалення
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
@@ -82,6 +84,9 @@ export default function SystemsPage() {
       if (res.ok) {
         setQuery('');
         fetchMySystems();
+        // При ручному додаванні також показуємо алерт
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1);
       }
     } catch (err) { 
       console.error('Помилка додавання системи за назвою:', err); 
@@ -110,7 +115,10 @@ export default function SystemsPage() {
       });
       if (res.ok) {
         fetchMySystems();
-        setIsAlertOpen(true); // Показуємо алерт "Додано"
+        
+        // НОВЕ: Відкриваємо алерт і змінюємо його ключ, щоб анімація відтворилась знову
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1); 
       }
     } catch (err) { 
       console.error('Помилка додавання рекомендованої системи:', err); 
@@ -270,8 +278,9 @@ export default function SystemsPage() {
         </div>
       )}
 
-      {/* Тост-алерт при успішному додаванні */}
+      {/* НОВЕ: Передаємо key, щоб при зміні стейту React повністю перемонтував компонент */}
       <AlertModal 
+        key={alertKey}
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         title="Додано"
