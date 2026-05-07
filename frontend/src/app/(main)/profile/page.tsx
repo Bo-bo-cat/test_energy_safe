@@ -89,8 +89,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>Профіль</h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">Профіль</h1>
 
       <div className={styles.profileHeader}>
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
