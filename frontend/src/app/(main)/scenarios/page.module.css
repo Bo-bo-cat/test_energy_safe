@@ -1,26 +1,5 @@
 /* src/app/(main)/scenarios/page.module.css */
 
-.wrap {
-  width: 100%;
-  max-width: 1440px;
-  padding-top: 32px;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-main);
-  box-sizing: border-box;
-}
-
-/* =========================================
-   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
-   ========================================= */
-.title {
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  margin: 0 0 24px 0;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-
 /* Сітка карток */
 .grid {
   display: grid;
@@ -169,20 +148,6 @@
    ВЕРТИКАЛЬНА МОБІЛЬНА ВЕРСІЯ (Portrait)
    ========================================= */
 @media (max-width: 768px) and (orientation: portrait) {
-  .wrap {
-    padding-top: 16px;
-    padding-bottom: 120px; /* Місце для нижнього меню */
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  
-  /* Уніфікований заголовок для портрету */
-  .title {
-    font-size: 24px;
-    margin-bottom: 16px;
-    width: 100%;
-  }
-  
   .grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -193,21 +158,6 @@
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ) - КОМПАКТНА
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
-  .wrap {
-    padding: 12px 20px; 
-    height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Уніфікований заголовок для ландшафту */
-  .title {
-    font-size: 20px; 
-    margin: 0 0 12px 0;
-    flex-shrink: 0;
-  }
-
   /* Робимо сітку щільнішою: мінімум 2 колонки */
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 

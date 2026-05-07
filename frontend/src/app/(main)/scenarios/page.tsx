@@ -105,8 +105,8 @@ export default function ScenariosPage() {
   };
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>Мої Сценарії</h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">Мої Сценарії</h1>
 
       {isLoading ? (
         <p style={{ color: 'var(--text-muted)' }}>Завантаження сценаріїв...</p>
