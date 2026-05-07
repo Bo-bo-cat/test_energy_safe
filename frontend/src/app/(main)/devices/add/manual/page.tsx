@@ -163,8 +163,8 @@ export default function ManualAddDevicePage() {
   };
 
   return (
-    <div className={styles['page-wrapper']}>
-      <h1 className={styles['title']}>Ввести вручну</h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">Ввести вручну</h1>
 
       <form onSubmit={handleSubmit} className={styles['form']}>
         {/* Назва приладу */}
