@@ -17,6 +17,9 @@ import { LogOutIcon } from '../../components/icons/LogOut';
 // Імпорт модалки
 import { DecisionModal } from '../../components/DecisionModal';
 
+// НОВЕ: Імпортуємо наш навігатор для свайпів
+import { MobileSwipeNav } from '../../components/MobileSwipeNav';
+
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -86,17 +89,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <div className={styles['icon-wrapper']}>
                    <IconComponent className={styles['nav-icon']} />
                 </div>
-                {/* Обернули текст, щоб його можна було приховати */}
                 <span className={styles['nav-text']}>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Секція нижніх кнопок (притиснута до низу) */}
         <div className={styles['logout-section']}>
-          
-          {/* Перемикач теми */}
           <div className={styles['theme-toggle-row']} onClick={toggleTheme}>
             <span>Темна тема</span>
             <div className={`${styles['toggle-switch']} ${isDarkMode ? styles['active'] : ''}`}>
@@ -104,22 +103,22 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
 
-          {/* Кнопка виходу (відкриває модалку) */}
           <button onClick={() => setShowLogoutModal(true)} className={styles['logout-btn']}>
             <div className={styles['icon-wrapper']}>
               <LogOutIcon className={styles['nav-icon']} />
             </div>
             Вийти
           </button>
-
         </div>
       </aside>
 
       <main className={styles['main-content']}>
-        {children}
+        {/* НОВЕ: Обертаємо контент у MobileSwipeNav */}
+        <MobileSwipeNav>
+          {children}
+        </MobileSwipeNav>
       </main>
 
-      {/* Модалка підтвердження виходу */}
       <DecisionModal 
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}

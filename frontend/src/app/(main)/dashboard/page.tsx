@@ -106,15 +106,11 @@ export default function DashboardPage() {
   return (
     <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
       
-      {/* Заголовок видалено для цієї сторінки */}
-
       {/* ВЕРХНІЙ РЯД */}
       <div className={styles.topGrid}>
-        
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>Статус системи</h2>
           <div className={styles.statusContent}>
-            
             <div className={styles.donutWrapper}>
               <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
                 <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="var(--border-color)" strokeWidth="20" strokeLinecap="butt" />
@@ -153,7 +149,6 @@ export default function DashboardPage() {
                 <div className={styles.statBoxOutlineLabel}>Автономія, Год</div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -178,12 +173,10 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* СЕРЕДНІЙ РЯД */}
       <div className={styles.middleFlex}>
-        
         <div className={styles.actionsGroup}>
           <Link href="/devices" className={styles.actionBtn}>
             <CameraIcon className={styles.actionIcon} />
@@ -221,12 +214,12 @@ export default function DashboardPage() {
             <div className={styles.smallStatLabel}>Приладів<br/>включено</div>
           </div>
         </div>
-
       </div>
 
       {/* НИЖНІЙ РЯД: Сценарії */}
       <h2 className={styles.sectionTitle}>Ваші сценарії</h2>
-      <div className={styles.scenariosFlex}>
+      {/* Додано клас no-swipe */}
+      <div className={`${styles.scenariosFlex} no-swipe`}>
         {scenarios.length > 0 ? (
           scenarios.map(scen => (
             <div 
@@ -252,7 +245,8 @@ export default function DashboardPage() {
         <div className={styles.activeDevicesWrapper}>
           <h3 className={styles.activeDevicesTitle}>Прилади у сценарії:</h3>
           {activeDevices.length > 0 ? (
-            <div className={styles.activeDevicesGrid}>
+            /* Додано клас no-swipe */
+            <div className={`${styles.activeDevicesGrid} no-swipe`}>
               {activeDevices.map(dev => {
                 const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
                 const power = dev.powerWatts || dev.power_watts || dev.power || 0;
@@ -274,7 +268,6 @@ export default function DashboardPage() {
           )}
         </div>
       )}
-
     </div>
   );
 }

@@ -159,7 +159,6 @@ export default function CalculatorPage() {
     const token = localStorage.getItem('access_token');
     
     try {
-      // Додаємо selectedSystemId у payload
       const payload = {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
@@ -203,10 +202,11 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
-  const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
-    return categoryToIcon[d.category] === activeCategory;
-  }) : [];
-
+  // ОНОВЛЕНА ЛОГІКА ФІЛЬТРУ: 
+  // Якщо activeCategory є - фільтруємо по ньому. Якщо немає (null) - показуємо всі прилади з locationFilteredDevices
+  const filteredDevices = activeCategory 
+    ? locationFilteredDevices.filter(d => categoryToIcon[d.category] === activeCategory) 
+    : locationFilteredDevices;
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -240,7 +240,8 @@ export default function CalculatorPage() {
         {/* ЛІВА ЧАСТИНА */}
         <div className={styles['main-content']}>
           
-          <div className={styles['filters-row']}>
+          {/* ДОДАНО КЛАС no-swipe */}
+          <div className={`${styles['filters-row']} no-swipe`}>
             {['Усі', 'Дім', 'Офіс'].map(loc => (
               <div 
                 key={loc}
@@ -255,7 +256,8 @@ export default function CalculatorPage() {
             ))}
           </div>
 
-          <div className={styles['icon-filters']}>
+          {/* ДОДАНО КЛАС no-swipe */}
+          <div className={`${styles['icon-filters']} no-swipe`}>
             {availableIcons.length > 0 ? (
               availableIcons.map(icon => (
                 <div 
@@ -273,11 +275,9 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          {/* Список приладів */}
+          {/* Список приладів - ОНОВЛЕНО */}
           <div className={styles['device-list']}>
-            {!activeCategory ? (
-              <p style={{ color: 'var(--text-muted)' }}>Оберіть категорію вище, щоб побачити прилади.</p>
-            ) : filteredDevices.length > 0 ? (
+            {filteredDevices.length > 0 ? (
               filteredDevices.map(device => {
                 const id = device.id || device._id; 
                 const isSelected = selectedDeviceIds.includes(id);
@@ -302,12 +302,12 @@ export default function CalculatorPage() {
                 )
               })
             ) : (
-              <p style={{ color: 'var(--text-muted)' }}>У цій категорії ще немає приладів.</p>
+              <p style={{ color: 'var(--text-muted)' }}>У цій категорії/локації ще немає приладів.</p>
             )}
           </div>
 
-          {/* Сітка Систем */}
-          <div className={styles['systems-grid']}>
+          {/* Сітка Систем - ДОДАНО КЛАС no-swipe */}
+          <div className={`${styles['systems-grid']} no-swipe`}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
               <span className={styles['add-icon']}>+</span>
               <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>Додати мою ДБЖ</span>
