@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import './globals.css';
+import './globals.css'; 
 
 // 1. Додаємо колір теми для статус-бару телефону
 export const viewport: Viewport = {
@@ -10,7 +10,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Energy Safe',
   description: 'Плануйте енергозабезпечення без складних розрахунків',
-  manifest: '/manifest.json', // <-- ВАЖЛИВО!
+  manifest: '/manifest.json',
+  // ДОДАЄМО ЦЕЙ БЛОК:
+  icons: {
+    icon: '/icon.svg', // або '/favicon.ico', залежно від того, що ти переніс у public
+    apple: '/icon-192x192.png', // Одразу страхуємось для айфонів
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
