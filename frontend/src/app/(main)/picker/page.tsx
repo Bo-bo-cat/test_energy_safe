@@ -171,8 +171,8 @@ export default function SystemsPage() {
   const displayedList = tab === 'my' ? systems : recommended;
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>
+    <div className="global-page-wrap">
+      <h1 className="page-title">
         {tab === 'my' ? 'Система' : 'Рекомендовані системи'}
       </h1>
 
@@ -278,7 +278,6 @@ export default function SystemsPage() {
         </div>
       )}
 
-      {/* НОВЕ: Передаємо key, щоб при зміні стейту React повністю перемонтував компонент */}
       <AlertModal 
         key={alertKey}
         isOpen={isAlertOpen}
@@ -286,7 +285,6 @@ export default function SystemsPage() {
         title="Додано"
       />
 
-      {/* Модалка підтвердження видалення */}
       <DecisionModal 
         isOpen={systemToDelete !== null}
         onClose={() => setSystemToDelete(null)}
