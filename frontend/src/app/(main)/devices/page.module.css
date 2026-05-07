@@ -52,6 +52,7 @@
   font-weight: 700;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   text-decoration: none;
   transition: opacity 0.2s ease;
@@ -324,10 +325,15 @@
   .top-section {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
+    align-items: stretch; /* <-- Кнопка і фільтри будуть однакової ширини */
     gap: 10px; 
     margin-bottom: 0;
-    flex: 1;
+    flex: 0 0 auto; /* <-- Більше не розтягується на всю ліву половину */
+    width: fit-content; /* <-- Ширина суворо по ширині контенту (фільтрів) */
+  }
+
+  .filters {
+    flex-wrap: nowrap; /* Гарантуємо, що фільтри в один ряд */
   }
 
   .summary-card {
@@ -338,6 +344,7 @@
   }
   
   .add-btn { 
+    width: 100%; /* <-- Тепер 100% від ширини фільтрів, а не від всього екрану! */
     padding: 6px 12px; 
     font-size: 12px; 
     height: fit-content; 
