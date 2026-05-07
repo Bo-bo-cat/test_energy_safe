@@ -51,3 +51,61 @@ body {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+
+/* =========================================
+   ЄДИНИЙ СТАНДАРТ СТОРІНОК (Layout + Title)
+   ========================================= */
+
+/* 1. Обгортка сторінки (Відступи від сайд-бару) */
+.global-page-wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0; 
+  padding: 40px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. Шаблон заголовка (За замовчуванням — зліва) */
+.page-title {
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin: 0 0 24px 0;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+/* ВИНЯТОК: Центрування заголовка (для сторінки Додати прилад) */
+.page-title-centered {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 900px; 
+}
+
+/* --- АДАПТАЦІЯ ДЛЯ МОБІЛЬНИХ (ПОРТРЕТ) --- */
+@media (max-width: 768px) and (orientation: portrait) {
+  .global-page-wrap {
+    padding: 24px 16px 120px 16px;
+  }
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+}
+
+/* --- АДАПТАЦІЯ ДЛЯ МОБІЛЬНИХ (ЛАНДШАФТ) --- */
+@media (max-width: 950px) and (orientation: landscape) {
+  .global-page-wrap {
+    padding: 16px 20px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+}
