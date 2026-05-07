@@ -43,8 +43,8 @@ export default function FaqPage() {
   const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>FAQ</h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">FAQ</h1>
       <p className={styles.subtitle}>Відповіді на найпоширеніші запитання</p>
 
       <div className={styles.list}>

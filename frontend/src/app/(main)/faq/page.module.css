@@ -1,37 +1,18 @@
 /* src/app/(main)/faq/page.module.css */
 
-.wrap {
-  width: 100%;
-  max-width: 800px;
-  padding-top: 32px;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-main);
-  box-sizing: border-box;
-}
-
-/* =========================================
-   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
-   ========================================= */
-.title {
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  margin: 0 0 24px 0;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-
 .subtitle {
   font-size: 16px;
   color: var(--text-muted);
-  /* Компенсуємо відступ від нового заголовка, щоб текст був ближче */
-  margin: -12px 0 32px 0; 
+  /* Компенсуємо відступ від глобального заголовка (margin-bottom: 24px), щоб текст був ближче */
+  margin: -16px 0 32px 0; 
 }
 
 .list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  max-width: 800px; /* Зберігаємо обмеження ширини списку для кращої читабельності */
 }
 
 .item {
@@ -94,20 +75,6 @@
    АДАПТАЦІЯ ДЛЯ Мобільних (Вертикально)
    ========================================= */
 @media (max-width: 768px) and (orientation: portrait) {
-  .wrap {
-    padding-top: 16px;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: 120px;
-  }
-
-  /* Уніфікований заголовок для портрету */
-  .title {
-    font-size: 24px;
-    margin-bottom: 16px;
-    width: 100%;
-  }
-
   .subtitle {
     font-size: 14px;
     margin-top: -8px;
@@ -129,19 +96,6 @@
    Ультра-компактна адаптація для ЛАНДШАФТУ
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
-  .wrap {
-    padding: 12px 20px; 
-    height: 100vh;
-    overflow-y: auto; 
-  }
-
-  /* Уніфікований заголовок для ландшафту */
-  .title {
-    font-size: 20px; 
-    margin: 0 0 12px 0;
-    flex-shrink: 0;
-  }
-
   .subtitle {
     font-size: 13px; 
     margin-top: -6px;
