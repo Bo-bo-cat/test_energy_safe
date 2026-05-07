@@ -149,11 +149,13 @@ export default function DevicesPage() {
   };
 
   return (
-    <div className={styles['wrap']}>
+    <div className="global-page-wrap">
+      {/* 1. Глобальний заголовок */}
+      <h1 className="page-title">Мої прилади</h1>
       
+      {/* 2. Контейнер з фільтрами та підсумком */}
       <div className={styles['header-container']}>
         <div className={styles['top-section']}>
-          <h1 className={styles['title']}>Мої прилади</h1>
           
           <div className={styles['filters']}>
             <button 
@@ -199,13 +201,13 @@ export default function DevicesPage() {
         </div>
       </div>
 
+      {/* 3. Список приладів */}
       <div className={styles['device-list']}>
         {isLoading ? (
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>Завантаження приладів...</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
           Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
             <div key={categoryName} className={styles['category-group']}>
-              {/* ДОДАНО УМОВНИЙ КЛАС .expanded */}
               <div 
                 className={`${styles['category-header']} ${expandedCategories[categoryName] ? styles['expanded'] : ''}`} 
                 onClick={() => toggleCategory(categoryName)}

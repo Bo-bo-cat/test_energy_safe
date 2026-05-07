@@ -96,14 +96,17 @@ export default function DashboardPage() {
     : [];
 
   if (isLoading) {
-    return <div className="global-page-wrap"><p style={{ color: 'var(--text-muted)' }}>Завантаження...</p></div>;
+    return (
+      <div className="global-page-wrap">
+        <p style={{ color: 'var(--text-muted)' }}>Завантаження...</p>
+      </div>
+    );
   }
 
   return (
     <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
       
-      {/* ДОДАНО ЄДИНИЙ ЗАГОЛОВОК */}
-      <h1 className="page-title">Головна</h1>
+      {/* Заголовок видалено для цієї сторінки */}
 
       {/* ВЕРХНІЙ РЯД */}
       <div className={styles.topGrid}>

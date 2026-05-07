@@ -1,45 +1,22 @@
 /* src/app/(main)/devices/page.module.css */
 
-.wrap {
-  width: 100%;
-  max-width: 1440px;
-  padding-top: 32px;
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.3s ease;
-}
-
 .header-container {
   display: flex;
   flex-direction: column;
 }
 
 .top-section {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    "title title"
-    "filters button";
-  /* Відступ від заголовка тепер контролюється єдиним класом .title */
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-}
-
-/* =========================================
-   УНІФІКОВАНИЙ ЗАГОЛОВОК СТОРІНКИ (ШАБЛОН)
-   ========================================= */
-.title {
-  grid-area: title;
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  margin: 0 0 24px 0;
-  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  gap: 16px;
 }
 
 .filters {
-  grid-area: filters;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .filter-chip {
@@ -68,7 +45,6 @@
 }
 
 .add-btn {
-  grid-area: button;
   background-color: var(--text-main); 
   color: var(--bg-main); 
   border-radius: 8px;
@@ -79,6 +55,7 @@
   gap: 8px;
   text-decoration: none;
   transition: opacity 0.2s ease;
+  white-space: nowrap;
 }
 
 .add-btn:hover {
@@ -271,34 +248,24 @@
 
 @media (max-width: 1024px) {
   .top-section {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title"
-      "filters"
-      "button";
+    flex-direction: column;
+    align-items: flex-start;
   }
-  .add-btn { justify-content: center; }
+  .add-btn { 
+    width: 100%; 
+    justify-content: center; 
+  }
 }
 
 @media (max-width: 768px) {
-  .wrap {
-    padding-top: 16px;
-    padding-bottom: 120px; 
-  }
-  
-  /* Уніфікований заголовок для портрету */
-  .title { 
-    font-size: 24px;
-    margin-bottom: 16px;
-    width: 100%;
-  }
-  
   .category-title { font-size: 18px; }
   
   .filters {
     overflow-x: auto;
     padding-bottom: 4px;
     -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    width: 100%;
   }
 
   .summary-card {
@@ -346,10 +313,6 @@
    ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ)
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
-  .wrap {
-    padding: 12px 20px; 
-  }
-
   .header-container {
     flex-direction: row;
     justify-content: space-between;
@@ -372,14 +335,6 @@
     margin-top: 0; 
     padding: 10px 16px;
     flex-shrink: 0;
-  }
-
-  /* Уніфікований заголовок для ландшафту */
-  .title { 
-    font-size: 20px; 
-    margin: 0 0 12px 0;
-    flex-shrink: 0;
-    line-height: 1; 
   }
   
   .add-btn { 
