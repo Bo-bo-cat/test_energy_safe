@@ -31,6 +31,9 @@ export function proxy(request: NextRequest) {
 }
 
 // Конфіг захищає всі роути, крім системних файлів Next.js
+// Конфіг захищає всі роути, крім системних файлів Next.js та статики (іконок, маніфесту)
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|.*\\.svg|.*\\.png|.*\\.ico|.*\\.json).*)',
+  ],
 };
