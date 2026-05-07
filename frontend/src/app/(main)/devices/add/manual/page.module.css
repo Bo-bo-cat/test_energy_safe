@@ -244,8 +244,8 @@
     flex-direction: column;
     gap: 10px;
     width: 100%;
-    max-width: 500px;
     margin: 0;
+    /* ПРИБРАНО max-width: 500px, тепер форма тягнеться на весь екран */
   }
 
   .input-group {

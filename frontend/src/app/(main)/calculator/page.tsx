@@ -163,7 +163,7 @@ export default function CalculatorPage() {
       const payload = {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
-        selectedSystemId: selectedSystemId, // Обов'язково selectedSystemId!
+        selectedSystemId: selectedSystemId, 
         totalPowerWatts: calcResult?.totalPowerWatts || 0,
         loadPercent: calcResult?.loadPercent || 0,
         autonomyHours: calcResult?.autonomyHours || 0
@@ -195,20 +195,14 @@ export default function CalculatorPage() {
     }
   };
 
-  // --- ЛОГІКА ДИНАМІЧНИХ КАТЕГОРІЙ ---
-  
-  // Крок А: Фільтруємо прилади лише за локацією
   const locationFilteredDevices = devices.filter(d => {
     return activeLocation === 'Усі' || d.tag === activeLocation || d.tag === 'Усі';
   });
 
-  // Крок Б: Отримуємо унікальні іконки на основі цих приладів
-  // Set гарантує, що іконка з'явиться лише 1 раз, навіть якщо у вас 3 холодильники
   const availableIcons = Array.from(
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
-  // Крок В: Фільтруємо список приладів для відображення (якщо іконка обрана)
   const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
     return categoryToIcon[d.category] === activeCategory;
   }) : [];
@@ -239,8 +233,8 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.title}>Розрахунок</h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">Розрахунок</h1>
 
       <div className={styles.layout}>
         {/* ЛІВА ЧАСТИНА */}
@@ -253,7 +247,7 @@ export default function CalculatorPage() {
                 className={`${styles['filter-chip']} ${activeLocation === loc ? styles.active : ''}`}
                 onClick={() => {
                   setActiveLocation(loc);
-                  setActiveCategory(null); // Скидаємо обрану іконку при зміні локації
+                  setActiveCategory(null); 
                 }}
               >
                 {loc}
@@ -262,7 +256,6 @@ export default function CalculatorPage() {
           </div>
 
           <div className={styles['icon-filters']}>
-            {/* Рендеримо тільки ті іконки, для яких є додані прилади */}
             {availableIcons.length > 0 ? (
               availableIcons.map(icon => (
                 <div 
