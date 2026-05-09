@@ -18,8 +18,10 @@ import { OtherIcon } from '../../../components/icons/Other';
 import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
-// ВАЖЛИВО: Імпорт модалки збереження сценарію
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
+
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { useTranslation } from '../../../context/LanguageContext';
 
 const categoryToIcon: Record<string, string> = {
   'Холодильник': 'fridge',
@@ -52,14 +54,12 @@ const renderDeviceIcon = (iconName?: string) => {
     case 'kettle': return <KettleIcon className={styles['device-svg']} />;
     case 'coffee': return <CoffeeMachineIcon className={styles['device-svg']} />;
     case 'other': return <OtherIcon className={styles['device-svg']} />;
-
     default: return <div className={styles['device-svg']} style={{ backgroundColor: 'var(--border-color)', borderRadius: '4px' }} />;
   }
 };
 
-// Допоміжна функція для очищення назви моделі
-const cleanModelName = (name: string) => {
-  if (!name) return 'Модель';
+const cleanModelName = (name: string, fallback: string) => {
+  if (!name) return fallback;
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
@@ -67,30 +67,27 @@ const cleanModelName = (name: string) => {
 };
 
 export default function CalculatorPage() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
+
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Стан фільтрів
   const [activeLocation, setActiveLocation] = useState('Усі');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  // Стан вибору
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
 
-  // Результати калькуляції з бекенду
   const [calcResult, setCalcResult] = useState<{
     totalPowerWatts: number;
     loadPercent: number;
     autonomyHours: number;
   } | null>(null);
 
-  // Стейт для модалки збереження
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // 1. Завантаження даних
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -115,11 +112,10 @@ export default function CalculatorPage() {
           setSelectedSystemId(systemsArray[0].id || systemsArray[0]._id);
         }
       })
-      .catch(err => console.error("Помилка завантаження даних:", err))
+      .catch(err => console.error(t.common.error, err))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [t.common.error]);
 
-  // 2. Виклик бекенд-калькулятора
   useEffect(() => {
     if (selectedDeviceIds.length === 0 || !selectedSystemId) {
       setCalcResult(null);
@@ -141,19 +137,18 @@ export default function CalculatorPage() {
       })
     })
       .then(res => {
-        if (!res.ok) throw new Error('Помилка калькуляції');
+        if (!res.ok) throw new Error('Calc error');
         return res.json();
       })
       .then(data => {
         setCalcResult(data);
       })
       .catch(err => {
-        console.error('Помилка при розрахунку:', err);
+        console.error(err);
         setCalcResult(null);
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
-  // Функція збереження сценарію на бекенд
   const handleSaveScenario = async (scenarioName: string) => {
     setIsSaving(true);
     const token = localStorage.getItem('access_token');
@@ -178,17 +173,14 @@ export default function CalculatorPage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        console.error("Помилка від бекенду:", errorData);
-        alert(`Помилка бекенду: ${JSON.stringify(errorData.detail || errorData)}`);
-        throw new Error('Помилка збереження');
+        throw new Error('Save error');
       }
       
       setIsModalOpen(false);
       window.location.href = '/scenarios'; 
       
     } catch (err) {
-      console.error('Помилка при збереженні сценарію:', err);
+      console.error(err);
     } finally {
       setIsSaving(false);
     }
@@ -202,11 +194,9 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
-  // ОНОВЛЕНА ЛОГІКА ФІЛЬТРУ: 
-  // Якщо activeCategory є - фільтруємо по ньому. Якщо немає (null) - показуємо всі прилади з locationFilteredDevices
-  const filteredDevices = activeCategory 
-    ? locationFilteredDevices.filter(d => categoryToIcon[d.category] === activeCategory) 
-    : locationFilteredDevices;
+  const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
+    return categoryToIcon[d.category] === activeCategory;
+  }) : [];
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -219,8 +209,8 @@ export default function CalculatorPage() {
   };
 
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
-  const rawDisplayName = selectedSystem ? (selectedSystem.model || selectedSystem.type || 'Модель') : 'Оберіть систему';
-  const systemDisplayName = selectedSystem ? cleanModelName(rawDisplayName) : rawDisplayName;
+  const rawDisplayName = selectedSystem ? (selectedSystem.model || selectedSystem.type || t.common.model) : t.dashboard.chooseSystem;
+  const systemDisplayName = selectedSystem ? cleanModelName(rawDisplayName, t.common.model) : rawDisplayName;
 
   const loadPercentage = calcResult?.loadPercent || 0;
   const progressWidth = Math.min(loadPercentage, 100);
@@ -232,32 +222,37 @@ export default function CalculatorPage() {
     progressColor = '#FF2D55'; 
   }
 
+  // Об'єкти для фільтрів, щоб відділити логіку від тексту
+  const locations = [
+    { id: 'Усі', label: t.common.all },
+    { id: 'Дім', label: t.common.home },
+    { id: 'Офіс', label: t.common.office }
+  ];
+
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">Розрахунок</h1>
+      <h1 className="page-title">{t.calculator.title}</h1>
 
       <div className={styles.layout}>
         {/* ЛІВА ЧАСТИНА */}
         <div className={styles['main-content']}>
           
-          {/* ДОДАНО КЛАС no-swipe */}
-          <div className={`${styles['filters-row']} no-swipe`}>
-            {['Усі', 'Дім', 'Офіс'].map(loc => (
+          <div className={styles['filters-row']}>
+            {locations.map(loc => (
               <div 
-                key={loc}
-                className={`${styles['filter-chip']} ${activeLocation === loc ? styles.active : ''}`}
+                key={loc.id}
+                className={`${styles['filter-chip']} ${activeLocation === loc.id ? styles.active : ''}`}
                 onClick={() => {
-                  setActiveLocation(loc);
+                  setActiveLocation(loc.id);
                   setActiveCategory(null); 
                 }}
               >
-                {loc}
+                {loc.label}
               </div>
             ))}
           </div>
 
-          {/* ДОДАНО КЛАС no-swipe */}
-          <div className={`${styles['icon-filters']} no-swipe`}>
+          <div className={styles['icon-filters']}>
             {availableIcons.length > 0 ? (
               availableIcons.map(icon => (
                 <div 
@@ -270,14 +265,16 @@ export default function CalculatorPage() {
               ))
             ) : (
               <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-                Немає приладів для відображення в цій локації
+                {t.calculator.noDevicesInLocation}
               </span>
             )}
           </div>
 
-          {/* Список приладів - ОНОВЛЕНО */}
+          {/* Список приладів */}
           <div className={styles['device-list']}>
-            {filteredDevices.length > 0 ? (
+            {!activeCategory ? (
+              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.chooseCategory}</p>
+            ) : filteredDevices.length > 0 ? (
               filteredDevices.map(device => {
                 const id = device.id || device._id; 
                 const isSelected = selectedDeviceIds.includes(id);
@@ -296,29 +293,29 @@ export default function CalculatorPage() {
                       <span className={styles['device-name']}>{device.model_name || device.name}</span>
                     </div>
                     <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} Вт {device.startup_current_watts ? `- пуск ${device.startup_current_watts} Вт` : ''}
+                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices.startup} ${device.startup_current_watts} ${t.common.w}` : ''}
                     </div>
                   </div>
                 )
               })
             ) : (
-              <p style={{ color: 'var(--text-muted)' }}>У цій категорії/локації ще немає приладів.</p>
+              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInCategory}</p>
             )}
           </div>
 
-          {/* Сітка Систем - ДОДАНО КЛАС no-swipe */}
-          <div className={`${styles['systems-grid']} no-swipe`}>
+          {/* Сітка Систем */}
+          <div className={styles['systems-grid']}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
               <span className={styles['add-icon']}>+</span>
-              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>Додати мою ДБЖ</span>
+              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
             </Link>
 
             {systems.map(sys => {
               const id = sys.id || sys._id;
               const isSelected = selectedSystemId === id;
               
-              const rawSysName = sys.model || 'Модель';
-              const cleanName = cleanModelName(rawSysName);
+              const rawSysName = sys.model || t.common.model;
+              const cleanName = cleanModelName(rawSysName, t.common.model);
               
               return (
                 <div 
@@ -329,15 +326,15 @@ export default function CalculatorPage() {
                   <div className={styles['system-title']}>{cleanName}</div>
                   
                   <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>Тип</span>
-                    <span className={styles['spec-value']}>{sys.type || 'Електростанція'}</span>
+                    <span className={styles['spec-label']}>{t.common.type}</span>
+                    <span className={styles['spec-value']}>{sys.type || t.dashboard.portableStation}</span>
                   </div>
                   <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>Потужність</span>
-                    <span className={styles['spec-value']}>{sys.power} Вт</span>
+                    <span className={styles['spec-label']}>{t.common.power}</span>
+                    <span className={styles['spec-value']}>{sys.power} {t.common.w}</span>
                   </div>
                   <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>Батарея</span>
+                    <span className={styles['spec-label']}>{t.common.battery}</span>
                     <span className={styles['spec-value']}>{sys.battery}</span>
                   </div>
                 </div>
@@ -357,21 +354,21 @@ export default function CalculatorPage() {
               <div className={styles['stat-value']}>
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
-              <div className={styles['stat-label']}>Вт сумарно</div>
+              <div className={styles['stat-label']}>{t.calculator.totalW}</div>
             </div>
 
             <div className={styles['stat-box']}>
               <div className={`${styles['stat-value']} ${loadPercentage > 100 ? styles.error : ''}`}>
                 {calcResult ? calcResult.loadPercent : '0'}%
               </div>
-              <div className={styles['stat-label']}>Від інвертора</div>
+              <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
             </div>
 
             <div className={styles['stat-box']}>
               <div className={styles['stat-value']}>
                 {calcResult ? calcResult.autonomyHours : '0'}
               </div>
-              <div className={styles['stat-label']}>Автономія, Год</div>
+              <div className={styles['stat-label']}>{t.calculator.autonomyH}</div>
             </div>
           </div>
 
@@ -390,12 +387,11 @@ export default function CalculatorPage() {
             disabled={!calcResult || loadPercentage > 100 || selectedDeviceIds.length === 0}
             onClick={() => setIsModalOpen(true)}
           >
-            {loadPercentage > 100 ? 'Перевантаження' : 'Зберегти сценарій'}
+            {loadPercentage > 100 ? t.calculator.overload : t.calculator.saveScenario}
           </button>
         </div>
       </div>
 
-      {/* МОДАЛКА ЗБЕРЕЖЕННЯ */}
       <SaveScenarioModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

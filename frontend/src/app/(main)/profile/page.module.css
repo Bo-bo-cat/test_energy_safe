@@ -45,9 +45,9 @@
 
 /* =========================================
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
-   (Завжди доступні для мобільних/планшетів)
    ========================================= */
 .themeToggleMobile {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
@@ -212,11 +212,6 @@
     max-width: 100%;
   }
 
-  .themeToggleMobile {
-    display: flex;
-    margin-bottom: 0;
-  }
-
   .logoutBtn {
     display: block;
     width: 100%;
@@ -285,11 +280,6 @@
     padding: 10px 16px;
     font-size: 13px;
     border-radius: 10px;
-  }
-
-  .themeToggleMobile {
-    display: flex;
-    margin-bottom: 0;
   }
 
   .logoutBtn {

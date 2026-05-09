@@ -112,7 +112,7 @@ export default function ProfilePage() {
         
         {/* НОВЕ: Перемикач мови */}
         <div className={styles.languageToggle} onClick={toggleLanguage}>
-          <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
+          <span>{lang === 'uk' ? 'Мова: Українська' : 'Language: English'}</span>
           <div className={styles.languageIndicator}>
              {lang === 'uk' ? 'UA' : 'EN'}
           </div>
