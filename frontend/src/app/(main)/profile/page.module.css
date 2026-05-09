@@ -47,7 +47,7 @@
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
    ========================================= */
 .themeToggleMobile {
-  display: flex;
+  /* ТУТ БУВ display: flex; - ми його прибрали, щоб не збивав налаштування ПК */
   align-items: center;
   justify-content: space-between;
   padding: 16px;

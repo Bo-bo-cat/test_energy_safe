@@ -8,8 +8,11 @@ import { CalcIcon } from '../../../components/icons/Calc';
 import { ScenarioIcon } from '../../../components/icons/Scenario';
 import { SystemIcon } from '../../../components/icons/System';
 
-const cleanModelName = (name: string) => {
-  if (!name) return 'Оберіть систему';
+// Підключаємо словник
+import { useTranslation } from '../../../context/LanguageContext';
+
+const cleanModelName = (name: string, fallback: string) => {
+  if (!name) return fallback;
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
@@ -17,6 +20,8 @@ const cleanModelName = (name: string) => {
 };
 
 export default function DashboardPage() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
+
   const [systems, setSystems] = useState<any[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
@@ -53,7 +58,7 @@ export default function DashboardPage() {
 
       setDevices(Array.isArray(dataDev) ? dataDev : (dataDev.data || []));
     } catch (err) {
-      console.error('Помилка завантаження даних:', err);
+      console.error(t.common.error, err);
     } finally {
       setIsLoading(false);
     }
@@ -76,10 +81,10 @@ export default function DashboardPage() {
     displaySystem = systems.find(s => s.selected_for_calculation === true) || systems[0];
   }
 
-  const rawSystemName = displaySystem ? (displaySystem.model || displaySystem.name || 'Оберіть систему') : 'Оберіть систему';
-  const systemName = cleanModelName(rawSystemName);
+  const rawSystemName = displaySystem ? (displaySystem.model || displaySystem.name || t.dashboard.chooseSystem) : t.dashboard.chooseSystem;
+  const systemName = cleanModelName(rawSystemName, t.dashboard.chooseSystem);
   const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
-  const systemBattery = displaySystem ? (displaySystem.battery || 'Невідомо') : 'Невідомо';
+  const systemBattery = displaySystem ? (displaySystem.battery || t.dashboard.unknown) : t.dashboard.unknown;
 
   const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
   const safePercent = Math.min(Math.round(loadPercent), 100);
@@ -98,7 +103,7 @@ export default function DashboardPage() {
   if (isLoading) {
     return (
       <div className="global-page-wrap">
-        <p style={{ color: 'var(--text-muted)' }}>Завантаження...</p>
+        <p style={{ color: 'var(--text-muted)' }}>{t.common.loading}</p>
       </div>
     );
   }
@@ -109,7 +114,7 @@ export default function DashboardPage() {
       {/* ВЕРХНІЙ РЯД */}
       <div className={styles.topGrid}>
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Статус системи</h2>
+          <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
           <div className={styles.statusContent}>
             <div className={styles.donutWrapper}>
               <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
@@ -127,26 +132,26 @@ export default function DashboardPage() {
               </svg>
               <div className={styles.donutText}>
                 <div className={styles.donutPercent}>{safePercent}%</div>
-                <div className={styles.donutLabel}>{loadWatts} Вт з {systemPower} Вт</div>
+                <div className={styles.donutLabel}>{loadWatts} {t.dashboard.fromTotal} {systemPower} {t.common.w}</div>
               </div>
             </div>
 
             <div className={styles.statusStats}>
               <div className={styles.statBoxOutline}>
                 <div className={styles.statBoxOutlineValue}>{loadWatts}</div>
-                <div className={styles.statBoxOutlineLabel}>Робоча, Вт</div>
+                <div className={styles.statBoxOutlineLabel}>{t.dashboard.workingW}</div>
               </div>
               <div className={styles.statBoxOutline}>
                 <div className={styles.statBoxOutlineValue}>
                   {loadWatts > 0 ? Math.round(loadWatts * 2.5) : 0}
                 </div>
-                <div className={styles.statBoxOutlineLabel}>Пуск, Вт</div>
+                <div className={styles.statBoxOutlineLabel}>{t.dashboard.startupW}</div>
               </div>
               <div className={styles.statBoxOutline}>
                 <div className={styles.statBoxOutlineValue}>
                   {typeof autonomy === 'number' ? autonomy.toFixed(1) : autonomy}
                 </div>
-                <div className={styles.statBoxOutlineLabel}>Автономія, Год</div>
+                <div className={styles.statBoxOutlineLabel}>{t.dashboard.autonomyH}</div>
               </div>
             </div>
           </div>
@@ -156,20 +161,20 @@ export default function DashboardPage() {
           <h2 className={styles.cardTitle}>{systemName}</h2>
           <div className={styles.upsSpecs}>
             <div className={styles.upsRow}>
-              <span className={styles.upsLabel}>Тип</span>
-              <span className={styles.upsValue}>{displaySystem?.type || 'Портативна станція'}</span>
+              <span className={styles.upsLabel}>{t.common.type}</span>
+              <span className={styles.upsValue}>{displaySystem?.type || t.dashboard.portableStation}</span>
             </div>
             <div className={styles.upsRow}>
-              <span className={styles.upsLabel}>Потужність</span>
-              <span className={styles.upsValue}>{systemPower} Вт</span>
+              <span className={styles.upsLabel}>{t.common.power}</span>
+              <span className={styles.upsValue}>{systemPower} {t.common.w}</span>
             </div>
             <div className={styles.upsRow}>
-              <span className={styles.upsLabel}>Батарея</span>
+              <span className={styles.upsLabel}>{t.common.battery}</span>
               <span className={styles.upsValue}>{systemBattery}</span>
             </div>
             <div className={styles.upsRow}>
-              <span className={styles.upsLabel}>Автономія</span>
-              <span className={styles.upsValue}>{typeof autonomy === 'number' ? autonomy.toFixed(1) : autonomy} год</span>
+              <span className={styles.upsLabel}>{t.common.autonomy}</span>
+              <span className={styles.upsValue}>{typeof autonomy === 'number' ? autonomy.toFixed(1) : autonomy} {t.common.h}</span>
             </div>
           </div>
         </div>
@@ -180,30 +185,30 @@ export default function DashboardPage() {
         <div className={styles.actionsGroup}>
           <Link href="/devices" className={styles.actionBtn}>
             <CameraIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>Додати прилад</span>
+            <span className={styles.actionText}>{t.dashboard.addDevice}</span>
           </Link>
           <Link href="/calculator" className={styles.actionBtn}>
             <CalcIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>Розрахувати</span>
+            <span className={styles.actionText}>{t.dashboard.calculate}</span>
           </Link>
           <Link href="/scenarios" className={styles.actionBtn}>
             <ScenarioIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>Сценарії</span>
+            <span className={styles.actionText}>{t.dashboard.scenarios}</span>
           </Link>
           <Link href="/picker" className={styles.actionBtn}>
             <SystemIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>Підбір системи</span>
+            <span className={styles.actionText}>{t.dashboard.pickSystem}</span>
           </Link>
         </div>
 
         <div className={styles.statsGroup}>
           <div className={styles.smallStatBox}>
             <div className={styles.smallStatValue}>{devices.length}</div>
-            <div className={styles.smallStatLabel}>Приладів<br/>зареєстровано</div>
+            <div className={styles.smallStatLabel} dangerouslySetInnerHTML={{ __html: t.dashboard.devicesRegistered.replace(' ', '<br/>') }} />
           </div>
           <div className={styles.smallStatBox}>
             <div className={styles.smallStatValue}>{scenarios.length}</div>
-            <div className={styles.smallStatLabel}>Сценарії<br/>активних</div>
+            <div className={styles.smallStatLabel} dangerouslySetInnerHTML={{ __html: t.dashboard.activeScenarios.replace(' ', '<br/>') }} />
           </div>
           <div className={styles.smallStatBox}>
             <div className={styles.smallStatValue}>
@@ -211,14 +216,13 @@ export default function DashboardPage() {
                 ? Math.round((activeScenario.selectedDeviceIds.length / devices.length) * 100) 
                 : 0}%
             </div>
-            <div className={styles.smallStatLabel}>Приладів<br/>включено</div>
+            <div className={styles.smallStatLabel} dangerouslySetInnerHTML={{ __html: t.dashboard.devicesIncluded.replace(' ', '<br/>') }} />
           </div>
         </div>
       </div>
 
       {/* НИЖНІЙ РЯД: Сценарії */}
-      <h2 className={styles.sectionTitle}>Ваші сценарії</h2>
-      {/* Додано клас no-swipe */}
+      <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
       <div className={`${styles.scenariosFlex} no-swipe`}>
         {scenarios.length > 0 ? (
           scenarios.map(scen => (
@@ -236,21 +240,20 @@ export default function DashboardPage() {
             </div>
           ))
         ) : (
-          <p style={{ color: 'var(--text-muted)' }}>У вас ще немає збережених сценаріїв.</p>
+          <p style={{ color: 'var(--text-muted)' }}>{t.dashboard.noScenarios}</p>
         )}
       </div>
 
       {/* ПРИЛАДИ У СЦЕНАРІЇ */}
       {activeScenario && (
         <div className={styles.activeDevicesWrapper}>
-          <h3 className={styles.activeDevicesTitle}>Прилади у сценарії:</h3>
+          <h3 className={styles.activeDevicesTitle}>{t.dashboard.devicesInScenario}</h3>
           {activeDevices.length > 0 ? (
-            /* Додано клас no-swipe */
             <div className={`${styles.activeDevicesGrid} no-swipe`}>
               {activeDevices.map(dev => {
                 const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
                 const power = dev.powerWatts || dev.power_watts || dev.power || 0;
-                const deviceName = dev.model_name || dev.name || dev.model || 'Прилад';
+                const deviceName = dev.model_name || dev.name || dev.model || t.common.model;
                 
                 return (
                   <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
@@ -258,13 +261,13 @@ export default function DashboardPage() {
                       {qty > 1 ? <span className={styles.qtyBadge}>{qty}x</span> : null}
                       <span className={styles.truncateText}>{deviceName}</span>
                     </div>
-                    <div className={styles.activeDevicePower}>{power * qty} Вт</div>
+                    <div className={styles.activeDevicePower}>{power * qty} {t.common.w}</div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>У цьому сценарії немає обраних приладів.</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{t.dashboard.noDevicesInScenario}</p>
           )}
         </div>
       )}
