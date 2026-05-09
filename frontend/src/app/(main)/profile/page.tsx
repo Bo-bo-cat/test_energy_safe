@@ -111,7 +111,7 @@ export default function ProfilePage() {
       <div className={styles.controlsRow}>
         
         {/* НОВЕ: Перемикач мови */}
-        <div className={styles.themeToggleMobile} onClick={toggleLanguage}>
+        <div className={styles.languageToggle} onClick={toggleLanguage}>
           <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
           <div className={styles.languageIndicator}>
              {lang === 'uk' ? 'UA' : 'EN'}

@@ -1,8 +1,46 @@
 /* src/app/(main)/profile/page.module.css */
 
-/* Ховаємо мобільні кнопки на десктопі */
+/* Ховаємо ТІЛЬКИ дублюючі мобільні кнопки на десктопі */
 .logoutBtn, .themeToggleMobile {
   display: none; 
+}
+
+/* =========================================
+   ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
+   ========================================= */
+.languageToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.languageToggle:hover {
+  background-color: var(--border-color);
+}
+
+.languageIndicator {
+  min-width: 51px;
+  height: 31px;
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
 }
 
 /* =========================================
@@ -242,7 +280,8 @@
   .faqBtn, 
   .deleteBtn, 
   .logoutBtn, 
-  .themeToggleMobile {
+  .themeToggleMobile,
+  .languageToggle {
     padding: 10px 16px;
     font-size: 13px;
     border-radius: 10px;
@@ -263,7 +302,6 @@
     text-align: center;
   }
 
-  /* Перевизначаємо розміри тумблера для горизонталі */
   .toggle-switch {
     width: 44px;
     height: 26px;
@@ -276,5 +314,11 @@
 
   .toggle-switch.active .toggle-knob {
     transform: translateX(18px);
+  }
+  
+  .languageIndicator {
+    min-width: 44px;
+    height: 26px;
+    font-size: 12px;
   }
 }
