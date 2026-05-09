@@ -25,6 +25,9 @@ import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 // Компонент модалки
 import { DecisionModal } from '../../../components/DecisionModal';
 
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { useTranslation } from '../../../context/LanguageContext';
+
 const categoryToIcon: Record<string, string> = {
   'Холодильник': 'fridge',
   'Телевізор': 'tv',
@@ -61,6 +64,8 @@ const renderDeviceIcon = (iconName?: string) => {
 };
 
 export default function DevicesPage() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
+
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
@@ -92,9 +97,9 @@ export default function DevicesPage() {
           })));
         }
       })
-      .catch((err) => console.error('Помилка завантаження:', err))
+      .catch((err) => console.error(t.common.error, err))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [t.common.error]);
 
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
@@ -151,7 +156,7 @@ export default function DevicesPage() {
   return (
     <div className="global-page-wrap">
       {/* 1. Глобальний заголовок */}
-      <h1 className="page-title">Мої прилади</h1>
+      <h1 className="page-title">{t.devices.title}</h1>
       
       {/* 2. Контейнер з фільтрами та підсумком */}
       <div className={styles['header-container']}>
@@ -162,7 +167,7 @@ export default function DevicesPage() {
               className={`${styles['filter-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
               onClick={() => setActiveFilter('Усі')}
             >
-              Усі
+              {t.common.all}
             </button>
             <button 
               className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
@@ -180,21 +185,21 @@ export default function DevicesPage() {
 
           <Link href="/devices/add" className={styles['add-btn']}>
             <span className={styles['plus-icon']}>+</span>
-            Додати
+            {t.common.add}
           </Link>
         </div>
 
         <div className={styles['summary-card']}>
-          <div className={styles['summary-label']}>Загальна потужність</div>
+          <div className={styles['summary-label']}>{t.devices.totalPower}</div>
           <div className={styles['summary-value']}>
             <span className={styles['accent']}>
               {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
-            </span> Вт 
+            </span> {t.common.w} 
             {filteredDevices.some(d => d.startup_power_watt) && (
               <>
-                , пуск <span className={styles['accent']}>
+                , {t.devices.startup} <span className={styles['accent']}>
                   {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
-                </span> Вт
+                </span> {t.common.w}
               </>
             )}
           </div>
@@ -204,7 +209,7 @@ export default function DevicesPage() {
       {/* 3. Список приладів */}
       <div className={styles['device-list']}>
         {isLoading ? (
-          <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>Завантаження приладів...</p>
+          <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
           Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
             <div key={categoryName} className={styles['category-group']}>
@@ -232,7 +237,7 @@ export default function DevicesPage() {
                         
                         <div className={styles['item-controls']}>
                           <span className={styles['item-power']}>
-                            {device.power_watt} Вт {device.startup_power_watt ? `- пуск ${device.startup_power_watt} Вт` : ''}
+                            {device.power_watt} {t.common.w} {device.startup_power_watt ? `- ${t.devices.startup} ${device.startup_power_watt} ${t.common.w}` : ''}
                           </span>
                           
                           <div className={styles['action-group']}>
@@ -241,14 +246,14 @@ export default function DevicesPage() {
                               onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Дім'); }}
                             >
                               <HomeIcon className={styles['action-icon']} />
-                              Дім
+                              {t.common.home}
                             </button>
                             <button
                               className={`${styles['action-btn']} ${device.tag === 'Офіс' ? styles['active'] : ''}`}
                               onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Офіс'); }}
                             >
                               <OfficeIcon className={styles['action-icon']} />
-                              Офіс
+                              {t.common.office}
                             </button>
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
@@ -270,7 +275,9 @@ export default function DevicesPage() {
           ))
         ) : (
           <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>
-            {activeFilter === 'Усі' ? 'У вас ще немає доданих приладів.' : `Немає приладів у категорії "${activeFilter}".`}
+            {activeFilter === 'Усі' 
+              ? t.devices.noDevicesAdded 
+              : `${t.devices.noDevicesInCategory} "${activeFilter === 'Дім' ? t.common.home : t.common.office}".`}
           </p>
         )}
       </div>
@@ -279,6 +286,9 @@ export default function DevicesPage() {
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}
         onConfirm={confirmDelete}
+        title={t.common.areYouSure}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
     </div>
   );

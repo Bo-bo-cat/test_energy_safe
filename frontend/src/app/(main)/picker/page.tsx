@@ -8,11 +8,14 @@ import { DeleteIcon } from '../../../components/icons/Delete';
 import { AlertModal } from '../../../components/AlertModal';
 import { DecisionModal } from '../../../components/DecisionModal';
 
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { useTranslation } from '../../../context/LanguageContext';
+
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-// Функція для очищення назви
-const cleanModelName = (name: string) => {
-  if (!name) return 'Модель';
+// Функція для очищення назви, тепер приймає fallback з перекладу
+const cleanModelName = (name: string, fallback: string) => {
+  if (!name) return fallback;
   if (name.includes(' - ')) {
     return name.split(' - ')[1].trim();
   }
@@ -20,17 +23,16 @@ const cleanModelName = (name: string) => {
 };
 
 export default function SystemsPage() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
+
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   
-  // Стейт для алерту успішного додавання
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  // НОВЕ: Стейт-ключ для примусового перезапуску анімації алерту
   const [alertKey, setAlertKey] = useState(0); 
   
-  // Стейт для модалки підтвердження видалення
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function SystemsPage() {
         setSystems(data || []);
       }
     } catch (err) { 
-      console.error('Помилка завантаження моїх систем:', err); 
+      console.error('Fetch my systems error:', err); 
     }
   }
 
@@ -63,7 +65,7 @@ export default function SystemsPage() {
         setRecommended(data || []);
       }
     } catch (err) { 
-      console.error('Помилка завантаження рекомендованих систем:', err); 
+      console.error('Fetch recommended error:', err); 
     }
   }
 
@@ -84,12 +86,11 @@ export default function SystemsPage() {
       if (res.ok) {
         setQuery('');
         fetchMySystems();
-        // При ручному додаванні також показуємо алерт
         setIsAlertOpen(true);
         setAlertKey(prev => prev + 1);
       }
     } catch (err) { 
-      console.error('Помилка додавання системи за назвою:', err); 
+      console.error('Add by name error:', err); 
     }
   };
 
@@ -115,13 +116,11 @@ export default function SystemsPage() {
       });
       if (res.ok) {
         fetchMySystems();
-        
-        // НОВЕ: Відкриваємо алерт і змінюємо його ключ, щоб анімація відтворилась знову
         setIsAlertOpen(true);
         setAlertKey(prev => prev + 1); 
       }
     } catch (err) { 
-      console.error('Помилка додавання рекомендованої системи:', err); 
+      console.error('Add recommended error:', err); 
     }
   };
 
@@ -129,9 +128,8 @@ export default function SystemsPage() {
     if (!systemToDelete) return;
     
     const id = systemToDelete;
-    setSystemToDelete(null); // Закриваємо модалку
+    setSystemToDelete(null); 
     
-    // Оновлюємо UI миттєво
     setSystems(prev => prev.filter(s => s.id !== id));
     
     const token = localStorage.getItem('access_token');
@@ -143,8 +141,8 @@ export default function SystemsPage() {
         headers: { Authorization: `Bearer ${token}` } 
       });
     } catch (err) { 
-      console.error('Помилка видалення:', err); 
-      fetchMySystems(); // Відкочуємо зміни при помилці
+      console.error('Delete error:', err); 
+      fetchMySystems(); 
     }
   };
 
@@ -164,7 +162,7 @@ export default function SystemsPage() {
         body: JSON.stringify({ selected_for_calculation: !currentState })
       });
     } catch (err) { 
-      console.error('Помилка оновлення статусу:', err); 
+      console.error('Toggle status error:', err); 
     }
   };
 
@@ -173,7 +171,7 @@ export default function SystemsPage() {
   return (
     <div className="global-page-wrap">
       <h1 className="page-title">
-        {tab === 'my' ? 'Система' : 'Рекомендовані системи'}
+        {tab === 'my' ? t.picker.titleMy : t.picker.titleRec}
       </h1>
 
       <div className={styles.tabs}>
@@ -181,38 +179,38 @@ export default function SystemsPage() {
           className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`}
           onClick={() => setTab('my')}
         >
-          Мої системи
+          {t.picker.tabMy}
         </button>
         <button 
           className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`}
           onClick={() => setTab('recommended')}
         >
-          Рекомендовані
+          {t.picker.tabRec}
         </button>
       </div>
 
       {tab === 'my' && (
         <>
-          <h2 className={styles.sectionTitle}>Введіть вашу систему</h2>
+          <h2 className={styles.sectionTitle}>{t.picker.enterYours}</h2>
           <div className={styles.inputRow}>
             <input 
               type="text" 
               className={styles.addInput} 
-              placeholder="Наприклад: Ecoflow" 
+              placeholder={t.picker.inputPlaceholder} 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
             />
             <button className={styles.addBtn} onClick={handleAddByName}>
-              Додати систему
+              {t.picker.addSystemBtn}
             </button>
           </div>
         </>
       )}
 
       {displayedList.length === 0 && (
-        <p style={{ color: '#A0A0A0', fontWeight: 500, marginBottom: '48px' }}>
-          {tab === 'my' ? 'У вас ще немає збережених систем.' : 'Рекомендовані системи завантажуються...'}
+        <p style={{ color: 'var(--text-muted)', fontWeight: 500, marginBottom: '48px' }}>
+          {tab === 'my' ? t.picker.noSaved : t.picker.loadingRec}
         </p>
       )}
 
@@ -221,7 +219,7 @@ export default function SystemsPage() {
           <div key={item.id} className={styles.card}>
             
             <div className={styles.cardHeader}>
-              <div className={styles.cardTitle}>{cleanModelName(item.model)}</div>
+              <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
               
               <div className={styles.cardActions}>
                 {tab === 'my' ? (
@@ -238,26 +236,26 @@ export default function SystemsPage() {
 
             <div className={styles.specs}>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Тип</span>
+                <span className={styles.specLabel}>{t.common.type}</span>
                 <span className={styles.specValue}>{item.type}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Потужність</span>
-                <span className={styles.specValue}>{item.power} Вт</span>
+                <span className={styles.specLabel}>{t.common.power}</span>
+                <span className={styles.specValue}>{item.power} {t.common.w}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Батарея</span>
+                <span className={styles.specLabel}>{t.common.battery}</span>
                 <span className={styles.specValue}>{item.battery}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Автономія</span>
+                <span className={styles.specLabel}>{t.common.autonomy}</span>
                 <span className={styles.specValue}>{item.autonomy}</span>
               </div>
             </div>
 
             {tab === 'my' && (
               <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                <span className={styles.calcLabel}>Додати до Розрахунку</span>
+                <span className={styles.calcLabel}>{t.picker.addToCalc}</span>
                 <button className={styles.iconBtn}>
                   {item.selected_for_calculation ? (
                     <CheckboxCheckedIcon className={styles.actionIconOrange} />
@@ -273,8 +271,8 @@ export default function SystemsPage() {
 
       {tab === 'recommended' && (
         <div className={styles.hintBox}>
-          <div className={styles.hintTitle}>Підказка</div>
-          <div className={styles.hintText}>Додайте одну з рекомендованих систем, щоб подивитись як це працює</div>
+          <div className={styles.hintTitle}>{t.picker.hintTitle}</div>
+          <div className={styles.hintText}>{t.picker.hintText}</div>
         </div>
       )}
 
@@ -282,14 +280,16 @@ export default function SystemsPage() {
         key={alertKey}
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
-        title="Додано"
+        title={t.picker.addedAlert}
       />
 
       <DecisionModal 
         isOpen={systemToDelete !== null}
         onClose={() => setSystemToDelete(null)}
         onConfirm={confirmDelete}
-        title="Видалити систему?"
+        title={t.picker.deleteSystem}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
     </div>
   );

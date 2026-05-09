@@ -4,6 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { useTranslation } from '../../../../../context/LanguageContext';
+
 const CATEGORIES = [
   'Холодильник', 'Телевізор', 'Пральна машина', 'Мікрохвильовка',
   'Кондиціонер', 'Ноутбук', 'Роутер', 'Освітлення', 'Зарядний пристрій',
@@ -21,6 +24,7 @@ const ArrowIcon = ({ className }: { className?: string }) => (
 
 export default function ManualAddDevicePage() {
   const router = useRouter();
+  const { t } = useTranslation(); // Ініціалізуємо переклад
 
   const [formData, setFormData] = useState({
     name: '',
@@ -34,14 +38,10 @@ export default function ManualAddDevicePage() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({ name: '', category: '', power: '' });
 
-  // Стейт для кастомного селекту категорій
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Стейт для показу поля "Пусковий струм"
   const [showStartupPower, setShowStartupPower] = useState(false);
 
-  // Закриття випадаючого списку при кліку поза ним
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -54,12 +54,15 @@ export default function ManualAddDevicePage() {
 
   const validate = () => {
     const errors = { name: '', category: '', power: '' };
-    if (!formData.name.trim()) errors.name = 'Введіть назву приладу';
-    else if (/^\d+$/.test(formData.name.trim())) errors.name = 'Назва приладу не може бути числом';
-    if (!formData.category) errors.category = 'Оберіть категорію';
-    if (!formData.power) errors.power = 'Введіть потужність';
-    else if (isNaN(Number(formData.power))) errors.power = 'Потужність має бути числом';
-    else if (Number(formData.power) <= 0) errors.power = 'Потужність має бути більше 0';
+    if (!formData.name.trim()) errors.name = t.deviceManual.nameError;
+    else if (/^\d+$/.test(formData.name.trim())) errors.name = t.deviceManual.nameNumError;
+    
+    if (!formData.category) errors.category = t.deviceManual.catError;
+    
+    if (!formData.power) errors.power = t.deviceManual.powerError;
+    else if (isNaN(Number(formData.power))) errors.power = t.deviceManual.powerNumError;
+    else if (Number(formData.power) <= 0) errors.power = t.deviceManual.powerZeroError;
+    
     setFieldErrors(errors);
     return !errors.name && !errors.category && !errors.power;
   };
@@ -96,11 +99,11 @@ export default function ManualAddDevicePage() {
       const data = await res.json();
 
       if (res.status === 422) {
-        setError(data.detail || 'Це не схоже на побутовий електроприлад');
+        setError(data.detail || t.deviceManual.notAppliance);
         return;
       }
       if (!res.ok) {
-        setError('Помилка пошуку. Спробуйте ще раз');
+        setError(t.deviceManual.searchError);
         return;
       }
 
@@ -111,13 +114,12 @@ export default function ManualAddDevicePage() {
         startupPower: data.startup_current_watts ? String(Math.round(data.startup_current_watts)) : '',
       }));
 
-      // Якщо пошук знайшов пусковий струм, автоматично відкриваємо поле
       if (data.startup_current_watts) {
         setShowStartupPower(true);
       }
 
     } catch {
-      setError('Помилка мережі');
+      setError(t.common.networkError);
     } finally {
       setSearching(false);
     }
@@ -150,13 +152,13 @@ export default function ManualAddDevicePage() {
 
       if (!res.ok) {
         const data = await res.json();
-        setError(data.detail || 'Помилка збереження');
+        setError(data.detail || t.common.error);
         return;
       }
 
       router.push('/devices');
     } catch {
-      setError('Помилка мережі');
+      setError(t.common.networkError);
     } finally {
       setIsLoading(false);
     }
@@ -164,12 +166,12 @@ export default function ManualAddDevicePage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">Ввести вручну</h1>
+      <h1 className="page-title">{t.deviceManual.title}</h1>
 
       <form onSubmit={handleSubmit} className={styles['form']}>
         {/* Назва приладу */}
         <div className={styles['input-group']}>
-          <label htmlFor="name" className={styles['label']}>Назва приладу</label>
+          <label htmlFor="name" className={styles['label']}>{t.deviceManual.deviceName}</label>
           <div className={styles['search-row']}>
             <input
               type="text"
@@ -178,7 +180,7 @@ export default function ManualAddDevicePage() {
               value={formData.name}
               onChange={handleChange}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSearch())}
-              placeholder="Наприклад: Gorenje RK4182PW4"
+              placeholder={t.deviceManual.namePlaceholder}
               className={styles['input']}
             />
             <button
@@ -187,22 +189,22 @@ export default function ManualAddDevicePage() {
               disabled={searching || !formData.name.trim()}
               className={styles['search-btn']}
             >
-              {searching ? 'Пошук...' : 'Знайти'}
+              {searching ? t.common.searching : t.common.search}
             </button>
           </div>
           {fieldErrors.name && <p className={styles['error']}>{fieldErrors.name}</p>}
           {error && <p className={styles['error']}>{error}</p>}
         </div>
 
-        {/* КАСТОМНИЙ ВІДЖЕТ ДЛЯ КАТЕГОРІЇ */}
+        {/* Категорія */}
         <div className={styles['input-group']} ref={dropdownRef}>
-          <label className={styles['label']}>Категорія</label>
+          <label className={styles['label']}>{t.deviceManual.category}</label>
           <div className={styles['custom-select-container']}>
             <div
               className={`${styles['input']} ${styles['custom-select-trigger']} ${!formData.category ? styles['placeholder'] : ''}`}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <span>{formData.category || 'Оберіть категорію'}</span>
+              <span>{formData.category || t.deviceManual.chooseCategory}</span>
               <ArrowIcon className={`${styles['arrow-icon']} ${isDropdownOpen ? styles['arrow-up'] : ''}`} />
             </div>
 
@@ -225,7 +227,7 @@ export default function ManualAddDevicePage() {
 
         {/* Потужність */}
         <div className={styles['input-group']}>
-          <label htmlFor="power" className={styles['label']}>Потужність (Вт)</label>
+          <label htmlFor="power" className={styles['label']}>{t.deviceManual.powerW}</label>
           <input
             type="number"
             id="power"
@@ -238,11 +240,11 @@ export default function ManualAddDevicePage() {
           {fieldErrors.power && <p className={styles['error']}>{fieldErrors.power}</p>}
         </div>
 
-        {/* Пусковий струм (Прихований або Відкритий) */}
+        {/* Пусковий струм */}
         {showStartupPower ? (
           <div className={styles['input-group']}>
             <div className={styles['startup-header']}>
-              <label htmlFor="startupPower" className={styles['label']}>Пусковий струм (Вт)</label>
+              <label htmlFor="startupPower" className={styles['label']}>{t.deviceManual.startupW}</label>
               <button 
                 type="button" 
                 className={styles['remove-startup-btn']}
@@ -251,7 +253,7 @@ export default function ManualAddDevicePage() {
                   setFormData(prev => ({ ...prev, startupPower: '' }));
                 }}
               >
-                Сховати
+                {t.deviceManual.hide}
               </button>
             </div>
             <input
@@ -270,17 +272,16 @@ export default function ManualAddDevicePage() {
             className={styles['add-startup-btn']}
             onClick={() => setShowStartupPower(true)}
           >
-            + Додати пусковий струм
+            {t.deviceManual.addStartup}
           </button>
         )}
 
-        {/* Кнопка Зберегти */}
         <button
           type="submit"
           className={styles['submit-btn']}
           disabled={isLoading}
         >
-          {isLoading ? 'Збереження...' : 'Зберегти'}
+          {isLoading ? t.common.saving : t.common.save}
         </button>
       </form>
     </div>

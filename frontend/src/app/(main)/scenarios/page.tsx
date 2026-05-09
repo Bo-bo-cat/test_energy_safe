@@ -6,18 +6,20 @@ import Link from 'next/link';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
 import { DecisionModal } from '../../../components/DecisionModal';
-
-// НОВЕ: Імпортуємо нашу модалку
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
 
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { useTranslation } from '../../../context/LanguageContext';
+
 export default function ScenariosPage() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
+
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
   const [scenarioToDelete, setScenarioToDelete] = useState<string | null>(null);
 
-  // НОВЕ: Стан для редагування назви
   const [editingScenario, setEditingScenario] = useState<{ id: string, name: string } | null>(null);
   const [isRenaming, setIsRenaming] = useState(false);
 
@@ -26,7 +28,6 @@ export default function ScenariosPage() {
   }, []);
 
   const fetchScenarios = async () => {
-    // ... (старий код завантаження без змін)
     const token = localStorage.getItem('access_token');
     if (!token) return;
     try {
@@ -38,7 +39,7 @@ export default function ScenariosPage() {
         setScenarios(Array.isArray(data) ? data : []);
       }
     } catch (err) {
-      console.error('Помилка завантаження:', err);
+      console.error(t.common.error, err);
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +51,6 @@ export default function ScenariosPage() {
   };
 
   const confirmDelete = async () => {
-    // ... (старий код видалення без змін)
     if (!scenarioToDelete) return;
     const id = scenarioToDelete;
     setScenarioToDelete(null);
@@ -68,23 +68,18 @@ export default function ScenariosPage() {
     }
   };
 
-  // НОВЕ: Функція для збереження нової назви
   const handleRename = async (newName: string) => {
     if (!editingScenario) return;
     setIsRenaming(true);
     const token = localStorage.getItem('access_token');
 
     try {
-      // Оновлюємо назву локально, щоб UI змінився миттєво
       setScenarios(prev => prev.map(s => s.id === editingScenario.id ? { ...s, name: newName } : s));
-      
-      // Закриваємо модалку
       const currentId = editingScenario.id;
       setEditingScenario(null);
 
-      // Відправляємо PATCH запит на сервер
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${currentId}`, {
-        method: 'PATCH', // або PUT, залежно від того, як налаштовано ваш бекенд
+        method: 'PATCH', 
         headers: { 
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}` 
@@ -93,8 +88,8 @@ export default function ScenariosPage() {
       });
 
     } catch (err) {
-      console.error('Помилка перейменування:', err);
-      fetchScenarios(); // Якщо помилка - повертаємо старі дані
+      console.error(err);
+      fetchScenarios();
     } finally {
       setIsRenaming(false);
     }
@@ -106,15 +101,14 @@ export default function ScenariosPage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">Мої Сценарії</h1>
+      <h1 className="page-title">{t.scenarios.title}</h1>
 
       {isLoading ? (
-        <p style={{ color: 'var(--text-muted)' }}>Завантаження сценаріїв...</p>
+        <p style={{ color: 'var(--text-muted)' }}>{t.scenarios.loading}</p>
       ) : (
         <div className={styles.grid}>
           
           {scenarios.map(scenario => {
-            // ... (старий код розрахунку змінних без змін)
             const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
             const autonomyHours = scenario.autonomyHours || scenario.autonomy_hours || scenario.duration_hours || 0;
             const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
@@ -138,7 +132,6 @@ export default function ScenariosPage() {
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>{scenario.name}</div>
                   <div className={styles.actions}>
-                    {/* НОВЕ: Викликаємо модалку при кліку на олівець */}
                     <button 
                       className={styles.iconBtn} 
                       onClick={(e) => {
@@ -157,17 +150,16 @@ export default function ScenariosPage() {
                   </div>
                 </div>
 
-                {/* ... (старий код статистики і прогрес-бару) */}
                 <div>
                   <div className={styles.statsRow}>
                     <div className={styles.statItem}>
-                      <span className={styles.statValue}>{powerWatts}</span> Вт
+                      <span className={styles.statValue}>{powerWatts}</span> {t.common.w}
                     </div>
                     <div className={styles.statItem}>
-                      ~<span className={styles.statValue}>{displayAutonomy} год</span> автономії
+                      ~<span className={styles.statValue}>{displayAutonomy} {t.common.h}</span> {t.scenarios.autonomySuffix}
                     </div>
                     <div className={styles.statItem}>
-                      <span className={styles.statValue}>{displayLoad}%</span> інвертора
+                      <span className={styles.statValue}>{displayLoad}%</span> {t.scenarios.inverterSuffix}
                     </div>
                   </div>
                   <div className={styles.progressContainer}>
@@ -184,7 +176,7 @@ export default function ScenariosPage() {
 
           <Link href="/calculator" className={`${styles.card} ${styles.addCard}`}>
             <div className={styles.addIcon}>+</div>
-            <div className={styles.addText}>Додати сценарій</div>
+            <div className={styles.addText}>{t.scenarios.addScenario}</div>
           </Link>
 
         </div>
@@ -194,16 +186,17 @@ export default function ScenariosPage() {
         isOpen={scenarioToDelete !== null}
         onClose={() => setScenarioToDelete(null)}
         onConfirm={confirmDelete}
-        title="Видалити сценарій?"
+        title={t.scenarios.deleteConfirm}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
 
-      {/* НОВЕ: Додаємо модалку перейменування в кінець */}
       <SaveScenarioModal 
         isOpen={editingScenario !== null}
         onClose={() => setEditingScenario(null)}
         onSave={handleRename}
         isLoading={isRenaming}
-        title="Змінити назву"
+        title={t.scenarios.renameModal}
         initialName={editingScenario?.name || ''}
       />
     </div>

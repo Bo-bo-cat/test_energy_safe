@@ -5,7 +5,11 @@ import styles from './page.module.css';
 import { LightningIcon } from '../../components/icons/Lightning';
 import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
 
-export default function AuthPage() {
+// ПІДКЛЮЧАЄМО СЛОВНИК
+import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
+
+function AuthPageContent() {
+  const { t } = useTranslation(); // Ініціалізуємо переклад
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -35,7 +39,7 @@ export default function AuthPage() {
       });
 
       if (!res.ok) {
-        setError('Невірний email або пароль');
+        setError(t.auth.invalidCreds);
         return;
       }
 
@@ -59,12 +63,12 @@ export default function AuthPage() {
       });
 
       if (res.status === 409) {
-        setError('Користувач з таким email вже існує');
+        setError(t.auth.userExists);
         return;
       }
 
       if (!res.ok) {
-        setError('Помилка реєстрації. Спробуйте ще раз.');
+        setError(t.auth.regError);
         return;
       }
 
@@ -92,21 +96,21 @@ export default function AuthPage() {
             className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`}
             onClick={() => switchMode('login')}
           >
-            Вхід
+            {t.auth.loginTab}
           </button>
           <button
             type="button"
             className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`}
             onClick={() => switchMode('register')}
           >
-            Реєстрація
+            {t.auth.registerTab}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
 
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>Email</label>
+            <label className={styles['input-label']}>{t.auth.email}</label>
             <input
               type="email"
               className={styles['auth-input']}
@@ -119,19 +123,19 @@ export default function AuthPage() {
 
           {mode === 'register' && (
             <div className={styles['input-group']}>
-              <label className={styles['input-label']}>Ім'я</label>
+              <label className={styles['input-label']}>{t.auth.name}</label>
               <input
                 type="text"
                 className={styles['auth-input']}
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Іван Іваненко"
+                placeholder={t.auth.namePlaceholder}
               />
             </div>
           )}
 
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>Пароль</label>
+            <label className={styles['input-label']}>{t.auth.password}</label>
             <div className={styles['password-wrapper']}>
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -158,12 +162,21 @@ export default function AuthPage() {
           {error && <p className={styles['error-text']}>{error}</p>}
 
           <button type="submit" className={styles['submit-button']}>
-            {mode === 'login' ? 'Увійти' : 'Зареєструватися'}
+            {mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}
           </button>
 
         </form>
       </div>
 
     </div>
+  );
+}
+
+// Огортаємо сторінку в провайдер, щоб переклад працював навіть до входу в кабінет
+export default function AuthPage() {
+  return (
+    <LanguageProvider>
+      <AuthPageContent />
+    </LanguageProvider>
   );
 }
