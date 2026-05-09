@@ -4,7 +4,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './layout.module.css';
 
-// Імпорт іконок
 import { LightningIcon } from '../../components/icons/Lightning';
 import { HomeIcon } from '../../components/icons/Home';
 import { DeviceIcon } from '../../components/icons/Device';
@@ -14,22 +13,18 @@ import { SystemIcon } from '../../components/icons/System';
 import { ProfileIcon } from '../../components/icons/Profile';
 import { LogOutIcon } from '../../components/icons/LogOut';
 
-// Імпорт модалки
 import { DecisionModal } from '../../components/DecisionModal';
-
-// НОВЕ: Імпортуємо наш навігатор для свайпів
 import { MobileSwipeNav } from '../../components/MobileSwipeNav';
+import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation(); // Використовуємо тільки для назв пунктів меню
   
-  // Стейт для теми
   const [isDarkMode, setIsDarkMode] = useState(false);
-  // Стейт для модалки логауту
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Перевірка збереженої теми при завантаженні
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -38,12 +33,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     }
   }, []);
 
-  // Функція перемикання теми
   const toggleTheme = () => {
     const newTheme = !isDarkMode ? 'dark' : 'light';
     setIsDarkMode(!isDarkMode);
     localStorage.setItem('theme', newTheme);
-    
     if (newTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -52,18 +45,16 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   };
 
   const navItems = [
-    { href: '/dashboard', label: 'Головна', Icon: HomeIcon },
-    { href: '/devices', label: 'Прилади', Icon: DeviceIcon },
-    { href: '/calculator', label: 'Розрахунок', Icon: CalcIcon },
-    { href: '/scenarios', label: 'Сценарії', Icon: ScenarioIcon },
-    { href: '/picker', label: 'Система', Icon: SystemIcon }, 
-    { href: '/profile', label: 'Профіль', Icon: ProfileIcon },
+    { href: '/dashboard', label: t.sidebar.home, Icon: HomeIcon },
+    { href: '/devices', label: t.sidebar.devices, Icon: DeviceIcon },
+    { href: '/calculator', label: t.sidebar.calculator, Icon: CalcIcon },
+    { href: '/scenarios', label: t.sidebar.scenarios, Icon: ScenarioIcon },
+    { href: '/picker', label: t.sidebar.system, Icon: SystemIcon }, 
+    { href: '/profile', label: t.sidebar.profile, Icon: ProfileIcon },
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('user_name');
+    localStorage.clear();
     document.cookie = 'access_token=; path=/; max-age=0';
     router.push('/auth');
   };
@@ -97,7 +88,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         <div className={styles['logout-section']}>
           <div className={styles['theme-toggle-row']} onClick={toggleTheme}>
-            <span>Темна тема</span>
+            <span>{t.sidebar.darkMode}</span>
             <div className={`${styles['toggle-switch']} ${isDarkMode ? styles['active'] : ''}`}>
               <div className={styles['toggle-knob']}></div>
             </div>
@@ -107,13 +98,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <div className={styles['icon-wrapper']}>
               <LogOutIcon className={styles['nav-icon']} />
             </div>
-            Вийти
+            {t.sidebar.logout}
           </button>
         </div>
       </aside>
 
       <main className={styles['main-content']}>
-        {/* НОВЕ: Обертаємо контент у MobileSwipeNav */}
         <MobileSwipeNav>
           {children}
         </MobileSwipeNav>
@@ -123,8 +113,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
-        title="Вийти з акаунту?"
+        title={t.sidebar.logoutConfirm}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
     </div>
+  );
+}
+
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <LanguageProvider>
+      <MainLayoutContent>{children}</MainLayoutContent>
+    </LanguageProvider>
   );
 }

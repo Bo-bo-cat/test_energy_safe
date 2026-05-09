@@ -6,15 +6,16 @@ import styles from './page.module.css';
 import { DecisionModal } from '../../../components/DecisionModal';
 import { PasswordModal } from '../../../components/PasswordModal';
 import { NameModal } from '../../../components/NameModal';
-
-const mockUser = { name: 'Користувач', email: 'user@energysafe.com' };
+// НОВЕ: Переклад
+import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(mockUser);
+  const { t, lang, toggleLanguage } = useTranslation();
+  
+  const [user, setUser] = useState<any>({ name: 'Користувач', email: '...' });
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Стейти модалок
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
@@ -25,14 +26,14 @@ export default function ProfilePage() {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-        .then(r => r.ok ? r.json() : Promise.reject('Помилка сервера'))
+        .then(r => r.ok ? r.json() : Promise.reject(t.profile.serverError))
         .then(data => { if (data) setUser(data); })
-        .catch(err => console.error('Не вдалося завантажити профіль:', err));
+        .catch(err => console.error(t.profile.loadError, err));
     }
 
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') setIsDarkMode(true);
-  }, []);
+  }, [t.profile.serverError, t.profile.loadError]);
 
   const toggleTheme = () => {
     const newTheme = !isDarkMode ? 'dark' : 'light';
@@ -90,7 +91,7 @@ export default function ProfilePage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">Профіль</h1>
+      <h1 className="page-title">{t.profile.title}</h1>
 
       <div className={styles.profileHeader}>
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
@@ -108,33 +109,39 @@ export default function ProfilePage() {
       </div>
 
       <div className={styles.controlsRow}>
+        
+        {/* НОВЕ: Перемикач мови */}
+        <div className={styles.themeToggleMobile} onClick={toggleLanguage}>
+          <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
+          <div className={styles.languageIndicator}>
+             {lang === 'uk' ? 'UA' : 'EN'}
+          </div>
+        </div>
+
         <div className={styles.themeToggleMobile} onClick={toggleTheme}>
-          <span>Темна тема</span>
+          <span>{t.sidebar.darkMode}</span>
           <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
             <div className={styles['toggle-knob']}></div>
           </div>
         </div>
 
         <button className={styles.changePasswordBtn} onClick={() => setShowPasswordModal(true)}>
-          Змінити пароль
+          {t.profile.changePassword}
         </button>
 
         <button className={styles.faqBtn} onClick={() => router.push('/faq')}>
           FAQ
         </button>
 
-        {/* Кнопка "Вийти" піднята вище та тепер помаранчева */}
         <button className={styles.logoutBtn} onClick={handleLogout}>
-          Вийти з акаунту
+          {t.profile.logout}
         </button>
 
-        {/* Кнопка "Видалити" в самому низу */}
         <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
-          Видалити аккаунт
+          {t.profile.deleteAccount}
         </button>
       </div>
 
-      {/* Модалки */}
       <NameModal 
         isOpen={showNameModal} 
         onClose={() => setShowNameModal(false)} 
@@ -151,6 +158,9 @@ export default function ProfilePage() {
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteAccount}
+        title={t.common.areYouSure}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
     </div>
   );
