@@ -20,7 +20,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function DashboardPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation();
 
   const [systems, setSystems] = useState<any[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -86,15 +86,16 @@ export default function DashboardPage() {
   const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
   const systemBattery = displaySystem ? (displaySystem.battery || t.dashboard.unknown) : t.dashboard.unknown;
 
-  const loadPercent = activeScenario ? (activeScenario.loadPercent || activeScenario.load_percent || 0) : 0;
-  const safePercent = Math.min(Math.round(loadPercent), 100);
+  // МАГІЯ ТУТ: Рахуємо відсоток самостійно, щоб не було багу "150/300 = 19%"
+  const calculatedPercent = systemPower > 0 ? (loadWatts / systemPower) * 100 : 0;
+  const safePercent = Math.min(Math.round(calculatedPercent), 100);
 
   const radius = 90; 
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  // ОНОВЛЕНА ЛОГІКА КОЛЬОРІВ:
-  let progressColor = '#34C759'; // Зелений за замовчуванням (до 33%)
+  // НОВА ЛОГІКА КОЛЬОРІВ
+  let progressColor = '#34C759'; // Зелений (до 33%)
   if (safePercent > 33 && safePercent <= 66) {
     progressColor = '#FF9500'; // Помаранчевий
   } else if (safePercent > 66) {
@@ -116,7 +117,6 @@ export default function DashboardPage() {
   return (
     <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
       
-      {/* ВЕРХНІЙ РЯД */}
       <div className={styles.topGrid}>
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
@@ -185,7 +185,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* СЕРЕДНІЙ РЯД */}
       <div className={styles.middleFlex}>
         <div className={styles.actionsGroup}>
           <Link href="/devices" className={styles.actionBtn}>
@@ -226,7 +225,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* НИЖНІЙ РЯД: Сценарії */}
       <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
       <div className={`${styles.scenariosFlex} no-swipe`}>
         {scenarios.length > 0 ? (
@@ -249,7 +247,6 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* ПРИЛАДИ У СЦЕНАРІЇ */}
       {activeScenario && (
         <div className={styles.activeDevicesWrapper}>
           <h3 className={styles.activeDevicesTitle}>{t.dashboard.devicesInScenario}</h3>
