@@ -11,27 +11,10 @@ export function InstallPrompt() {
   const [os, setOs] = useState<'ios' | 'android' | null>(null);
 
   useEffect(() => {
-    // 1. Перевіряємо, чи користувач вже закривав банер
-    const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
-    if (hasDismissed) return;
-
-    // 2. Перевіряємо, чи додаток ВЖЕ встановлено (працює як standalone PWA)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator && (window.navigator as any).standalone);
-    if (isStandalone) return;
-
-    // 3. Визначаємо операційну систему
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIOS = /iphone|ipad|ipod/.test(userAgent);
-    const isAndroid = /android/.test(userAgent);
-    
-    // Показуємо банер тільки на мобільних пристроях
-    if (isIOS) {
-      setOs('ios');
-      setShowBanner(true);
-    } else if (isAndroid) {
-      setOs('android');
-      setShowBanner(true);
-    }
+    // ПРИМУСОВО ПОКАЗУЄМО БАНЕР ДЛЯ ТЕСТУ
+    console.log("InstallPrompt завантажено!");
+    setOs('ios'); 
+    setShowBanner(true);
   }, []);
 
   const handleDismissBanner = () => {
