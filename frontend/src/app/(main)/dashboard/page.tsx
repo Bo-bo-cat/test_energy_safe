@@ -93,8 +93,13 @@ export default function DashboardPage() {
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  let progressColor = '#FF9500'; 
-  if (safePercent > 90) progressColor = '#FF2D55'; 
+  // ОНОВЛЕНА ЛОГІКА КОЛЬОРІВ:
+  let progressColor = '#34C759'; // Зелений за замовчуванням (до 33%)
+  if (safePercent > 33 && safePercent <= 66) {
+    progressColor = '#FF9500'; // Помаранчевий
+  } else if (safePercent > 66) {
+    progressColor = '#FF2D55'; // Червоний
+  }
 
   const activeDevices = activeScenario && activeScenario.selectedDeviceIds
     ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
@@ -127,7 +132,7 @@ export default function DashboardPage() {
                   strokeLinecap="butt"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
-                  style={{ transition: 'stroke-dashoffset 0.8s ease-in-out' }}
+                  style={{ transition: 'stroke-dashoffset 0.8s ease-in-out, stroke 0.3s ease' }}
                 />
               </svg>
               <div className={styles.donutText}>
