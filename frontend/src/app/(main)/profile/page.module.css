@@ -172,9 +172,41 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
+  position: relative; /* Додано для hover-ефекту */
+  overflow: hidden;
 }
 
-.changePasswordBtn:hover, .faqBtn:hover {
+/* МАГІЯ ДЛЯ HOVER: Ховаємо старий текст, показуємо новий */
+.changePasswordBtn span {
+  display: block;
+  transition: opacity 0.2s;
+}
+
+.changePasswordBtn::after {
+  content: attr(data-hover);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: var(--accent-orange);
+  font-weight: 800;
+}
+
+.changePasswordBtn:hover span {
+  opacity: 0;
+}
+
+.changePasswordBtn:hover::after {
+  opacity: 1;
+}
+
+.faqBtn:hover {
   opacity: 0.9;
 }
 
@@ -188,6 +220,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
+  margin-top: 40px; /* <--- Відсунули кнопку подалі від інших */
 }
 
 .deleteBtn:hover {

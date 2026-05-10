@@ -4,9 +4,8 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 import { DecisionModal } from '../../../components/DecisionModal';
-import { PasswordModal } from '../../../components/PasswordModal';
 import { NameModal } from '../../../components/NameModal';
-// НОВЕ: Переклад
+import { AlertModal } from '../../../components/AlertModal'; // Додали AlertModal
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {
@@ -17,8 +16,8 @@ export default function ProfilePage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false); // Стейт для "Скоро буде!"
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -110,9 +109,8 @@ export default function ProfilePage() {
 
       <div className={styles.controlsRow}>
         
-        {/* НОВЕ: Перемикач мови */}
         <div className={styles.languageToggle} onClick={toggleLanguage}>
-          <span>{lang === 'uk' ? 'Мова: Українська' : 'Language: English'}</span>
+          <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
           <div className={styles.languageIndicator}>
              {lang === 'uk' ? 'UA' : 'EN'}
           </div>
@@ -125,8 +123,13 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <button className={styles.changePasswordBtn} onClick={() => setShowPasswordModal(true)}>
-          {t.profile.changePassword}
+        {/* ОНОВЛЕНО: Тепер при наведенні спрацює CSS, а при кліку викличе AlertModal */}
+        <button 
+          className={styles.changePasswordBtn} 
+          onClick={() => setIsAlertOpen(true)}
+          data-hover={t.deviceAdd.soon}
+        >
+          <span>{t.profile.changePassword}</span>
         </button>
 
         <button className={styles.faqBtn} onClick={() => router.push('/faq')}>
@@ -149,9 +152,11 @@ export default function ProfilePage() {
         initialName={user.name} 
       />
 
-      <PasswordModal 
-        isOpen={showPasswordModal} 
-        onClose={() => setShowPasswordModal(false)} 
+      {/* ОНОВЛЕНО: Модалка з повідомленням "Скоро буде" */}
+      <AlertModal 
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        title={t.deviceAdd.soon}
       />
 
       <DecisionModal
