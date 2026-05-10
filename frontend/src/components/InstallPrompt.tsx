@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './InstallPrompt.module.css';
-import { MobileIcon } from '../components/icons/Mobile'; // Переконайся, що шлях до твоєї іконки вірний
+import { MobileIcon } from '../components/icons/Mobile'; 
 import { useTranslation } from '../context/LanguageContext';
 
 export function InstallPrompt() {
@@ -11,10 +11,23 @@ export function InstallPrompt() {
   const [os, setOs] = useState<'ios' | 'android' | null>(null);
 
   useEffect(() => {
-    // ПРИМУСОВО ПОКАЗУЄМО БАНЕР ДЛЯ ТЕСТУ
-    console.log("InstallPrompt завантажено!");
-    setOs('ios'); 
-    setShowBanner(true);
+    const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
+    if (hasDismissed) return;
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    if (isStandalone) return;
+
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+    
+    if (isIOS) {
+      setOs('ios');
+      setShowBanner(true);
+    } else if (isAndroid) {
+      setOs('android');
+      setShowBanner(true);
+    }
   }, []);
 
   const handleDismissBanner = () => {
@@ -36,71 +49,41 @@ export function InstallPrompt() {
 
   return (
     <>
-      {/* ПЛАВАЮЧИЙ БАНЕР */}
       {showBanner && (
         <div className={styles.bannerOverlay}>
           <div className={styles.bannerContent}>
-            <div className={styles.iconWrap}>
-              <MobileIcon className={styles.mobileIcon} />
-            </div>
-            <div className={styles.bannerText}>
-              {t.installApp.bannerText}
-            </div>
+            <div className={styles.iconWrap}><MobileIcon className={styles.mobileIcon} /></div>
+            <div className={styles.bannerText}>{t.installApp.bannerText}</div>
           </div>
           <div className={styles.bannerActions}>
-            <button className={styles.installBtn} onClick={handleOpenModal}>
-              {t.installApp.installBtn}
-            </button>
-            <button className={styles.closeBannerBtn} onClick={handleDismissBanner}>
-              ✕
-            </button>
+            <button className={styles.installBtn} onClick={handleOpenModal}>{t.installApp.installBtn}</button>
+            <button className={styles.closeBannerBtn} onClick={handleDismissBanner}>✕</button>
           </div>
         </div>
       )}
 
-      {/* МОДАЛКА З ІНСТРУКЦІЄЮ */}
       {showModal && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>{t.installApp.modalTitle}</h2>
-            
             <div className={styles.steps}>
               {os === 'ios' ? (
-                <>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>1</div>
-                    <div className={styles.stepText}>{t.installApp.iosStep1}</div>
+                ['iosStep1', 'iosStep2', 'iosStep3'].map((step, i) => (
+                  <div key={i} className={styles.step}>
+                    <div className={styles.stepNumber}>{i+1}</div>
+                    <div className={styles.stepText}>{(t.installApp as any)[step]}</div>
                   </div>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>2</div>
-                    <div className={styles.stepText}>{t.installApp.iosStep2}</div>
-                  </div>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>3</div>
-                    <div className={styles.stepText}>{t.installApp.iosStep3}</div>
-                  </div>
-                </>
+                ))
               ) : (
-                <>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>1</div>
-                    <div className={styles.stepText}>{t.installApp.androidStep1}</div>
+                ['androidStep1', 'androidStep2', 'androidStep3'].map((step, i) => (
+                  <div key={i} className={styles.step}>
+                    <div className={styles.stepNumber}>{i+1}</div>
+                    <div className={styles.stepText}>{(t.installApp as any)[step]}</div>
                   </div>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>2</div>
-                    <div className={styles.stepText}>{t.installApp.androidStep2}</div>
-                  </div>
-                  <div className={styles.step}>
-                    <div className={styles.stepNumber}>3</div>
-                    <div className={styles.stepText}>{t.installApp.androidStep3}</div>
-                  </div>
-                </>
+                ))
               )}
             </div>
-
-            <button className={styles.closeModalBtn} onClick={handleCloseModal}>
-              {t.installApp.closeBtn}
-            </button>
+            <button className={styles.closeModalBtn} onClick={handleCloseModal}>{t.installApp.closeBtn}</button>
           </div>
         </div>
       )}
