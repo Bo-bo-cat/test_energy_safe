@@ -17,10 +17,13 @@ import { DecisionModal } from '../../components/DecisionModal';
 import { MobileSwipeNav } from '../../components/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
+// НОВЕ: Імпорт модалки встановлення
+import { InstallPrompt } from '../../components/InstallPrompt';
+
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useTranslation(); // Використовуємо тільки для назв пунктів меню
+  const { t } = useTranslation(); 
   
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -117,6 +120,9 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         confirmText={t.common.yes}
         cancelText={t.common.no}
       />
+
+      {/* НОВЕ: Компонент встановлення */}
+      <InstallPrompt />
     </div>
   );
 }

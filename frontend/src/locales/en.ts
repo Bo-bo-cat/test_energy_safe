@@ -170,4 +170,18 @@ export const en = {
     deleteConfirm: 'Delete scenario?',
     renameModal: 'Change name',
   }
+
+  // ... попередні переклади
+  installApp: {
+    bannerText: 'Install the app for easy access',
+    installBtn: 'Install',
+    modalTitle: 'How to install the app?',
+    iosStep1: 'Tap the "Share" button (square with an arrow) at the bottom of the screen.',
+    iosStep2: 'Scroll down the menu and tap "Add to Home Screen".',
+    iosStep3: 'Tap "Add" in the top right corner.',
+    androidStep1: 'Tap the menu icon (three dots) in the top right corner of the browser.',
+    androidStep2: 'Select "Install app" or "Add to Home screen".',
+    androidStep3: 'Confirm the installation by tapping "Add".',
+    closeBtn: 'Got it'
+  }
 };
