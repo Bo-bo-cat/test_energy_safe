@@ -13,7 +13,6 @@ import { useTranslation } from '../../../context/LanguageContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
-// Функція для очищення назви, тепер приймає fallback з перекладу
 const cleanModelName = (name: string, fallback: string) => {
   if (!name) return fallback;
   if (name.includes(' - ')) {
@@ -23,7 +22,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function SystemsPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation();
 
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
@@ -32,8 +31,16 @@ export default function SystemsPage() {
   
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertKey, setAlertKey] = useState(0); 
-  
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
+
+  // Стейт для нової модалки власної системи
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [customForm, setCustomForm] = useState({
+    model: '',
+    power: '',
+    battery: '',
+    autonomy: ''
+  });
 
   useEffect(() => {
     fetchMySystems();
@@ -69,6 +76,7 @@ export default function SystemsPage() {
     }
   }
 
+  // Знайти систему через Groq
   const handleAddByName = async () => {
     if (!query.trim()) return;
     const token = localStorage.getItem('access_token');
@@ -91,6 +99,40 @@ export default function SystemsPage() {
       }
     } catch (err) { 
       console.error('Add by name error:', err); 
+    }
+  };
+
+  // Створити власну систему (Ручне введення)
+  const handleCreateCustomSystem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API}/systems`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          model: customForm.model, 
+          type: 'ДБЖ / Власна збірка', 
+          power: Number(customForm.power), 
+          battery: customForm.battery, 
+          autonomy: customForm.autonomy, 
+          selected_for_calculation: false
+        }),
+      });
+      if (res.ok) {
+        setIsCustomModalOpen(false);
+        setCustomForm({ model: '', power: '', battery: '', autonomy: '' });
+        fetchMySystems();
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1); 
+      }
+    } catch (err) { 
+      console.error('Create custom system error:', err); 
     }
   };
 
@@ -126,10 +168,8 @@ export default function SystemsPage() {
 
   const confirmDelete = async () => {
     if (!systemToDelete) return;
-    
     const id = systemToDelete;
     setSystemToDelete(null); 
-    
     setSystems(prev => prev.filter(s => s.id !== id));
     
     const token = localStorage.getItem('access_token');
@@ -148,7 +188,6 @@ export default function SystemsPage() {
 
   const handleToggleSelect = async (id: string, currentState: boolean) => {
     setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: !currentState } : s));
-    
     const token = localStorage.getItem('access_token');
     if (!token) return;
     
@@ -192,17 +231,25 @@ export default function SystemsPage() {
       {tab === 'my' && (
         <>
           <h2 className={styles.sectionTitle}>{t.picker.enterYours}</h2>
-          <div className={styles.inputRow}>
-            <input 
-              type="text" 
-              className={styles.addInput} 
-              placeholder={t.picker.inputPlaceholder} 
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
-            />
-            <button className={styles.addBtn} onClick={handleAddByName}>
-              {t.picker.addSystemBtn}
+          
+          {/* Оновлений блок керування (Пошук + Додавання) */}
+          <div className={styles.topControls}>
+            <div className={styles.searchGroup}>
+              <input 
+                type="text" 
+                className={styles.addInput} 
+                placeholder={t.picker.inputPlaceholder} 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
+              />
+              <button className={styles.addBtn} onClick={handleAddByName}>
+                Знайти систему
+              </button>
+            </div>
+
+            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>
+              Додати власну систему
             </button>
           </div>
         </>
@@ -217,7 +264,6 @@ export default function SystemsPage() {
       <div className={styles.grid}>
         {displayedList.map((item) => (
           <div key={item.id} className={styles.card}>
-            
             <div className={styles.cardHeader}>
               <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
               
@@ -273,6 +319,54 @@ export default function SystemsPage() {
         <div className={styles.hintBox}>
           <div className={styles.hintTitle}>{t.picker.hintTitle}</div>
           <div className={styles.hintText}>{t.picker.hintText}</div>
+        </div>
+      )}
+
+      {/* МОДАЛКА ВЛАСНОЇ СИСТЕМИ */}
+      {isCustomModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsCustomModalOpen(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <h3 className={styles.modalHeader}>Додати систему вручну</h3>
+            <form onSubmit={handleCreateCustomSystem} className={styles.modalForm}>
+              
+              <div className={styles.inputWrap}>
+                <label>Назва моделі</label>
+                <input required type="text" placeholder="Напр. Моя збірка 12V" 
+                  value={customForm.model} onChange={e => setCustomForm({...customForm, model: e.target.value})} 
+                />
+              </div>
+
+              <div className={styles.inputWrap}>
+                <label>Потужність (Вт)</label>
+                <input required type="number" min="1" placeholder="Напр. 1000" 
+                  value={customForm.power} onChange={e => setCustomForm({...customForm, power: e.target.value})} 
+                />
+              </div>
+
+              <div className={styles.inputWrap}>
+                <label>Ємність батареї</label>
+                <input required type="text" placeholder="Напр. 100Ah або 1200Wh" 
+                  value={customForm.battery} onChange={e => setCustomForm({...customForm, battery: e.target.value})} 
+                />
+              </div>
+
+              <div className={styles.inputWrap}>
+                <label>Приблизна автономія</label>
+                <input required type="text" placeholder="Напр. 4-6 год" 
+                  value={customForm.autonomy} onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} 
+                />
+              </div>
+
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.modalBtnCancel} onClick={() => setIsCustomModalOpen(false)}>
+                  {t.common.no || 'Скасувати'}
+                </button>
+                <button type="submit" className={styles.modalBtnSave}>
+                  Зберегти
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 

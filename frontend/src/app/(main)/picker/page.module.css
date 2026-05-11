@@ -25,7 +25,6 @@
   border-color: var(--text-main);
 }
 
-/* Блок введення системи */
 .sectionTitle {
   font-size: 24px; 
   font-weight: 800;
@@ -33,11 +32,21 @@
   margin: 0 0 16px 0;
 }
 
-.inputRow {
+/* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ --- */
+.topControls {
   display: flex;
-  gap: 16px;
-  margin-bottom: 32px; 
-  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.searchGroup {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  max-width: 500px; /* Це зменшує поле вводу приблизно вдвічі на ПК */
 }
 
 .addInput {
@@ -46,13 +55,12 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   background-color: var(--bg-card);
-  font-size: 16px; 
+  font-size: 15px; 
   color: var(--text-main);
   font-family: inherit;
   outline: none;
-  transition: border-color 0.2s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.2s;
   box-sizing: border-box;
-  width: 100%;
 }
 
 .addInput::placeholder {
@@ -64,24 +72,39 @@
 }
 
 .addBtn {
-  background-color: var(--accent-orange);
-  color: #FFFFFF;
+  background-color: var(--text-main);
+  color: var(--bg-main);
   border: none;
   border-radius: 12px;
-  padding: 0 28px;
-  font-size: 16px;
+  padding: 0 24px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: opacity 0.2s;
   white-space: nowrap;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .addBtn:hover { 
-  opacity: 0.9;
+  opacity: 0.8;
+}
+
+.customSysBtn {
+  background-color: transparent;
+  color: var(--accent-orange);
+  border: 2px solid var(--accent-orange);
+  border-radius: 12px;
+  padding: 0 24px;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.customSysBtn:hover {
+  background-color: var(--accent-orange);
+  color: #fff;
 }
 
 /* --- СІТКА КАРТОК --- */
@@ -142,7 +165,6 @@
 
 .iconBtn:hover { opacity: 0.7; }
 
-/* Іконки в картках */
 .actionIconOrange {
   width: 22px;
   height: 22px;
@@ -159,7 +181,6 @@
   justify-content: center;
 }
 
-/* --- ХАРАКТЕРИСТИКИ В ОДИН РЯДОК --- */
 .specs {
   display: flex;
   flex-direction: column;
@@ -189,7 +210,6 @@
   max-width: 60%; 
 }
 
-/* --- НОВИЙ РЯДОК РОЗРАХУНКУ З ЧЕКБОКСОМ --- */
 .calcRow {
   display: flex;
   justify-content: space-between;
@@ -204,14 +224,12 @@
   color: var(--text-main);
 }
 
-/* --- ПІДКАЗКИ ТА ІНШЕ --- */
 .hintBox {
   background-color: var(--bg-card-inner);
   border-radius: 12px;
   padding: 16px 20px;
   margin-top: 16px;
   border: 1px solid var(--border-color);
-  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .hintTitle {
@@ -228,6 +246,102 @@
 }
 
 /* =========================================
+   СТИЛІ ДЛЯ МОДАЛКИ "ВЛАСНА СИСТЕМА"
+   ========================================= */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modalContent {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modalHeader {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputWrap label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.inputWrap input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+}
+
+.inputWrap input:focus {
+  border-color: var(--accent-orange);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.modalBtnCancel {
+  flex: 1;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modalBtnSave {
+  flex: 1;
+  background-color: var(--accent-orange);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================================
    АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
    ========================================= */
 
@@ -240,130 +354,42 @@
 
 /* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) and (orientation: portrait) {
-  .sectionTitle {
-    font-size: 20px;
-  }
-
-  .inputRow {
+  .sectionTitle { font-size: 20px; }
+  
+  .topControls {
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
+    gap: 16px;
   }
-
-  .addBtn {
-    padding: 16px; 
-    width: 100%;
+  
+  .searchGroup {
+    max-width: 100%;
+    flex-direction: column;
+  }
+  
+  .addBtn, .customSysBtn {
+    height: 48px;
   }
 
   .grid {
     grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .card {
-    padding: 16px;
-  }
-  
-  .hintBox {
-    width: 100%;
-    box-sizing: border-box;
   }
 }
 
 /* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 950px) and (orientation: landscape) {
-  .tabs {
-    margin-bottom: 12px;
-  }
-
-  .tabBtn {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .sectionTitle {
-    font-size: 16px; 
-    margin-bottom: 12px;
-  }
-
-  .inputRow {
-    flex-direction: row;
-    gap: 12px;
-    margin-bottom: 20px; 
-  }
-
-  .addInput {
-    padding: 8px 14px;
-    font-size: 14px;
-    border-radius: 10px;
-  }
-
-  .addBtn {
-    width: auto;
-    padding: 0 16px;
-    font-size: 13px;
-    border-radius: 10px;
-  }
-
+  .searchGroup { max-width: 100%; }
+  .addInput { padding: 8px 14px; font-size: 14px; }
+  .addBtn, .customSysBtn { height: 40px; padding: 0 16px; font-size: 13px; }
+  
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
-    margin-bottom: 24px;
   }
-
-  .card {
-    padding: 12px 14px; 
-    border-radius: 12px;
-  }
-
-  .cardHeader {
-    padding-bottom: 8px;
-  }
-
-  .cardTitle {
-    font-size: 15px;
-  }
-
-  .actionIconOrange {
-    width: 18px; 
-    height: 18px;
-  }
-
-  .plusIconTop {
-    font-size: 20px;
-  }
-
-  .specRow {
-    padding: 6px 0; 
-  }
-
-  .specLabel {
-    font-size: 10px;
-  }
-
-  .specValue {
-    font-size: 11px;
-    max-width: 65%;
-  }
-
-  .calcRow {
-    padding-top: 8px;
-  }
-
-  .calcLabel {
-    font-size: 12px;
-  }
-
-  .hintBox {
-    padding: 12px 16px;
-    margin-top: 12px;
-  }
-
-  .hintTitle {
-    font-size: 13px;
-    margin-bottom: 2px;
-  }
-
-  .hintText {
-    font-size: 11px;
-  }
+  .card { padding: 12px 14px; }
+  .cardHeader { padding-bottom: 8px; }
+  .cardTitle { font-size: 15px; }
+  .specRow { padding: 6px 0; }
+  .specLabel { font-size: 10px; }
+  .specValue { font-size: 11px; max-width: 65%; }
 }
