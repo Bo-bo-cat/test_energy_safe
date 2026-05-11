@@ -1,18 +1,18 @@
-/* src/app/(main)/page.module.css */
+/* src/app/(main)/dashboard/page.module.css */
 
 /* --- ВЕРХНІЙ РЯД --- */
 .topGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px; 
-  margin-bottom: 16px; 
+  grid-template-columns: 4fr 3fr; /* Ідеальна пропорція під нижній ряд */
+  gap: 32px; /* Усюди 32px */
+  margin-bottom: 32px; 
 }
 
 .card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 16px; 
-  padding: 16px 20px; 
+  padding: 24px; /* Трохи збільшив падінги для краси */
   box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
 .cardTitle {
   font-size: 18px; 
   font-weight: 800;
-  margin-bottom: 16px; 
+  margin-bottom: 20px; 
   color: var(--text-main);
 }
 
@@ -78,7 +78,7 @@
 /* СТАТИСТИКА СПРАВА ВІД БУБЛИКА */
 .statusStats {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   flex: 1;
 }
 
@@ -119,7 +119,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0; 
+  padding: 8px 0; 
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -141,29 +141,35 @@
 
 /* --- СЕРЕДНІЙ РЯД (Швидкі дії + Статистика) --- */
 .middleFlex {
-  display: flex;
-  gap: 16px; 
-  margin-bottom: 20px; 
+  display: grid;
+  grid-template-columns: 4fr 3fr; /* Синхронно з верхнім рядом */
+  gap: 32px; /* Усюди 32px */
+  margin-bottom: 32px; 
   width: 100%;
 }
 
-.actionsGroup, .statsGroup {
-  display: flex;
-  gap: 12px; 
-  flex: 1;
+.actionsGroup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px; /* Відступи між кнопками 32px */
+}
+
+.statsGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px; /* Відступи між статистикою 32px */
 }
 
 .actionBtn {
-  flex: 1;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px; 
+  padding: 16px 12px; 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   text-decoration: none;
   transition: all 0.2s ease;
 }
@@ -174,8 +180,8 @@
 }
 
 .actionIcon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   color: var(--text-main);
 }
 
@@ -187,21 +193,20 @@
 }
 
 .smallStatBox {
-  flex: 1;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px; 
+  padding: 16px 8px; 
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .smallStatValue {
-  font-size: 22px; 
+  font-size: 24px; 
   font-weight: 800;
   color: var(--accent-orange);
 }
@@ -210,7 +215,7 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--text-main);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 /* --- НИЖНІЙ РЯД (Сценарії) --- */
@@ -218,13 +223,13 @@
   font-size: 18px; 
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 12px; 
+  margin-bottom: 16px; 
 }
 
 .scenariosFlex {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; 
+  gap: 16px; 
   width: 100%;
 }
 
@@ -232,7 +237,7 @@
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 10px 16px; 
+  padding: 12px 20px; 
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
@@ -260,27 +265,27 @@
 
 /* --- ПРИЛАДИ В СЦЕНАРІЇ --- */
 .activeDevicesWrapper {
-  margin-top: 20px; 
+  margin-top: 32px; 
 }
 
 .activeDevicesTitle {
-  font-size: 15px; 
+  font-size: 16px; 
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 12px; 
+  margin-bottom: 16px; 
 }
 
 .activeDevicesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
 }
 
 .activeDeviceCard {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 12px 14px; 
+  padding: 16px; 
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -317,7 +322,7 @@
 }
 
 .activeDevicePower {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--accent-orange);
   flex-shrink: 0; 
@@ -325,18 +330,17 @@
 
 
 /* =========================================
-   ПЛАНШЕТИ / ПОРТРЕТНІ МОБІЛЬНІ (Vertical)
+   ПЛАНШЕТИ / ПОРТРЕТНІ МОБІЛЬНІ
    ========================================= */
 @media (max-width: 768px) and (orientation: portrait) {
-  /* 1. КАРУСЕЛЬ для "Статус системи" та "ДБЖ" */
   .topGrid {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none; 
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 24px;
     margin-left: -16px;
     margin-right: -16px;
     padding-left: 16px;
@@ -358,15 +362,8 @@
     flex-wrap: nowrap;
   }
 
-  .donutWrapper { 
-    width: 130px; 
-    height: 75px; 
-    flex-shrink: 0;
-  }
-
-  .donutPercent { 
-    font-size: 26px; 
-  }
+  .donutWrapper { width: 130px; height: 75px; flex-shrink: 0; }
+  .donutPercent { font-size: 26px; }
 
   .statusStats { 
     display: flex;
@@ -375,26 +372,12 @@
     flex: 1; 
   }
 
-  .statBoxOutline {
-    padding: 10px;
-  }
-
-  .statBoxOutlineValue {
-    font-size: 18px;
-    margin-bottom: 2px;
-  }
-
-  .statBoxOutlineLabel {
-    font-size: 10px;
-  }
-
-  /* 2. Середній ряд */
   .middleFlex { 
+    display: flex;
     flex-direction: column; 
-    gap: 12px; 
+    gap: 16px; 
   }
 
-  /* НОВЕ: Карусель для кнопок швидких дій */
   .actionsGroup {
     display: flex;
     flex-wrap: nowrap;
@@ -415,79 +398,36 @@
     padding: 16px 8px;
   }
 
-  /* 3. Три блоки статистики в один ряд */
   .statsGroup {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 8px;
-  }
-
-  .smallStatBox {
-    padding: 12px 4px;
-  }
-
-  .smallStatValue {
-    font-size: 18px;
-  }
-
-  .smallStatLabel {
-    font-size: 9px;
+    gap: 12px;
   }
   
-  /* 4. Прилади в сценарії один під одним */
   .activeDevicesGrid {
     grid-template-columns: 1fr; 
   }
 }
 
 /* =========================================
-   УЛЬТРА-КОМПАКТ ДЛЯ ЛАНДШАФТУ (Landscape)
+   УЛЬТРА-КОМПАКТ ДЛЯ ЛАНДШАФТУ
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .topGrid {
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .card {
-    padding: 12px;
-    border-radius: 12px;
-  }
-
-  .cardTitle {
-    font-size: 15px;
-    margin-bottom: 8px;
-  }
-
-  .statusContent {
     gap: 16px;
+    margin-bottom: 16px;
   }
 
-  .donutWrapper {
-    width: 120px; 
-    height: 68px; 
-  }
-
-  .donutPercent {
-    font-size: 24px; 
-  }
-
-  .donutLabel {
-    font-size: 10px;
-    margin-top: 2px;
-  }
-
-  .statBoxOutline { padding: 6px; }
-  .statBoxOutlineValue { font-size: 14px; margin-bottom: 2px; }
-  .statBoxOutlineLabel { font-size: 9px; }
-
-  .upsRow { padding: 4px 0; }
-  .upsLabel { font-size: 10px; }
-  .upsValue { font-size: 11px; }
+  .card { padding: 16px; }
+  .cardTitle { font-size: 15px; margin-bottom: 12px; }
 
   .middleFlex {
-    margin-bottom: 12px;
-    gap: 12px;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .actionsGroup, .statsGroup {
+    gap: 16px;
   }
   
   .actionBtn, .smallStatBox { 
@@ -495,42 +435,11 @@
     gap: 4px;
   }
 
-  .actionIcon { width: 18px; height: 18px; }
-  .actionText { font-size: 10px; }
-  .smallStatValue { font-size: 16px; }
-  .smallStatLabel { font-size: 9px; }
-
-  .sectionTitle {
-    font-size: 15px;
-    margin-bottom: 8px;
-  }
-
-  .scenariosFlex {
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .scenarioChip {
-    padding: 6px 12px;
-    font-size: 12px;
-    border-radius: 8px;
-  }
-
-  .activeDevicesWrapper {
-    margin-top: 0;
-    padding-bottom: 16px;
-  }
-
-  .activeDevicesTitle {
-    font-size: 13px;
-    margin-bottom: 8px;
-  }
-
   .activeDevicesGrid {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 12px;
+    gap: 16px;
     padding-bottom: 8px;
     scrollbar-width: none; 
   }
@@ -539,10 +448,5 @@
   .activeDeviceCard {
     width: 200px; 
     flex-shrink: 0;
-    padding: 10px 12px;
-  }
-
-  .truncateText, .activeDevicePower {
-    font-size: 12px;
   }
 }

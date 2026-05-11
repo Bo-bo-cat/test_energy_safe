@@ -65,8 +65,8 @@ export default function DashboardPage() {
   };
 
   const activeScenario = scenarios.find(s => s.id === activeScenarioId) || null;
-  const loadWatts = activeScenario ? (activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
-  const autonomy = activeScenario ? (activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
+  const loadWatts = activeScenario ? Number(activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
+  const autonomy = activeScenario ? Number(activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
   
   let displaySystem = null;
   
@@ -83,10 +83,10 @@ export default function DashboardPage() {
 
   const rawSystemName = displaySystem ? (displaySystem.model || displaySystem.name || t.dashboard.chooseSystem) : t.dashboard.chooseSystem;
   const systemName = cleanModelName(rawSystemName, t.dashboard.chooseSystem);
-  const systemPower = displaySystem ? (displaySystem.power || 0) : 0;
+  const systemPower = displaySystem ? Number(displaySystem.power || 0) : 0;
   const systemBattery = displaySystem ? (displaySystem.battery || t.dashboard.unknown) : t.dashboard.unknown;
 
-  // МАГІЯ ТУТ: Рахуємо відсоток самостійно, щоб не було багу "150/300 = 19%"
+  // ПРИМУСОВИЙ РОЗРАХУНОК (це виправить баг 150/300 = 19%)
   const calculatedPercent = systemPower > 0 ? (loadWatts / systemPower) * 100 : 0;
   const safePercent = Math.min(Math.round(calculatedPercent), 100);
 
@@ -94,8 +94,8 @@ export default function DashboardPage() {
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  // НОВА ЛОГІКА КОЛЬОРІВ
-  let progressColor = '#34C759'; // Зелений (до 33%)
+  // ПРАВИЛЬНА ЛОГІКА КОЛЬОРІВ
+  let progressColor = '#34C759'; // Зелений (за замовчуванням, до 33%)
   if (safePercent > 33 && safePercent <= 66) {
     progressColor = '#FF9500'; // Помаранчевий
   } else if (safePercent > 66) {
