@@ -66,7 +66,6 @@
 
 .iconBtn:hover {
   background-color: var(--bg-card-inner);
-  color: var(--accent-orange);
 }
 
 /* Корзина завжди помаранчева */
