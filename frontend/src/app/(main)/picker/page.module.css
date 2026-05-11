@@ -35,9 +35,9 @@
 /* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ --- */
 .topControls {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start; /* Притискаємо всі елементи вліво замість розкидання по краях */
   align-items: center;
-  gap: 24px;
+  gap: 16px; /* Відступ між групою пошуку та кнопкою 'Додати власну' */
   margin-bottom: 32px;
   flex-wrap: wrap;
 }
@@ -45,13 +45,14 @@
 .searchGroup {
   display: flex;
   gap: 12px;
-  flex: 1;
-  max-width: 500px; /* Це зменшує поле вводу приблизно вдвічі на ПК */
+  width: 100%;
+  max-width: 420px; /* Зменшене поле вводу */
 }
 
 .addInput {
   flex: 1;
-  padding: 14px 20px;
+  height: 48px; /* Фіксуємо висоту для ідеального вирівнювання з кнопками */
+  padding: 0 20px;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   background-color: var(--bg-card);
@@ -71,42 +72,49 @@
   border-color: var(--accent-orange); 
 }
 
+/* Кнопка "Знайти систему" (Помаранчева) */
 .addBtn {
-  background-color: var(--text-main);
-  color: var(--bg-main);
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
   border: none;
   border-radius: 12px;
+  height: 48px;
   padding: 0 24px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .addBtn:hover { 
   opacity: 0.8;
 }
 
+/* Кнопка "Додати власну систему" (Темно-сіра) */
 .customSysBtn {
-  background-color: transparent;
-  color: var(--accent-orange);
-  border: 2px solid var(--accent-orange);
+  background-color: #2c2c2c;
+  color: #FFFFFF;
+  border: none;
   border-radius: 12px;
-  padding: 0 24px;
   height: 48px;
+  padding: 0 24px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .customSysBtn:hover {
-  background-color: var(--accent-orange);
-  color: #fff;
+  opacity: 0.8;
 }
-
 /* --- СІТКА КАРТОК --- */
 .grid {
   display: grid;

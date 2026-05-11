@@ -18,6 +18,7 @@ import { MobileSwipeNav } from '../../components/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
 // НОВЕ: Імпорт модалки встановлення
+import { InstallPrompt } from '../../components//InstallPrompt';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -121,6 +122,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       />
 
       {/* НОВЕ: Компонент встановлення */}
+      <InstallPrompt />
     </div>
   );
 }
