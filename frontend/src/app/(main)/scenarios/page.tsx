@@ -140,9 +140,10 @@ export default function ScenariosPage() {
                     >
                       <PenIcon/>
                     </button>
+                    {/* Додано спеціальний клас deleteBtn для корзини */}
                     <button 
-                      className={styles.iconBtn} 
-                      onClick={(e) => handleDeleteClick(scenario.id, e)}
+                      className={`${styles.iconBtn} ${styles.deleteBtn}`} 
+                        onClick={(e) => handleDeleteClick(scenario.id, e)}
                     >
                       <DeleteIcon />
                     </button>
@@ -150,7 +151,6 @@ export default function ScenariosPage() {
                 </div>
 
                 <div>
-                  {/* ОНОВЛЕНА СТАТИСТИКА: 3 акуратні колонки */}
                   <div className={styles.statsRow}>
                     <div className={styles.statBox}>
                       <span className={styles.statValue}>{powerWatts}</span>

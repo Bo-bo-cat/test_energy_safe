@@ -49,7 +49,7 @@
   flex-shrink: 0;
 }
 
-/* Оновлені іконки: без рамок, чистий вигляд */
+/* Оновлені іконки: базовий колір 2c2c2c */
 .iconBtn {
   width: 36px;
   height: 36px;
@@ -60,12 +60,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--text-muted);
+  color: #2c2c2c; /* ЗМІНЕНО: тепер графітовий замість світло-сірого */
   transition: all 0.2s ease;
 }
 
 .iconBtn:hover {
   background-color: var(--bg-card-inner);
+  color: var(--accent-orange);
+}
+
+/* Корзина завжди помаранчева */
+.deleteBtn {
   color: var(--accent-orange);
 }
 
@@ -99,18 +104,18 @@
   line-height: 1.2;
 }
 
-/* Прогрес бар */
+/* Прогрес бар - ТЕПЕР ПЛАСКИЙ */
 .progressContainer {
   width: 100%;
   height: 8px;
   background-color: var(--border-color); 
-  border-radius: 4px;
+  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
   transition: width 0.3s ease, background-color 0.3s ease;
 }
 
@@ -209,11 +214,11 @@
 
   .progressContainer {
     height: 6px; 
-    border-radius: 3px;
+    border-radius: 0; /* Плаский на мобільних теж */
   }
   
   .progressFill {
-    border-radius: 3px;
+    border-radius: 0; 
   }
 
   .addCard {
