@@ -1,8 +1,12 @@
 import os
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-me-in-production")
 ALGORITHM = "HS256"
