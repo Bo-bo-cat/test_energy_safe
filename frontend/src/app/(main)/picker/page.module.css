@@ -32,24 +32,17 @@
   margin: 0 0 16px 0;
 }
 
-/* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ --- */
+/* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ ЯК НА МАКЕТІ --- */
 .topControls {
   display: flex;
-  justify-content: space-between; 
   align-items: center;
   gap: 16px;
   margin-bottom: 32px;
   width: 100%;
 }
 
-.searchGroup {
-  display: flex;
-  gap: 12px;
-  flex: 1; 
-}
-
 .addInput {
-  flex: 1; 
+  flex: 1; /* Змушує інпут зайняти весь вільний простір зліва */
   height: 48px; 
   padding: 0 20px;
   border: 1px solid var(--border-color);
@@ -61,7 +54,6 @@
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
-  width: 100%;
 }
 
 .addInput::placeholder {
@@ -88,14 +80,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; 
+  flex-shrink: 0; /* Забороняє кнопці стискатися */
 }
 
 .addBtn:hover { 
   opacity: 0.8;
 }
 
-/* Кнопка "Додати власну систему" */
+/* Кнопка "Додати свою систему" */
 .customSysBtn {
   background-color: #2c2c2c;
   color: #FFFFFF;
@@ -111,7 +103,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0; 
+  flex-shrink: 0; /* Забороняє кнопці стискатися */
 }
 
 .customSysBtn:hover {
@@ -373,20 +365,9 @@
     gap: 12px; 
   }
   
-  .searchGroup {
-    flex-direction: column; 
-    width: 100%;
-    gap: 12px;
-  }
-  
-  .addInput {
+  .addInput, .addBtn, .customSysBtn {
     width: 100%;
     height: 48px; 
-  }
-
-  .addBtn, .customSysBtn {
-    width: 100%;
-    height: 48px;
   }
 
   .grid {
@@ -396,7 +377,6 @@
 
 /* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 950px) and (orientation: landscape) {
-  .searchGroup { max-width: 100%; }
   .addInput { padding: 8px 14px; font-size: 14px; }
   .addBtn, .customSysBtn { height: 40px; padding: 0 16px; font-size: 13px; }
   

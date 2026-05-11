@@ -7,17 +7,13 @@ import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked'
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { AlertModal } from '../../../components/AlertModal';
 import { DecisionModal } from '../../../components/DecisionModal';
-
-// ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 const cleanModelName = (name: string, fallback: string) => {
   if (!name) return fallback;
-  if (name.includes(' - ')) {
-    return name.split(' - ')[1].trim();
-  }
+  if (name.includes(' - ')) return name.split(' - ')[1].trim();
   return name;
 };
 
@@ -33,7 +29,7 @@ export default function SystemsPage() {
   const [alertKey, setAlertKey] = useState(0); 
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
 
-  // Стейт для нової модалки власної системи
+  // Стейт для модалки ручного додавання
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [customForm, setCustomForm] = useState({
     model: '',
@@ -50,7 +46,6 @@ export default function SystemsPage() {
   async function fetchMySystems() {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems/my`, { 
         headers: { Authorization: `Bearer ${token}` } 
@@ -60,7 +55,7 @@ export default function SystemsPage() {
         setSystems(data || []);
       }
     } catch (err) { 
-      console.error('Fetch my systems error:', err); 
+      console.error(err); 
     }
   }
 
@@ -72,23 +67,18 @@ export default function SystemsPage() {
         setRecommended(data || []);
       }
     } catch (err) { 
-      console.error('Fetch recommended error:', err); 
+      console.error(err); 
     }
   }
 
-  // Знайти систему через Groq
   const handleAddByName = async () => {
     if (!query.trim()) return;
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems/by-name`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ model: query })
       });
       if (res.ok) {
@@ -98,29 +88,22 @@ export default function SystemsPage() {
         setAlertKey(prev => prev + 1);
       }
     } catch (err) { 
-      console.error('Add by name error:', err); 
+      console.error(err); 
     }
   };
 
-  // Створити власну систему (Ручне введення)
   const handleCreateCustomSystem = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('access_token');
     if (!token) return;
-
     try {
       const res = await fetch(`${API}/systems`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          model: customForm.model, 
-          type: 'ДБЖ / Власна збірка', 
-          power: Number(customForm.power), 
-          battery: customForm.battery, 
-          autonomy: customForm.autonomy, 
+          ...customForm,
+          power: Number(customForm.power),
+          type: 'ДБЖ / Власна збірка',
           selected_for_calculation: false
         }),
       });
@@ -129,24 +112,20 @@ export default function SystemsPage() {
         setCustomForm({ model: '', power: '', battery: '', autonomy: '' });
         fetchMySystems();
         setIsAlertOpen(true);
-        setAlertKey(prev => prev + 1); 
+        setAlertKey(prev => prev + 1);
       }
     } catch (err) { 
-      console.error('Create custom system error:', err); 
+      console.error(err); 
     }
   };
 
   const handleAddRecommended = async (rec: any) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           model: rec.model, 
           type: rec.type, 
@@ -162,7 +141,7 @@ export default function SystemsPage() {
         setAlertKey(prev => prev + 1); 
       }
     } catch (err) { 
-      console.error('Add recommended error:', err); 
+      console.error(err); 
     }
   };
 
@@ -181,7 +160,7 @@ export default function SystemsPage() {
         headers: { Authorization: `Bearer ${token}` } 
       });
     } catch (err) { 
-      console.error('Delete error:', err); 
+      console.error(err); 
       fetchMySystems(); 
     }
   };
@@ -194,14 +173,11 @@ export default function SystemsPage() {
     try {
       await fetch(`${API}/systems/${id}`, {
         method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ selected_for_calculation: !currentState })
       });
     } catch (err) { 
-      console.error('Toggle status error:', err); 
+      console.error(err); 
     }
   };
 
@@ -209,19 +185,17 @@ export default function SystemsPage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">
-        {tab === 'my' ? t.picker.titleMy : t.picker.titleRec}
-      </h1>
+      <h1 className="page-title">{tab === 'my' ? t.picker.titleMy : t.picker.titleRec}</h1>
 
       <div className={styles.tabs}>
         <button 
-          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`}
+          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`} 
           onClick={() => setTab('my')}
         >
           {t.picker.tabMy}
         </button>
         <button 
-          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`}
+          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`} 
           onClick={() => setTab('recommended')}
         >
           {t.picker.tabRec}
@@ -231,26 +205,17 @@ export default function SystemsPage() {
       {tab === 'my' && (
         <>
           <h2 className={styles.sectionTitle}>{t.picker.enterYours}</h2>
-          
-          {/* Оновлений блок керування (Пошук + Додавання) */}
           <div className={styles.topControls}>
-            <div className={styles.searchGroup}>
-              <input 
-                type="text" 
-                className={styles.addInput} 
-                placeholder={t.picker.inputPlaceholder} 
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
-              />
-              <button className={styles.addBtn} onClick={handleAddByName}>
-                Знайти систему
-              </button>
-            </div>
-
-            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>
-              Додати власну систему
-            </button>
+            <input 
+              type="text" 
+              className={styles.addInput} 
+              placeholder={t.picker.inputPlaceholder} 
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
+            />
+            <button className={styles.addBtn} onClick={handleAddByName}>Знайти систему</button>
+            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>Додати свою систему</button>
           </div>
         </>
       )}
@@ -328,42 +293,27 @@ export default function SystemsPage() {
           <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
             <h3 className={styles.modalHeader}>Додати систему вручну</h3>
             <form onSubmit={handleCreateCustomSystem} className={styles.modalForm}>
-              
               <div className={styles.inputWrap}>
                 <label>Назва моделі</label>
-                <input required type="text" placeholder="Напр. Моя збірка 12V" 
-                  value={customForm.model} onChange={e => setCustomForm({...customForm, model: e.target.value})} 
-                />
+                <input required placeholder="Напр. Моя збірка 12V" value={customForm.model} onChange={e => setCustomForm({...customForm, model: e.target.value})} />
               </div>
-
               <div className={styles.inputWrap}>
                 <label>Потужність (Вт)</label>
-                <input required type="number" min="1" placeholder="Напр. 1000" 
-                  value={customForm.power} onChange={e => setCustomForm({...customForm, power: e.target.value})} 
-                />
+                <input required type="number" min="1" placeholder="Напр. 1000" value={customForm.power} onChange={e => setCustomForm({...customForm, power: e.target.value})} />
               </div>
-
               <div className={styles.inputWrap}>
                 <label>Ємність батареї</label>
-                <input required type="text" placeholder="Напр. 100Ah або 1200Wh" 
-                  value={customForm.battery} onChange={e => setCustomForm({...customForm, battery: e.target.value})} 
-                />
+                <input required placeholder="Напр. 100Ah або 1200Wh" value={customForm.battery} onChange={e => setCustomForm({...customForm, battery: e.target.value})} />
               </div>
-
               <div className={styles.inputWrap}>
                 <label>Приблизна автономія</label>
-                <input required type="text" placeholder="Напр. 4-6 год" 
-                  value={customForm.autonomy} onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} 
-                />
+                <input required placeholder="Напр. 4-6 год" value={customForm.autonomy} onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} />
               </div>
-
               <div className={styles.modalActions}>
                 <button type="button" className={styles.modalBtnCancel} onClick={() => setIsCustomModalOpen(false)}>
                   {t.common.no || 'Скасувати'}
                 </button>
-                <button type="submit" className={styles.modalBtnSave}>
-                  Зберегти
-                </button>
+                <button type="submit" className={styles.modalBtnSave}>Зберегти</button>
               </div>
             </form>
           </div>
