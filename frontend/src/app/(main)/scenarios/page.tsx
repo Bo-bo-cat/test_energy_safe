@@ -12,7 +12,7 @@ import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ScenariosPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation();
 
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +127,6 @@ export default function ScenariosPage() {
                 key={scenario.id} 
                 className={`${styles.card} ${isSelected ? styles.selected : ''}`}
                 onClick={() => handleCardClick(scenario.id)}
-                style={{ cursor: 'pointer' }}
               >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>{scenario.name}</div>
@@ -151,17 +150,22 @@ export default function ScenariosPage() {
                 </div>
 
                 <div>
+                  {/* ОНОВЛЕНА СТАТИСТИКА: 3 акуратні колонки */}
                   <div className={styles.statsRow}>
-                    <div className={styles.statItem}>
-                      <span className={styles.statValue}>{powerWatts}</span> {t.common.w}
+                    <div className={styles.statBox}>
+                      <span className={styles.statValue}>{powerWatts}</span>
+                      <span className={styles.statLabel}>{t.common.w}</span>
                     </div>
-                    <div className={styles.statItem}>
-                      ~<span className={styles.statValue}>{displayAutonomy} {t.common.h}</span> {t.scenarios.autonomySuffix}
+                    <div className={styles.statBox}>
+                      <span className={styles.statValue}>~{displayAutonomy}</span>
+                      <span className={styles.statLabel}>{t.common.h} {t.scenarios.autonomySuffix}</span>
                     </div>
-                    <div className={styles.statItem}>
-                      <span className={styles.statValue}>{displayLoad}%</span> {t.scenarios.inverterSuffix}
+                    <div className={styles.statBox}>
+                      <span className={styles.statValue}>{displayLoad}%</span>
+                      <span className={styles.statLabel}>{t.scenarios.inverterSuffix}</span>
                     </div>
                   </div>
+
                   <div className={styles.progressContainer}>
                     <div 
                       className={styles.progressFill} 
