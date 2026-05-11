@@ -169,7 +169,7 @@ export const en = {
     addScenario: 'Add scenario',
     deleteConfirm: 'Delete scenario?',
     renameModal: 'Change name',
-  }
+  },
 
   // ... попередні переклади
   installApp: {

@@ -169,8 +169,7 @@ export const uk = {
     addScenario: 'Додати сценарій',
     deleteConfirm: 'Видалити сценарій?',
     renameModal: 'Змінити назву',
-  }
-  // ... попередні переклади
+  },
   installApp: {
     bannerText: 'Встанови додаток для зручного доступу',
     installBtn: 'Встановити',
