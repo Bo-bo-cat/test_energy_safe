@@ -80,7 +80,7 @@ body {
 /* --- АДАПТАЦІЯ ДЛЯ МОБІЛЬНИХ (ПОРТРЕТ) --- */
 @media (max-width: 768px) and (orientation: portrait) {
   .global-page-wrap {
-    padding: 24px 16px 120px 16px;
+    padding: 8px 16px 120px 16px;
   }
   .page-title {
     font-size: 36px;
