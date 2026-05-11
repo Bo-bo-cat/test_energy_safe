@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import styles from './page.module.css';
 
+
 import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
