@@ -1,20 +1,22 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css'; 
 
-// 1. Додаємо колір теми для статус-бару телефону
+// 1. Імпортуємо реєстратор Service Worker
+import { ServiceWorkerRegister } from '../components/ServiceWorkerRegister/ServiceWorkerRegister';
+
+// Додаємо колір теми для статус-бару телефону
 export const viewport: Viewport = {
   themeColor: '#FF6E00',
 };
 
-// 2. Підключаємо маніфест та специфічні теги для Apple (iPhone)
+// Підключаємо маніфест та специфічні теги для Apple (iPhone)
 export const metadata: Metadata = {
   title: 'Energy Safe',
   description: 'Плануйте енергозабезпечення без складних розрахунків',
   manifest: '/manifest.json',
-  // ДОДАЄМО ЦЕЙ БЛОК:
   icons: {
-    icon: '/icon.svg', // або '/favicon.ico', залежно від того, що ти переніс у public
-    apple: '/icon-192x192.png', // Одразу страхуємось для айфонів
+    icon: '/icon.svg', 
+    apple: '/icon-192x192.png',
   },
   appleWebApp: {
     capable: true,
@@ -33,7 +35,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="uk">
-      <body>{children}</body>
+      <body>
+        {/* 2. Додаємо компонент реєстрації сюди */}
+        <ServiceWorkerRegister />
+        
+        {children}
+      </body>
     </html>
   );
 }
