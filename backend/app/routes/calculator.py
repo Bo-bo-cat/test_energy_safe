@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.database import get_database
+from app.database import get_database, col
 from app.models.calculator import CalculateRequest, CalculateResponse
 from app.auth import get_current_user_id
 
@@ -41,7 +41,7 @@ async def calculate(
         raise HTTPException(status_code=400, detail="Невалідний system_id")
 
     # Fetch devices and verify they belong to this user
-    cursor = db.devices.find({"_id": {"$in": device_oids}})
+    cursor = db[col("devices")].find({"_id": {"$in": device_oids}})
     devices = [doc async for doc in cursor]
 
     if len(devices) != len(device_oids):
@@ -52,7 +52,7 @@ async def calculate(
             raise HTTPException(status_code=403, detail="Доступ до приладу заборонено")
 
     # Fetch system and verify it belongs to this user
-    system = await db.systems.find_one({"_id": system_oid, "user_id": user_id})
+    system = await db[col("systems")].find_one({"_id": system_oid, "user_id": user_id})
     if not system:
         raise HTTPException(status_code=404, detail="ДБЖ не знайдено або не належить вам")
 
