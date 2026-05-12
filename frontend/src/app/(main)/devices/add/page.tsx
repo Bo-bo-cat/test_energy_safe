@@ -5,7 +5,7 @@ import Link from 'next/link';
 import styles from './page.module.css';
 import { CameraIcon } from '../../../../components/icons/Camera';
 import { PenIcon } from '../../../../components/icons/Pen';
-import { AlertModal } from '../../../../components/AlertModal';
+import { AlertModal } from '../../../../components/AlertModal/AlertModal';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../../context/LanguageContext';

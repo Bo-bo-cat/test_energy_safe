@@ -23,7 +23,7 @@ import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
 // Компонент модалки
-import { DecisionModal } from '../../../components/DecisionModal';
+import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';

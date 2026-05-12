@@ -13,12 +13,12 @@ import { SystemIcon } from '../../components/icons/System';
 import { ProfileIcon } from '../../components/icons/Profile';
 import { LogOutIcon } from '../../components/icons/LogOut';
 
-import { DecisionModal } from '../../components/DecisionModal';
-import { MobileSwipeNav } from '../../components/MobileSwipeNav';
+import { DecisionModal } from '../../components/DecisionModal/DecisionModal';
+import { MobileSwipeNav } from '../../components/MobileSwipeNav/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
 // НОВЕ: Імпорт модалки встановлення
-import { InstallPrompt } from '../../components//InstallPrompt';
+import { InstallPrompt } from '../../components/InstallPrompt/InstallPrompt';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

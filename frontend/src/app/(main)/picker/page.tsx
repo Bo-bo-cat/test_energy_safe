@@ -5,8 +5,9 @@ import styles from './page.module.css';
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
-import { AlertModal } from '../../../components/AlertModal';
-import { DecisionModal } from '../../../components/DecisionModal';
+import { AlertModal } from '../../../components/AlertModal/AlertModal';
+import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
+import { AddSystemModal } from '../../../components/AddSystemModal/AddSystemModal';
 import { useTranslation } from '../../../context/LanguageContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -29,14 +30,8 @@ export default function SystemsPage() {
   const [alertKey, setAlertKey] = useState(0); 
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
 
-  // Стейт для модалки ручного додавання
+  // Тільки стан відкрито/закрито (дані форми тепер живуть всередині модалки)
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
-  const [customForm, setCustomForm] = useState({
-    model: '',
-    power: '',
-    battery: '',
-    autonomy: ''
-  });
 
   useEffect(() => {
     fetchMySystems();
@@ -92,8 +87,8 @@ export default function SystemsPage() {
     }
   };
 
-  const handleCreateCustomSystem = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Оновлена функція, яка приймає готові дані з компонента модалки
+  const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string; autonomy: string }) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     try {
@@ -101,15 +96,14 @@ export default function SystemsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          ...customForm,
-          power: Number(customForm.power),
+          ...formData,
+          power: Number(formData.power),
           type: 'ДБЖ / Власна збірка',
           selected_for_calculation: false
         }),
       });
       if (res.ok) {
         setIsCustomModalOpen(false);
-        setCustomForm({ model: '', power: '', battery: '', autonomy: '' });
         fetchMySystems();
         setIsAlertOpen(true);
         setAlertKey(prev => prev + 1);
@@ -287,38 +281,12 @@ export default function SystemsPage() {
         </div>
       )}
 
-      {/* МОДАЛКА ВЛАСНОЇ СИСТЕМИ */}
-      {isCustomModalOpen && (
-        <div className={styles.modalOverlay} onClick={() => setIsCustomModalOpen(false)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <h3 className={styles.modalHeader}>Додати систему вручну</h3>
-            <form onSubmit={handleCreateCustomSystem} className={styles.modalForm}>
-              <div className={styles.inputWrap}>
-                <label>Назва моделі</label>
-                <input required placeholder="Напр. Моя збірка 12V" value={customForm.model} onChange={e => setCustomForm({...customForm, model: e.target.value})} />
-              </div>
-              <div className={styles.inputWrap}>
-                <label>Потужність (Вт)</label>
-                <input required type="number" min="1" placeholder="Напр. 1000" value={customForm.power} onChange={e => setCustomForm({...customForm, power: e.target.value})} />
-              </div>
-              <div className={styles.inputWrap}>
-                <label>Ємність батареї</label>
-                <input required placeholder="Напр. 100Ah або 1200Wh" value={customForm.battery} onChange={e => setCustomForm({...customForm, battery: e.target.value})} />
-              </div>
-              <div className={styles.inputWrap}>
-                <label>Приблизна автономія</label>
-                <input required placeholder="Напр. 4-6 год" value={customForm.autonomy} onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} />
-              </div>
-              <div className={styles.modalActions}>
-                <button type="button" className={styles.modalBtnCancel} onClick={() => setIsCustomModalOpen(false)}>
-                  {t.common.no || 'Скасувати'}
-                </button>
-                <button type="submit" className={styles.modalBtnSave}>Зберегти</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* НОВИЙ КОМПОНЕНТ МОДАЛКИ */}
+      <AddSystemModal 
+        isOpen={isCustomModalOpen} 
+        onClose={() => setIsCustomModalOpen(false)} 
+        onSave={handleCreateCustomSystem} 
+      />
 
       <AlertModal 
         key={alertKey}

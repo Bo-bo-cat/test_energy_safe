@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
-import { DecisionModal } from '../../../components/DecisionModal';
-import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
+import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
+import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';

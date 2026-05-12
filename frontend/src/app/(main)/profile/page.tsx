@@ -5,7 +5,7 @@ import styles from './page.module.css';
 
 import { DecisionModal } from '../../../components/DecisionModal';
 import { NameModal } from '../../../components/NameModal';
-import { AlertModal } from '../../../components/AlertModal'; // Додали AlertModal
+import { AlertModal } from '../../../components/AlertModal/AlertModal'; // Додали AlertModal
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {

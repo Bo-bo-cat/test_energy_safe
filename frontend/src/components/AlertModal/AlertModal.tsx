@@ -2,7 +2,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import styles from './AlertModal.module.css';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface AlertModalProps {
   isOpen: boolean;

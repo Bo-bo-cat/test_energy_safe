@@ -18,7 +18,7 @@ import { OtherIcon } from '../../../components/icons/Other';
 import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
-import { SaveScenarioModal } from '../../../components/SaveScenarioModal';
+import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';

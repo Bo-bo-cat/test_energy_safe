@@ -2,7 +2,7 @@
 'use client';
 import React, { useState } from 'react';
 import styles from './SaveScenarioModal.module.css';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface SaveScenarioModalProps {
   isOpen: boolean;

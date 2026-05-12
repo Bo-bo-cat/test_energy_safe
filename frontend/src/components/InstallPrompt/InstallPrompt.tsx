@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './InstallPrompt.module.css';
-import { MobileIcon } from '../components/icons/Mobile'; // Переконайся, що шлях до твоєї іконки вірний
-import { useTranslation } from '../context/LanguageContext';
+import { MobileIcon } from '../icons/Mobile'; // Переконайся, що шлях до твоєї іконки вірний
+import { useTranslation } from '../../context/LanguageContext';
 
 export function InstallPrompt() {
   const { t } = useTranslation();
