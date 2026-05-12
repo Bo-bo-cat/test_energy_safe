@@ -182,6 +182,9 @@ export const en = {
     androidStep1: 'Tap the menu icon (three dots) in the top right corner of the browser.',
     androidStep2: 'Select "Install app" or "Add to Home screen".',
     androidStep3: 'Confirm the installation by tapping "Add".',
+    pcStep1: "Open the site in Chrome or Edge browser.",
+    pcStep2: "Click on the install icon (monitor with an arrow) on the right side of the address bar.",
+    pcStep3: "Confirm the installation by clicking \"Install\".",
     closeBtn: 'Got it'
   }
 };

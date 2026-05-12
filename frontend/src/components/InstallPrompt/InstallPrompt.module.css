@@ -47,6 +47,11 @@
   height: 24px;
 }
 
+.pcIcon {
+  width: 24px;
+  height: 24px;
+}
+
 .bannerText {
   font-size: 14px;
   font-weight: 600;
@@ -89,7 +94,7 @@
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: rgba(0, 0, 0, 0.6);
   display: flex;
-  align-items: flex-end; /* Виїжджає знизу на телефонах */
+  align-items: flex-end; 
   justify-content: center;
   z-index: 99999;
   backdrop-filter: blur(4px);
@@ -161,4 +166,14 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* На ПК центруємо модалку */
+@media (min-width: 768px) {
+  .modalOverlay {
+    align-items: center;
+  }
+  .modal {
+    border-radius: 24px;
+  }
 }

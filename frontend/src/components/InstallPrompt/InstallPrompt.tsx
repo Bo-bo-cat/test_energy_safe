@@ -1,21 +1,31 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './InstallPrompt.module.css';
-import { MobileIcon } from '../icons/Mobile'; // Переконайся, що шлях до твоєї іконки вірний
+
+import { MobileIcon } from '../icons/Mobile'; 
+import { DeviceIcon } from '../icons/Device'; // Підключаємо іконку ПК
 import { useTranslation } from '../../context/LanguageContext';
 
 export function InstallPrompt() {
   const { t } = useTranslation();
   const [showBanner, setShowBanner] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [os, setOs] = useState<'ios' | 'android' | null>(null);
+  const [os, setOs] = useState<'ios' | 'android' | 'pc' | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
+    // Перехоплюємо системну подію встановлення (працює на ПК Chrome/Edge та Android)
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
     // 1. Перевіряємо, чи користувач вже закривав банер
     const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
     if (hasDismissed) return;
 
-    // 2. Перевіряємо, чи додаток ВЖЕ встановлено (працює як standalone PWA)
+    // 2. Перевіряємо, чи додаток ВЖЕ встановлено (режим standalone)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator && (window.navigator as any).standalone);
     if (isStandalone) return;
 
@@ -24,14 +34,17 @@ export function InstallPrompt() {
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
     const isAndroid = /android/.test(userAgent);
     
-    // Показуємо банер тільки на мобільних пристроях
     if (isIOS) {
       setOs('ios');
-      setShowBanner(true);
     } else if (isAndroid) {
       setOs('android');
-      setShowBanner(true);
+    } else {
+      setOs('pc'); // Все інше вважаємо десктопом
     }
+    
+    setShowBanner(true);
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
 
   const handleDismissBanner = () => {
@@ -39,9 +52,21 @@ export function InstallPrompt() {
     setShowBanner(false);
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = async () => {
     setShowBanner(false);
-    setShowModal(true);
+    
+    // Якщо браузер підтримує швидке встановлення - показуємо системне вікно (без нашої модалки)
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        localStorage.setItem('pwa_prompt_dismissed', 'true');
+      }
+      setDeferredPrompt(null);
+    } else {
+      // Якщо це iOS Safari (який не підтримує beforeinstallprompt) або сталася помилка - показуємо інструкцію
+      setShowModal(true);
+    }
   };
 
   const handleCloseModal = () => {
@@ -58,7 +83,11 @@ export function InstallPrompt() {
         <div className={styles.bannerOverlay}>
           <div className={styles.bannerContent}>
             <div className={styles.iconWrap}>
-              <MobileIcon className={styles.mobileIcon} />
+              {os === 'pc' ? (
+                <DeviceIcon className={styles.pcIcon} />
+              ) : (
+                <MobileIcon className={styles.mobileIcon} />
+              )}
             </div>
             <div className={styles.bannerText}>
               {t.installApp.bannerText}
@@ -75,7 +104,7 @@ export function InstallPrompt() {
         </div>
       )}
 
-      {/* МОДАЛКА З ІНСТРУКЦІЄЮ */}
+      {/* МОДАЛКА З ІНСТРУКЦІЄЮ (показується тільки якщо системне вікно недоступне) */}
       {showModal && (
         <div className={styles.modalOverlay} onClick={handleCloseModal}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -97,8 +126,25 @@ export function InstallPrompt() {
                     <div className={styles.stepText}>{t.installApp.iosStep3}</div>
                   </div>
                 </>
+              ) : os === 'pc' ? (
+                <>
+                  {/* Інструкція для ПК, якщо нативне вікно не спрацювало */}
+                  <div className={styles.step}>
+                    <div className={styles.stepNumber}>1</div>
+                    <div className={styles.stepText}>{t.installApp.pcStep1 || 'Відкрийте сайт у браузері Chrome або Edge.'}</div>
+                  </div>
+                  <div className={styles.step}>
+                    <div className={styles.stepNumber}>2</div>
+                    <div className={styles.stepText}>{t.installApp.pcStep2 || 'Натисніть на іконку встановлення (монітор зі стрілочкою) у правій частині адресного рядка.'}</div>
+                  </div>
+                  <div className={styles.step}>
+                    <div className={styles.stepNumber}>3</div>
+                    <div className={styles.stepText}>{t.installApp.pcStep3 || 'Підтвердіть встановлення, натиснувши "Встановити".'}</div>
+                  </div>
+                </>
               ) : (
                 <>
+                  {/* Інструкція для Android */}
                   <div className={styles.step}>
                     <div className={styles.stepNumber}>1</div>
                     <div className={styles.stepText}>{t.installApp.androidStep1}</div>
