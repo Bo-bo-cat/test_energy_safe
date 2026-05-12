@@ -132,15 +132,6 @@ function AuthPageContent() {
           </button>
         </div>
 
-        <button type="button" className={styles['google-button']} onClick={handleGoogleLogin}>
-          <GoogleIcon />
-          {t.auth.continueWithGoogle}
-        </button>
-
-        <div className={styles['divider']}>
-          <span className={styles['divider-text']}>{t.auth.orDivider}</span>
-        </div>
-
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
 
           <div className={styles['input-group']}>
@@ -197,6 +188,16 @@ function AuthPageContent() {
 
           <button type="submit" className={styles['submit-button']}>
             {mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}
+          </button>
+
+          {/* Перемістили Google кнопку сюди */}
+          <div className={styles['divider']}>
+            <span className={styles['divider-text']}>{t.auth.orDivider}</span>
+          </div>
+
+          <button type="button" className={styles['google-button']} onClick={handleGoogleLogin}>
+            <GoogleIcon />
+            {t.auth.continueWithGoogle}
           </button>
 
         </form>

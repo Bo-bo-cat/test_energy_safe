@@ -178,7 +178,7 @@
 }
 
 .error-text {
-  color: #D32F2F; /* Залишаємо червоний для помилок (можна теж винести в змінну, якщо хочете) */
+  color: #D32F2F; 
   font-size: 13px;
   font-weight: 600;
   margin: 0;
@@ -187,7 +187,7 @@
 .submit-button {
   /* Фон кнопки */
   background-color: var(--text-main);
-  /* Колір тексту на кнопці (використовуємо інвертований основний фон для контрасту) */
+  /* Колір тексту на кнопці */
   color: var(--bg-main);
   border: none;
   border-radius: 8px;
@@ -204,21 +204,22 @@
   opacity: 0.8;
 }
 
+/* ОНОВЛЕНА КНОПКА GOOGLE */
 .google-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: 100%;
-  height: 52px;
+  height: 48px; 
   background-color: var(--bg-card-inner);
   color: var(--text-main);
-  border: 2px solid var(--border-color);
+  border: 1px solid var(--border-color); 
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px; 
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 4px;
+  margin-bottom: 0;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -227,11 +228,12 @@
   background-color: var(--bg-card);
 }
 
+/* ОНОВЛЕНИЙ РОЗДІЛЬНИК */
 .divider {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 16px 0 4px;
+  margin: 8px 0; 
 }
 
 .divider::before,
@@ -271,20 +273,17 @@
     padding: 32px 20px;
     border-radius: 16px; 
     box-shadow: none; 
-    /* Переконуємось, що на мобільних фон такий самий, як і фон сторінки */
     background-color: transparent;
     border: none;
   }
 
   .mode-tabs {
     margin-bottom: 32px;
-    /* Використовуємо змінну для рамки */
     border-bottom: 1px solid var(--border-color); 
   }
 
   .mode-tab {
     font-size: 24px; 
-    /* Колір тексту вкладок на мобільному */
     color: var(--text-main); 
     padding-bottom: 12px;
     margin-bottom: -1px; 
@@ -318,8 +317,8 @@
   }
 
   .google-button {
-    height: 60px;
-    font-size: 18px;
+    height: 52px; 
+    font-size: 16px; 
     border-radius: 12px;
   }
 }
