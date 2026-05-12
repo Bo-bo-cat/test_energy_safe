@@ -1,23 +1,22 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { NameModal } from '../../../components/PasswordModal/NameModal';
-import { AlertModal } from '../../../components/AlertModal/AlertModal'; // Додали AlertModal
+import { PasswordModal } from '../../../components/PasswordModal/PasswordModal'; // Справжня модалка
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { t, lang, toggleLanguage } = useTranslation();
   
-  const [user, setUser] = useState<any>({ name: 'Користувач', email: '...' });
+  const [user, setUser] = useState<any>({ name: '...', email: '...' });
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); // Для виходу
   const [showNameModal, setShowNameModal] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false); // Стейт для "Скоро буде!"
+  const [showPassModal, setShowPassModal] = useState(false); // Для пароля
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -25,60 +24,29 @@ export default function ProfilePage() {
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
-        .then(r => r.ok ? r.json() : Promise.reject(t.profile.serverError))
-        .then(data => { if (data) setUser(data); })
-        .catch(err => console.error(t.profile.loadError, err));
+        .then(r => r.ok ? r.json() : null)
+        .then(data => { if (data) setUser(data); });
     }
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') setIsDarkMode(true);
-  }, [t.profile.serverError, t.profile.loadError]);
+    if (localStorage.getItem('theme') === 'dark') setIsDarkMode(true);
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = !isDarkMode ? 'dark' : 'light';
     setIsDarkMode(!isDarkMode);
     localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
-
-  const avatarColor = useMemo(() => {
-    const colors = ['#FF6B00', '#0029FF', '#00C2FF', '#FF2D55', '#5856D6', '#34C759', '#AF52DE', '#FF9500'];
-    if (!user?.name) return colors[0];
-    const charCode = user.name.charCodeAt(0);
-    return colors[charCode % colors.length];
-  }, [user?.name]);
 
   const handleChangeName = async (newName: string) => {
     const token = localStorage.getItem('access_token');
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ name: newName })
-      });
-      if (res.ok) {
-        setUser((prev: any) => ({ ...prev, name: newName }));
-        setShowNameModal(false);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    const token = localStorage.getItem('access_token');
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      handleLogout();
-    } catch {
-      handleLogout();
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ name: newName })
+    });
+    if (res.ok) {
+      setUser((prev: any) => ({ ...prev, name: newName }));
+      setShowNameModal(false);
     }
   };
 
@@ -93,8 +61,8 @@ export default function ProfilePage() {
       <h1 className="page-title">{t.profile.title}</h1>
 
       <div className={styles.profileHeader}>
-        <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
-          {user.name?.charAt(0).toUpperCase() || 'U'}
+        <div className={styles.avatar} style={{ backgroundColor: '#FF6B00' }}>
+          {user.name?.charAt(0).toUpperCase()}
         </div>
         <div className={styles.userInfo}>
           <div className={styles.nameRow}>
@@ -108,12 +76,9 @@ export default function ProfilePage() {
       </div>
 
       <div className={styles.controlsRow}>
-        
         <div className={styles.languageToggle} onClick={toggleLanguage}>
           <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
-          <div className={styles.languageIndicator}>
-             {lang === 'uk' ? 'UA' : 'EN'}
-          </div>
+          <div className={styles.languageIndicator}>{lang === 'uk' ? 'UA' : 'EN'}</div>
         </div>
 
         <div className={styles.themeToggleMobile} onClick={toggleTheme}>
@@ -123,20 +88,11 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ОНОВЛЕНО: Тепер при наведенні спрацює CSS, а при кліку викличе AlertModal */}
-        <button 
-          className={styles.changePasswordBtn} 
-          onClick={() => setIsAlertOpen(true)}
-          data-hover={t.deviceAdd.soon}
-        >
+        <button className={styles.changePasswordBtn} onClick={() => setShowPassModal(true)}>
           <span>{t.profile.changePassword}</span>
         </button>
 
-        <button className={styles.faqBtn} onClick={() => router.push('/faq')}>
-          FAQ
-        </button>
-
-        <button className={styles.logoutBtn} onClick={handleLogout}>
+        <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>
           {t.profile.logout}
         </button>
 
@@ -145,6 +101,7 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      {/* МОДАЛКИ */}
       <NameModal 
         isOpen={showNameModal} 
         onClose={() => setShowNameModal(false)} 
@@ -152,20 +109,25 @@ export default function ProfilePage() {
         initialName={user.name} 
       />
 
-      {/* ОНОВЛЕНО: Модалка з повідомленням "Скоро буде" */}
-      <AlertModal 
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        title={t.deviceAdd.soon}
+      <PasswordModal 
+        isOpen={showPassModal} 
+        onCloseAction={() => setShowPassModal(false)} 
+      />
+
+      <DecisionModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+        title={t.profile.logout + "?"}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
 
       <DecisionModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteAccount}
+        onConfirm={() => {/* логіка видалення */}}
         title={t.common.areYouSure}
-        confirmText={t.common.yes}
-        cancelText={t.common.no}
       />
     </div>
   );

@@ -98,6 +98,32 @@ async def get_my_profile(user_id: str = Depends(get_current_user_id)):
     )
 
 
+# --- НОВИЙ ЕНДПОІНТ ДЛЯ ЗМІНИ ІМЕНІ (ТА ІНШИХ ДАНИХ) ---
+@router.patch("/me", response_model=UserResponse)
+async def update_profile(payload: dict, user_id: str = Depends(get_current_user_id)):
+    db = get_database()
+    
+    try:
+        oid = ObjectId(user_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
+        
+    # Дозволяємо оновлювати тільки безпечні поля (name, theme тощо)
+    update_data = {k: v for k, v in payload.items() if k in ["name", "theme"]}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Немає даних для оновлення")
+        
+    await db[col("users")].update_one({"_id": oid}, {"$set": update_data})
+    doc = await db[col("users")].find_one({"_id": oid})
+    
+    if not doc:
+        raise HTTPException(status_code=404, detail="Користувача не знайдено")
+        
+    return _serialize_user(doc)
+# --------------------------------------------------------
+
+
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user(user_id: str, current_user_id: str = Depends(get_current_user_id)):
     if user_id != current_user_id:
