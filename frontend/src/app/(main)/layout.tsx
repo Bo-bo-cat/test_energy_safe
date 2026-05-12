@@ -13,7 +13,7 @@ import { SystemIcon } from '../../components/icons/System';
 import { ProfileIcon } from '../../components/icons/Profile';
 import { LogOutIcon } from '../../components/icons/LogOut';
 
-import { DecisionModal } from '../../components/DecisionModal/DecisionModal';
+import { DecisionModal } from '../../components/DecisionModal/DecisionModal' ;
 import { MobileSwipeNav } from '../../components/MobileSwipeNav/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
