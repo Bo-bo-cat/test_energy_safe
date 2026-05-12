@@ -5,7 +5,11 @@ from bson.errors import InvalidId
 import bcrypt
 
 from app.database import get_database, col
-from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse, UserProfileResponse, ChangePasswordRequest
+# Імпортуємо всі потрібні моделі, включаючи UserUpdate
+from app.models.user import (
+    UserCreate, UserLogin, UserResponse, TokenResponse, 
+    UserProfileResponse, ChangePasswordRequest, UserUpdate
+)
 from app.auth import create_access_token, get_current_user_id
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -51,11 +55,9 @@ async def login_user(payload: UserLogin):
 @router.post("", response_model=TokenResponse, status_code=201)
 async def create_user(payload: UserCreate):
     db = get_database()
-
     existing = await db[col("users")].find_one({"email": payload.email})
     if existing:
-        raise HTTPException(status_code=409, detail="Користувач з таким email вже існує")
-
+        raise HTTPException(status_code=409, detail="Користувач вже існує")
     doc = {
         "email": payload.email,
         "name": payload.name,
@@ -65,10 +67,9 @@ async def create_user(payload: UserCreate):
         "created_at": datetime.now(timezone.utc),
     }
     result = await db[col("users")].insert_one(doc)
-    user_id = str(result.inserted_id)
     return TokenResponse(
-        access_token=create_access_token(user_id),
-        user_id=user_id,
+        access_token=create_access_token(str(result.inserted_id)),
+        user_id=str(result.inserted_id),
         user_name=doc["name"],
     )
 
@@ -76,19 +77,11 @@ async def create_user(payload: UserCreate):
 @router.get("/me", response_model=UserProfileResponse)
 async def get_my_profile(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-
-    try:
-        oid = ObjectId(user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
-
-    doc = await db[col("users")].find_one({"_id": oid})
+    doc = await db[col("users")].find_one({"_id": ObjectId(user_id)})
     if not doc:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
-
+        raise HTTPException(status_code=404, detail="Не знайдено")
     parts = doc["name"].split()
     initials = "".join(p[0].upper() for p in parts[:2] if p)
-
     return UserProfileResponse(
         id=str(doc["_id"]),
         email=doc["email"],
@@ -98,95 +91,43 @@ async def get_my_profile(user_id: str = Depends(get_current_user_id)):
     )
 
 
-# --- НОВИЙ ЕНДПОІНТ ДЛЯ ЗМІНИ ІМЕНІ (ТА ІНШИХ ДАНИХ) ---
 @router.patch("/me", response_model=UserResponse)
-async def update_profile(payload: dict, user_id: str = Depends(get_current_user_id)):
+async def update_profile(payload: UserUpdate, user_id: str = Depends(get_current_user_id)):
     db = get_database()
+    oid = ObjectId(user_id)
     
-    try:
-        oid = ObjectId(user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
-        
-    # Дозволяємо оновлювати тільки безпечні поля (name, theme тощо)
-    update_data = {k: v for k, v in payload.items() if k in ["name", "theme"]}
+    # Витягуємо лише ті поля, які були передані
+    update_data = payload.model_dump(exclude_unset=True)
     
     if not update_data:
-        raise HTTPException(status_code=400, detail="Немає даних для оновлення")
+        raise HTTPException(status_code=400, detail="Дані не передано")
         
     await db[col("users")].update_one({"_id": oid}, {"$set": update_data})
     doc = await db[col("users")].find_one({"_id": oid})
-    
-    if not doc:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
-        
-    return _serialize_user(doc)
-# --------------------------------------------------------
-
-
-@router.get("/{user_id}", response_model=UserResponse)
-async def get_user(user_id: str, current_user_id: str = Depends(get_current_user_id)):
-    if user_id != current_user_id:
-        raise HTTPException(status_code=403, detail="Доступ заборонено")
-
-    db = get_database()
-
-    try:
-        oid = ObjectId(user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний user_id")
-
-    doc = await db[col("users")].find_one({"_id": oid})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
-
     return _serialize_user(doc)
 
 
 @router.patch("/me/password", status_code=204)
 async def change_password(payload: ChangePasswordRequest, user_id: str = Depends(get_current_user_id)):
     db = get_database()
-
-    try:
-        oid = ObjectId(user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
-
+    oid = ObjectId(user_id)
     doc = await db[col("users")].find_one({"_id": oid})
-    if not doc:
-        raise HTTPException(status_code=404, detail="Користувача не знайдено")
-
+    
     if not doc.get("password_hash"):
-        raise HTTPException(status_code=400, detail="Акаунт створено через Google — пароль не встановлено")
+        raise HTTPException(status_code=400, detail="Акаунт Google")
 
-    if not _verify_password(payload.old_password, doc.get("password_hash")):
-        raise HTTPException(status_code=400, detail="Невірний поточний пароль")
+    if not _verify_password(payload.old_password, doc["password_hash"]):
+        raise HTTPException(status_code=400, detail="Старий пароль невірний")
 
-    await db[col("users")].update_one({"_id": oid}, {"$set": {"password_hash": _hash_password(payload.new_password)}})
+    await db[col("users")].update_one(
+        {"_id": oid}, 
+        {"$set": {"password_hash": _hash_password(payload.new_password)}}
+    )
 
 
 @router.delete("/me", status_code=204)
 async def delete_account(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-
-    try:
-        oid = ObjectId(user_id)
-    except InvalidId:
-        raise HTTPException(status_code=400, detail="Невалідний ідентифікатор користувача")
-
-    user = await db[col("users")].find_one({"_id": oid})
-    if not user:
-        raise HTTPException(status_code=404, detail="Акаунт не знайдено або вже видалено")
-
-    try:
-        await db[col("devices")].delete_many({"user_id": user_id})
-        await db[col("systems")].delete_many({"user_id": user_id})
-        result = await db[col("users")].delete_one({"_id": oid})
-    except Exception:
-        raise HTTPException(
-            status_code=500,
-            detail="Помилка при видаленні акаунту. Спробуйте ще раз пізніше",
-        )
-
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=500, detail="Акаунт не вдалося видалити")
+    await db[col("devices")].delete_many({"user_id": user_id})
+    await db[col("systems")].delete_many({"user_id": user_id})
+    await db[col("users")].delete_one({"_id": ObjectId(user_id)})

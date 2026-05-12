@@ -20,6 +20,11 @@ class UserCreate(BaseModel):
         }
     }}
 
+# Модель для оновлення профілю (ім'я та тема)
+class UserUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    theme: Optional[str] = None
+
 
 class UserLogin(BaseModel):
     email: EmailStr
