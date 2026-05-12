@@ -4,7 +4,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from typing import List, Optional
 
-from app.database import get_database
+from app.database import get_database, col
 from app.models.scenario import ScenarioCreate, ScenarioResponse
 from app.auth import get_current_user_id
 
@@ -39,7 +39,7 @@ async def create_scenario(
         except InvalidId:
             raise HTTPException(status_code=400, detail=f"Невалідний device_id: {did}")
 
-    cursor = db.devices.find({"_id": {"$in": device_oids}, "user_id": user_id})
+    cursor = db[col("devices")].find({"_id": {"$in": device_oids}, "user_id": user_id})
     devices = []
     async for doc in cursor:
         devices.append(doc)
@@ -59,7 +59,7 @@ async def create_scenario(
         except InvalidId:
             raise HTTPException(status_code=400, detail="Невалідний selectedSystemId")
 
-        system = await db.systems.find_one({"_id": system_oid, "user_id": user_id})
+        system = await db[col("systems")].find_one({"_id": system_oid, "user_id": user_id})
         if not system:
             raise HTTPException(status_code=404, detail="Систему не знайдено або вона належить іншому користувачу")
         selected_system_id = payload.selectedSystemId
@@ -74,7 +74,7 @@ async def create_scenario(
         "autonomyHours": payload.autonomyHours,
         "createdAt": datetime.now(timezone.utc),
     }
-    result = await db.scenarios.insert_one(doc)
+    result = await db[col("scenarios")].insert_one(doc)
     doc["_id"] = result.inserted_id
     return _serialize_scenario(doc)
 
@@ -82,7 +82,7 @@ async def create_scenario(
 @router.get("", response_model=List[ScenarioResponse])
 async def list_scenarios(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-    cursor = db.scenarios.find({"userId": user_id})
+    cursor = db[col("scenarios")].find({"userId": user_id})
     scenarios = []
     async for doc in cursor:
         scenarios.append(_serialize_scenario(doc))
@@ -101,7 +101,7 @@ async def get_scenario(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний scenario_id")
 
-    doc = await db.scenarios.find_one({"_id": oid})
+    doc = await db[col("scenarios")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
     if doc["userId"] != user_id:
@@ -122,10 +122,10 @@ async def delete_scenario(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний scenario_id")
 
-    doc = await db.scenarios.find_one({"_id": oid})
+    doc = await db[col("scenarios")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Сценарій не знайдено")
     if doc["userId"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
-    await db.scenarios.delete_one({"_id": oid})
+    await db[col("scenarios")].delete_one({"_id": oid})

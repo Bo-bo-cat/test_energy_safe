@@ -4,7 +4,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from typing import List
 
-from app.database import get_database
+from app.database import get_database, col
 from app.models.device import (
     DeviceCreate, DeviceUpdate, DeviceResponse,
     ClassifyRequest, ClassifyResponse
@@ -40,7 +40,7 @@ def _serialize_device(doc: dict) -> DeviceResponse:
 async def _get_specs_with_cache(db, model_name: str) -> dict:
     """Check device_catalog first; call AI only on cache miss."""
     model_key = model_name.strip().lower()
-    cached = await db.device_catalog.find_one({"model_key": model_key})
+    cached = await db["device_catalog"].find_one({"model_key": model_key})
     if cached:
         return {
             "category": cached["category"],
@@ -51,7 +51,7 @@ async def _get_specs_with_cache(db, model_name: str) -> dict:
 
     specs = await lookup_device_specs(model_name)
 
-    await db.device_catalog.update_one(
+    await db["device_catalog"].update_one(
         {"model_key": model_key},
         {"$setOnInsert": {
             "model_key": model_key,
@@ -88,7 +88,7 @@ async def create_device(
 ):
     db = get_database()
 
-    user = await db.users.find_one({"_id": ObjectId(user_id)})
+    user = await db[col("users")].find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
@@ -109,7 +109,7 @@ async def create_device(
         "tag": _default_tag(specs["category"]),
         "created_at": datetime.now(timezone.utc),
     }
-    result = await db.devices.insert_one(doc)
+    result = await db[col("devices")].insert_one(doc)
     doc["_id"] = result.inserted_id
     return _serialize_device(doc)
 
@@ -117,7 +117,7 @@ async def create_device(
 @router.get("", response_model=List[DeviceResponse])
 async def list_devices(user_id: str = Depends(get_current_user_id)):
     db = get_database()
-    cursor = db.devices.find({"user_id": user_id})
+    cursor = db[col("devices")].find({"user_id": user_id})
     devices = []
     async for doc in cursor:
         devices.append(_serialize_device(doc))
@@ -136,7 +136,7 @@ async def get_device(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    doc = await db.devices.find_one({"_id": oid})
+    doc = await db[col("devices")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
     if doc["user_id"] != user_id:
@@ -158,7 +158,7 @@ async def update_device(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    doc = await db.devices.find_one({"_id": oid})
+    doc = await db[col("devices")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
     if doc["user_id"] != user_id:
@@ -174,7 +174,7 @@ async def update_device(
         update_data["power_watts"] = specs["power_watts"]
         update_data["brand"] = specs["brand"]
 
-    result = await db.devices.find_one_and_update(
+    result = await db[col("devices")].find_one_and_update(
         {"_id": oid},
         {"$set": update_data},
         return_document=True,
@@ -195,7 +195,7 @@ async def patch_device(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    doc = await db.devices.find_one({"_id": oid})
+    doc = await db[col("devices")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
     if doc["user_id"] != user_id:
@@ -205,7 +205,7 @@ async def patch_device(
     if not update_data:
         raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 
-    result = await db.devices.find_one_and_update(
+    result = await db[col("devices")].find_one_and_update(
         {"_id": oid},
         {"$set": update_data},
         return_document=True,
@@ -225,12 +225,12 @@ async def delete_device(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    doc = await db.devices.find_one({"_id": oid})
+    doc = await db[col("devices")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Пристрій не знайдено")
     if doc["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
-    result = await db.devices.delete_one({"_id": oid})
+    result = await db[col("devices")].delete_one({"_id": oid})
     if result.deleted_count == 0:
         raise HTTPException(status_code=500, detail="Не вдалося видалити пристрій")

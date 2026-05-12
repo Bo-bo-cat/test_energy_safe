@@ -4,7 +4,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 import bcrypt
 
-from app.database import get_database
+from app.database import get_database, col
 from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse, UserProfileResponse, ChangePasswordRequest
 from app.auth import create_access_token, get_current_user_id
 
@@ -33,7 +33,7 @@ def _serialize_user(doc: dict) -> UserResponse:
 @router.post("/login", response_model=TokenResponse)
 async def login_user(payload: UserLogin):
     db = get_database()
-    doc = await db.users.find_one({"email": payload.email})
+    doc = await db[col("users")].find_one({"email": payload.email})
     if not doc:
         raise HTTPException(status_code=401, detail="Невірний email або пароль")
     if not _verify_password(payload.password, doc.get("password_hash", "")):
@@ -50,7 +50,7 @@ async def login_user(payload: UserLogin):
 async def create_user(payload: UserCreate):
     db = get_database()
 
-    existing = await db.users.find_one({"email": payload.email})
+    existing = await db[col("users")].find_one({"email": payload.email})
     if existing:
         raise HTTPException(status_code=409, detail="Користувач з таким email вже існує")
 
@@ -62,7 +62,7 @@ async def create_user(payload: UserCreate):
         "inverter_capacity_wh": payload.inverter_capacity_wh,
         "created_at": datetime.now(timezone.utc),
     }
-    result = await db.users.insert_one(doc)
+    result = await db[col("users")].insert_one(doc)
     user_id = str(result.inserted_id)
     return TokenResponse(
         access_token=create_access_token(user_id),
@@ -80,7 +80,7 @@ async def get_my_profile(user_id: str = Depends(get_current_user_id)):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
 
-    doc = await db.users.find_one({"_id": oid})
+    doc = await db[col("users")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
@@ -108,7 +108,7 @@ async def get_user(user_id: str, current_user_id: str = Depends(get_current_user
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний user_id")
 
-    doc = await db.users.find_one({"_id": oid})
+    doc = await db[col("users")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
@@ -124,14 +124,14 @@ async def change_password(payload: ChangePasswordRequest, user_id: str = Depends
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний ідентифікатор")
 
-    doc = await db.users.find_one({"_id": oid})
+    doc = await db[col("users")].find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
     if not _verify_password(payload.old_password, doc.get("password_hash", "")):
         raise HTTPException(status_code=400, detail="Невірний поточний пароль")
 
-    await db.users.update_one({"_id": oid}, {"$set": {"password_hash": _hash_password(payload.new_password)}})
+    await db[col("users")].update_one({"_id": oid}, {"$set": {"password_hash": _hash_password(payload.new_password)}})
 
 
 @router.delete("/me", status_code=204)
@@ -143,14 +143,14 @@ async def delete_account(user_id: str = Depends(get_current_user_id)):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний ідентифікатор користувача")
 
-    user = await db.users.find_one({"_id": oid})
+    user = await db[col("users")].find_one({"_id": oid})
     if not user:
         raise HTTPException(status_code=404, detail="Акаунт не знайдено або вже видалено")
 
     try:
-        await db.devices.delete_many({"user_id": user_id})
-        await db.systems.delete_many({"user_id": user_id})
-        result = await db.users.delete_one({"_id": oid})
+        await db[col("devices")].delete_many({"user_id": user_id})
+        await db[col("systems")].delete_many({"user_id": user_id})
+        result = await db[col("users")].delete_one({"_id": oid})
     except Exception:
         raise HTTPException(
             status_code=500,
