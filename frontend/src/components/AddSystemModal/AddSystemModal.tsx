@@ -23,7 +23,6 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSave(customForm);
-    // Очищаємо форму після успішного збереження
     setCustomForm({ model: '', power: '', battery: '', autonomy: '' });
   };
 
@@ -31,9 +30,8 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         
-        {/* ОНОВЛЕНИЙ ХЕДЕР З ХРЕСТИКОМ */}
         <div className={styles.header}>
-          <h3 className={styles.modalHeader}>Додати систему вручну</h3>
+          <h3 className={styles.modalHeader}>{t.picker.modalTitle}</h3>
           <button type="button" className={styles.closeBtn} onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -45,51 +43,50 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           
           <div className={styles.inputWrap}>
-            <label>Назва моделі</label>
+            <label>{t.picker.modelName}</label>
             <input 
               required 
-              placeholder="Напр. Моя збірка 12V" 
+              placeholder={t.picker.modelPlaceholder} 
               value={customForm.model} 
               onChange={e => setCustomForm({...customForm, model: e.target.value})} 
             />
           </div>
 
           <div className={styles.inputWrap}>
-            <label>Потужність (Вт)</label>
+            <label>{t.picker.powerLabel}</label>
             <input 
               required 
               type="number" 
               min="1" 
-              placeholder="Напр. 1000" 
+              placeholder={t.picker.powerPlaceholder} 
               value={customForm.power} 
               onChange={e => setCustomForm({...customForm, power: e.target.value})} 
             />
           </div>
 
           <div className={styles.inputWrap}>
-            <label>Ємність батареї</label>
+            <label>{t.picker.batteryLabel}</label>
             <input 
               required 
-              placeholder="Напр. 100Ah або 1200Wh" 
+              placeholder={t.picker.batteryPlaceholder} 
               value={customForm.battery} 
               onChange={e => setCustomForm({...customForm, battery: e.target.value})} 
             />
           </div>
 
           <div className={styles.inputWrap}>
-            <label>Приблизна автономія</label>
+            <label>{t.picker.autonomyLabel}</label>
             <input 
               required 
-              placeholder="Напр. 4-6 год" 
+              placeholder={t.picker.autonomyPlaceholder} 
               value={customForm.autonomy} 
               onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} 
             />
           </div>
 
           <div className={styles.modalActions}>
-            {/* Кнопку "Ні" видалено, кнопка "Зберегти" тепер на всю ширину */}
             <button type="submit" className={styles.modalBtnSave}>
-              Зберегти
+              {t.common.save}
             </button>
           </div>
 
