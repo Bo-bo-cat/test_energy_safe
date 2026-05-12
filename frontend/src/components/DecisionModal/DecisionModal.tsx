@@ -2,7 +2,7 @@
 'use client';
 import React from 'react';
 import styles from './DecisionModal.module.css';
-import { useTranslation } from '../context/LanguageContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface DecisionModalProps {
   isOpen: boolean;

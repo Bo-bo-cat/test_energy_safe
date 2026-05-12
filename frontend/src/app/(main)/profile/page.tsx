@@ -3,10 +3,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
-import { DecisionModal } from '../../../components/DecisionModal';
-import { NameModal } from '../../../components/NameModal';
+import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
+import { NameModal } from '../../../components/PasswordModal/NameModal';
 import { AlertModal } from '../../../components/AlertModal/AlertModal';
-import { PasswordModal } from '../../../components/PasswordModal';
+import { PasswordModal } from '../../../components/PasswordModal/PasswordModal';
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {

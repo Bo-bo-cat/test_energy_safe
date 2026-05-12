@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import styles from './PasswordModal.module.css';
-import { useTranslation } from '../context/LanguageContext';
-import { EyeIcon, EyeOffIcon } from './icons/eye';
+import { useTranslation } from '../../context/LanguageContext';
+import { EyeIcon, EyeOffIcon } from '../icons/eye';
 
 interface Props {
   isOpen: boolean;
