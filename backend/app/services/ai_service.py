@@ -118,16 +118,30 @@ async def _groq_classify(model_name: str) -> dict:
     """Ask Groq for category, brand, estimated power, and validity."""
     categories_str = ", ".join(f'"{c}"' for c in VALID_CATEGORIES)
     prompt = (
-        "You are a consumer electronics classifier. "
-        "Given a device model name, determine:\n"
-        "1. is_valid: true only if this is a real electrical home appliance/electronics\n"
-        f"2. category: exactly one from [{categories_str}]\n"
-        "3. power_watts: NAMEPLATE rated running power in watts "
-        "(e.g. Samsung RB34 fridge=140, LG WM3400 washer=500, LG 32LM630 TV=55, "
-        "Bosch SMV46KX01E dishwasher=2400, Daikin FTXB35C AC=1100). "
-        "Use the spec sheet value, not average/annual consumption.\n"
-        "4. brand: manufacturer name only (e.g. 'Samsung', 'LG', 'Bosch')\n"
-        "Respond ONLY with valid JSON, no markdown:\n"
+        "You are a home appliance power consumption expert.\n"
+        "Given a device model name, return JSON with these fields:\n\n"
+        "1. is_valid (bool): true only if this is a real electrical home appliance or consumer electronics.\n"
+        f"2. category (string): exactly one of [{categories_str}].\n"
+        "3. power_watts (number): the RATED RUNNING power in watts from the device nameplate or official specs.\n"
+        "   - This is the MAXIMUM continuous draw, NOT average or standby consumption.\n"
+        "   - If you know the exact model: use its official rated wattage.\n"
+        "   - If you only know the brand/series: use the typical rated wattage for that product line.\n"
+        "   - If you only know the category: use the TYPICAL rated wattage for that appliance type.\n"
+        "   Reference values (nameplate rated power):\n"
+        "     Fridge Samsung RB34=140W, Fridge Bosch KGN=150W\n"
+        "     Washing machine LG F4=2000W, Washing machine Bosch WAJ=2000W\n"
+        "     Dishwasher Bosch SMS=2400W\n"
+        "     Microwave Samsung MG23=800W, Microwave LG MH=1000W\n"
+        "     Coffee machine DeLonghi Magnifica=1450W, Coffee machine Philips EP=1500W, Nespresso Vertuo=1500W\n"
+        "     Kettle Bosch TWK=2400W, Kettle Philips HD=2400W\n"
+        "     Air conditioner Daikin FTXB35=1100W, AC LG S09=900W\n"
+        "     TV LG 32LM=55W, TV Samsung UE43=100W\n"
+        "     Laptop Dell XPS=65W, Laptop MacBook Pro=96W\n"
+        "     Router TP-Link Archer=18W\n"
+        "     LED bulb=10W, LED strip 5m=25W\n"
+        "     Phone charger=20W, Laptop charger=65W\n"
+        "4. brand (string): manufacturer name only (e.g. 'Samsung', 'LG', 'Bosch', 'DeLonghi').\n\n"
+        "Respond ONLY with valid JSON, no markdown, no explanation:\n"
         "{\"is_valid\": bool, \"category\": \"string\", \"power_watts\": number, \"brand\": \"string\"}\n\n"
         f"Device: \"{model_name}\""
     )
@@ -140,7 +154,7 @@ async def _groq_classify(model_name: str) -> dict:
                 "model": GROQ_MODEL,
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.1,
-                "max_tokens": 120,
+                "max_tokens": 150,
             },
         )
         response.raise_for_status()

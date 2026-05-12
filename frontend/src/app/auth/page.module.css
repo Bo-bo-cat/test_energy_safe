@@ -201,9 +201,52 @@
 }
 
 .submit-button:hover {
-  /* Трохи інша логіка для hover, оскільки `var(--text-main)` інвертується в темній темі.
-     Можна використовувати `opacity` для універсального ефекту наведення. */
   opacity: 0.8;
+}
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 52px;
+  background-color: var(--bg-card-inner);
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.google-button:hover {
+  border-color: var(--accent-orange);
+  background-color: var(--bg-card);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 4px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.divider-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 /* =========================================
@@ -269,9 +312,15 @@
 
   .submit-button {
     margin-top: 24px;
-    height: 64px; 
+    height: 64px;
     font-size: 20px;
-    border-radius: 12px; 
+    border-radius: 12px;
+  }
+
+  .google-button {
+    height: 60px;
+    font-size: 18px;
+    border-radius: 12px;
   }
 }
 

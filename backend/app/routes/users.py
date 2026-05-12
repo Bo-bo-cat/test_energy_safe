@@ -15,7 +15,9 @@ def _hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 
-def _verify_password(password: str, hashed: str) -> bool:
+def _verify_password(password: str, hashed: str | None) -> bool:
+    if not hashed:
+        return False
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
 
@@ -128,7 +130,10 @@ async def change_password(payload: ChangePasswordRequest, user_id: str = Depends
     if not doc:
         raise HTTPException(status_code=404, detail="Користувача не знайдено")
 
-    if not _verify_password(payload.old_password, doc.get("password_hash", "")):
+    if not doc.get("password_hash"):
+        raise HTTPException(status_code=400, detail="Акаунт створено через Google — пароль не встановлено")
+
+    if not _verify_password(payload.old_password, doc.get("password_hash")):
         raise HTTPException(status_code=400, detail="Невірний поточний пароль")
 
     await db[col("users")].update_one({"_id": oid}, {"$set": {"password_hash": _hash_password(payload.new_password)}})

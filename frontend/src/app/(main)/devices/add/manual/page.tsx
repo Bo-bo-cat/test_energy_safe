@@ -41,6 +41,7 @@ export default function ManualAddDevicePage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showStartupPower, setShowStartupPower] = useState(false);
+  const [startupError, setStartupError] = useState('');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,15 +57,23 @@ export default function ManualAddDevicePage() {
     const errors = { name: '', category: '', power: '' };
     if (!formData.name.trim()) errors.name = t.deviceManual.nameError;
     else if (/^\d+$/.test(formData.name.trim())) errors.name = t.deviceManual.nameNumError;
-    
+
     if (!formData.category) errors.category = t.deviceManual.catError;
-    
+
     if (!formData.power) errors.power = t.deviceManual.powerError;
     else if (isNaN(Number(formData.power))) errors.power = t.deviceManual.powerNumError;
     else if (Number(formData.power) <= 0) errors.power = t.deviceManual.powerZeroError;
-    
+
+    let startupErr = '';
+    if (showStartupPower && formData.startupPower && formData.power) {
+      if (Number(formData.startupPower) < Number(formData.power)) {
+        startupErr = t.deviceManual.startupLessThanPower;
+      }
+    }
+    setStartupError(startupErr);
+
     setFieldErrors(errors);
-    return !errors.name && !errors.category && !errors.power;
+    return !errors.name && !errors.category && !errors.power && !startupErr;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -265,6 +274,7 @@ export default function ManualAddDevicePage() {
               placeholder="Авто * 3.5"
               className={styles['input']}
             />
+            {startupError && <p className={styles['error']}>{startupError}</p>}
           </div>
         ) : (
           <button 

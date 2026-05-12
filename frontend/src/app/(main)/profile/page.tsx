@@ -5,7 +5,8 @@ import styles from './page.module.css';
 
 import { DecisionModal } from '../../../components/DecisionModal';
 import { NameModal } from '../../../components/NameModal';
-import { AlertModal } from '../../../components/AlertModal/AlertModal'; // Додали AlertModal
+import { AlertModal } from '../../../components/AlertModal/AlertModal';
+import { PasswordModal } from '../../../components/PasswordModal';
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ProfilePage() {
@@ -17,7 +18,8 @@ export default function ProfilePage() {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false); // Стейт для "Скоро буде!"
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -123,11 +125,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ОНОВЛЕНО: Тепер при наведенні спрацює CSS, а при кліку викличе AlertModal */}
-        <button 
-          className={styles.changePasswordBtn} 
-          onClick={() => setIsAlertOpen(true)}
-          data-hover={t.deviceAdd.soon}
+        <button
+          className={styles.changePasswordBtn}
+          onClick={() => setShowPasswordModal(true)}
         >
           <span>{t.profile.changePassword}</span>
         </button>
@@ -145,15 +145,19 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      <NameModal 
-        isOpen={showNameModal} 
-        onClose={() => setShowNameModal(false)} 
-        onSave={handleChangeName} 
-        initialName={user.name} 
+      <NameModal
+        isOpen={showNameModal}
+        onClose={() => setShowNameModal(false)}
+        onSave={handleChangeName}
+        initialName={user.name}
       />
 
-      {/* ОНОВЛЕНО: Модалка з повідомленням "Скоро буде" */}
-      <AlertModal 
+      <PasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+      />
+
+      <AlertModal
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         title={t.deviceAdd.soon}

@@ -47,7 +47,11 @@ export const en = {
     invalidCreds: 'Invalid email or password',
     userExists: 'User with this email already exists',
     regError: 'Registration error. Try again.',
-    namePlaceholder: 'John Doe'
+    namePlaceholder: 'John Doe',
+    continueWithGoogle: 'Continue with Google',
+    orDivider: 'or',
+    googleDenied: 'You denied access via Google.',
+    googleError: 'Google login error. Please try again.'
   },
   dashboard: {
     systemStatus: 'System Status',
@@ -116,6 +120,7 @@ export const en = {
     powerError: 'Enter power',
     powerNumError: 'Power must be a number',
     powerZeroError: 'Power must be greater than 0',
+    startupLessThanPower: 'Startup power cannot be less than running power',
   },
   faq: {
     title: 'FAQ',
@@ -160,6 +165,13 @@ export const en = {
     deleteAccount: 'Delete Account',
     serverError: 'Server error',
     loadError: 'Failed to load profile:',
+    oldPassword: 'Current password',
+    newPassword: 'New password',
+    confirmPassword: 'Confirm new password',
+    passwordChanged: 'Password changed successfully!',
+    wrongOldPassword: 'Current password is incorrect',
+    passwordMismatch: 'Passwords do not match',
+    passwordTooShort: 'Password must be at least 4 characters',
   },
   scenarios: {
     title: 'My Scenarios',

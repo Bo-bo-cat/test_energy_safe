@@ -47,7 +47,11 @@ export const uk = {
     invalidCreds: 'Невірний email або пароль',
     userExists: 'Користувач з таким email вже існує',
     regError: 'Помилка реєстрації. Спробуйте ще раз.',
-    namePlaceholder: 'Іван Іваненко'
+    namePlaceholder: 'Іван Іваненко',
+    continueWithGoogle: 'Продовжити через Google',
+    orDivider: 'або',
+    googleDenied: 'Ви відмовили у доступі через Google.',
+    googleError: 'Помилка входу через Google. Спробуйте ще раз.'
   },
   dashboard: {
     systemStatus: 'Статус системи',
@@ -116,6 +120,7 @@ export const uk = {
     powerError: 'Введіть потужність',
     powerNumError: 'Потужність має бути числом',
     powerZeroError: 'Потужність має бути більше 0',
+    startupLessThanPower: 'Пусковий струм не може бути меншим за робочу потужність',
   },
   faq: {
     title: 'FAQ',
@@ -160,6 +165,13 @@ export const uk = {
     deleteAccount: 'Видалити аккаунт',
     serverError: 'Помилка сервера',
     loadError: 'Не вдалося завантажити профіль:',
+    oldPassword: 'Старий пароль',
+    newPassword: 'Новий пароль',
+    confirmPassword: 'Підтвердіть новий пароль',
+    passwordChanged: 'Пароль успішно змінено!',
+    wrongOldPassword: 'Невірний поточний пароль',
+    passwordMismatch: 'Паролі не співпадають',
+    passwordTooShort: 'Пароль має бути не менше 4 символів',
   },
   scenarios: {
     title: 'Мої Сценарії',
