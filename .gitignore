@@ -78,3 +78,4 @@ Thumbs.db
 # ЗОБРАЖЕННЯ ТА ІКОНКИ
 # =========================
 *.svg
+tsconfig.tsbuildinfo
