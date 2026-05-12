@@ -19,14 +19,40 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
+/* СТИЛІ ДЛЯ НОВОГО ХЕДЕРА ТА ХРЕСТИКА */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .modalHeader {
   font-size: 20px;
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 20px;
-  text-align: center;
+  margin: 0; 
 }
 
+.closeBtn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--accent-orange);
+  transition: background-color 0.2s;
+}
+
+.closeBtn:hover {
+  background-color: var(--bg-card);
+}
+
+/* СТИЛІ ДЛЯ ФОРМИ ТА ІНПУТІВ */
 .modalForm {
   display: flex;
   flex-direction: column;
@@ -60,26 +86,14 @@
   border-color: var(--accent-orange);
 }
 
+/* ОНОВЛЕНА КНОПКА ЗБЕРЕГТИ НА ВСЮ ШИРИНУ */
 .modalActions {
   display: flex;
-  gap: 12px;
   margin-top: 12px;
 }
 
-.modalBtnCancel {
-  flex: 1;
-  background-color: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .modalBtnSave {
-  flex: 1;
+  width: 100%;
   background-color: var(--accent-orange);
   color: #fff;
   border: none;

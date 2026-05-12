@@ -30,7 +30,18 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-        <h3 className={styles.modalHeader}>Додати систему вручну</h3>
+        
+        {/* ОНОВЛЕНИЙ ХЕДЕР З ХРЕСТИКОМ */}
+        <div className={styles.header}>
+          <h3 className={styles.modalHeader}>Додати систему вручну</h3>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className={styles.modalForm}>
           
           <div className={styles.inputWrap}>
@@ -76,9 +87,7 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
           </div>
 
           <div className={styles.modalActions}>
-            <button type="button" className={styles.modalBtnCancel} onClick={onClose}>
-              {t.common.no || 'Скасувати'}
-            </button>
+            {/* Кнопку "Ні" видалено, кнопка "Зберегти" тепер на всю ширину */}
             <button type="submit" className={styles.modalBtnSave}>
               Зберегти
             </button>
