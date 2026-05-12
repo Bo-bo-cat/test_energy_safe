@@ -250,7 +250,32 @@
   color: var(--text-muted);
   white-space: nowrap;
 }
+/* Рядок для лейблу та кнопки "Забули пароль" */
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2px;
+}
 
+/* Делікатна кнопка "Забули пароль?" */
+.forgot-password-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted); /* Робимо її делікатно-сірою */
+  cursor: pointer;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.forgot-password-btn:hover {
+  color: var(--accent-orange); /* При наведенні стає фірмовою помаранчевою */
+  text-decoration: underline;
+}
 /* =========================================
    МОБІЛЬНА АДАПТАЦІЯ (Розширено до 950px)
    ========================================= */
