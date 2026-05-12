@@ -1,22 +1,30 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { NameModal } from '../../../components/PasswordModal/NameModal';
-import { PasswordModal } from '../../../components/PasswordModal/PasswordModal'; // Справжня модалка
+import { PasswordModal } from '../../../components/PasswordModal/PasswordModal';
 import { useTranslation } from '../../../context/LanguageContext';
+
+// Палітра кольорів для аватарки
+const AVATAR_COLORS = [
+  '#FF6B00', '#4CAF50', '#2196F3', '#9C27B0', 
+  '#E91E63', '#00BCD4', '#8BC34A', '#FF9800'
+];
 
 export default function ProfilePage() {
   const { t, lang, toggleLanguage } = useTranslation();
+  const router = useRouter(); 
   
   const [user, setUser] = useState<any>({ name: '...', email: '...' });
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Для виходу
+  const [showLogoutModal, setShowLogoutModal] = useState(false); 
   const [showNameModal, setShowNameModal] = useState(false);
-  const [showPassModal, setShowPassModal] = useState(false); // Для пароля
+  const [showPassModal, setShowPassModal] = useState(false); 
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -56,12 +64,20 @@ export default function ProfilePage() {
     window.location.href = '/auth';
   };
 
+  // Генеруємо "випадковий", але стабільний для користувача колір
+  const avatarColor = useMemo(() => {
+    if (!user.name || user.name === '...') return '#FF6B00'; // Колір за замовчуванням поки вантажиться
+    const charCode = user.name.charCodeAt(0) || 0;
+    return AVATAR_COLORS[charCode % AVATAR_COLORS.length];
+  }, [user.name]);
+
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">{t.profile.title}</h1>
+      <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
 
       <div className={styles.profileHeader}>
-        <div className={styles.avatar} style={{ backgroundColor: '#FF6B00' }}>
+        {/* Аватарка з новим динамічним кольором */}
+        <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
           {user.name?.charAt(0).toUpperCase()}
         </div>
         <div className={styles.userInfo}>
@@ -82,22 +98,36 @@ export default function ProfilePage() {
         </div>
 
         <div className={styles.themeToggleMobile} onClick={toggleTheme}>
-          <span>{t.sidebar.darkMode}</span>
+          <span>{t.sidebar?.darkMode || 'Темна тема'}</span>
           <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
             <div className={styles['toggle-knob']}></div>
           </div>
         </div>
 
-        <button className={styles.changePasswordBtn} onClick={() => setShowPassModal(true)}>
-          <span>{t.profile.changePassword}</span>
+        {/* Кнопка "Змінити пароль" з data-hover */}
+        <button 
+          className={styles.changePasswordBtn} 
+          onClick={() => setShowPassModal(true)}
+          data-hover={t.profile?.changePassword || 'Змінити пароль'}
+        >
+          <span>{t.profile?.changePassword || 'Змінити пароль'}</span>
+        </button>
+
+        {/* Повернута кнопка FAQ */}
+        <button 
+          className={styles.changePasswordBtn} 
+          onClick={() => router.push('/faq')}
+          data-hover="FAQ"
+        >
+          <span>FAQ</span>
         </button>
 
         <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>
-          {t.profile.logout}
+          {t.profile?.logout || 'Вийти'}
         </button>
 
         <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
-          {t.profile.deleteAccount}
+          {t.profile?.deleteAccount || 'Видалити аккаунт'}
         </button>
       </div>
 
@@ -118,16 +148,16 @@ export default function ProfilePage() {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
-        title={t.profile.logout + "?"}
-        confirmText={t.common.yes}
-        cancelText={t.common.no}
+        title={(t.profile?.logout || 'Вийти') + "?"}
+        confirmText={t.common?.yes || 'Так'}
+        cancelText={t.common?.no || 'Ні'}
       />
 
       <DecisionModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={() => {/* логіка видалення */}}
-        title={t.common.areYouSure}
+        title={t.common?.areYouSure || 'Ви впевнені?'}
       />
     </div>
   );
