@@ -2,9 +2,13 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
+
 import { LightningIcon } from '../../components/icons/Lightning';
 import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
+import { PasswordResetModal } from '../../components/PasswordResetModal/PasswordResetModal';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
+
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 function GoogleIcon() {
   return (
@@ -19,96 +23,58 @@ function GoogleIcon() {
 
 function AuthPageContent() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const params = useSearchParams();
+
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
-  const params = useSearchParams();
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   useEffect(() => {
     const urlError = params.get('error');
     if (urlError) {
-      setError(
-        urlError === 'google_denied'
-          ? t.auth.googleDenied
-          : t.auth.googleError
-      );
+      setError(urlError === 'google_denied' ? t.auth.googleDenied : t.auth.googleError);
     }
   }, [params, t.auth.googleDenied, t.auth.googleError]);
 
-  function switchMode(newMode: 'login' | 'register') {
-    setMode(newMode);
-    setError('');
-    setEmail('');
-    setName('');
-    setPassword('');
-    setShowPassword(false);
-  }
+  const handleGoogleLogin = () => {
+    window.location.href = `${API}/auth/google`;
+  };
 
-  function handleGoogleLogin() {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (mode === 'login') {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+    const endpoint = mode === 'login' ? '/users/login' : '/users';
+    const body = mode === 'login' 
+      ? { email, password } 
+      : { email, name: name.trim() || email.split('@')[0], password, has_inverter: false, inverter_capacity_wh: null };
 
-      if (!res.ok) {
-        setError(t.auth.invalidCreds);
-        return;
-      }
+    const res = await fetch(`${API}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
 
-      const data = await res.json();
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user_id', data.user_id);
-      localStorage.setItem('user_name', data.user_name);
-      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      router.push('/');
-    } else {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name: name.trim() || email.split('@')[0],
-          password,
-          has_inverter: false,
-          inverter_capacity_wh: null,
-        }),
-      });
-
-      if (res.status === 409) {
-        setError(t.auth.userExists);
-        return;
-      }
-
-      if (!res.ok) {
-        setError(t.auth.regError);
-        return;
-      }
-
-      const data = await res.json();
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user_id', data.user_id);
-      localStorage.setItem('user_name', data.user_name);
-      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      router.push('/');
+    if (!res.ok) {
+      if (res.status === 409) return setError(t.auth.userExists);
+      return setError(mode === 'login' ? t.auth.invalidCreds : t.auth.regError);
     }
-  }
+
+    const data = await res.json();
+    localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('user_id', data.user_id);
+    localStorage.setItem('user_name', data.user_name);
+    document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+    router.push('/');
+  };
 
   return (
     <div className={styles['page-container']}>
-
       <div className={styles['logo-container']}>
         <LightningIcon className={styles['logo-icon']} />
         <div className={styles['logo-text']}>Energy Safe</div>
@@ -116,109 +82,61 @@ function AuthPageContent() {
 
       <div className={styles['auth-card']}>
         <div className={styles['mode-tabs']}>
-          <button
-            type="button"
-            className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`}
-            onClick={() => switchMode('login')}
-          >
-            {t.auth.loginTab}
-          </button>
-          <button
-            type="button"
-            className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`}
-            onClick={() => switchMode('register')}
-          >
-            {t.auth.registerTab}
-          </button>
+          <button type="button" className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`} onClick={() => setMode('login')}>{t.auth.loginTab}</button>
+          <button type="button" className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`} onClick={() => setMode('register')}>{t.auth.registerTab}</button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
-
           <div className={styles['input-group']}>
             <label className={styles['input-label']}>{t.auth.email}</label>
-            <input
-              type="email"
-              className={styles['auth-input']}
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="useruser@gmail.com"
-              required
-            />
+            <input type="email" className={styles['auth-input']} value={email} onChange={e => setEmail(e.target.value)} placeholder="user@gmail.com" required />
           </div>
 
           {mode === 'register' && (
             <div className={styles['input-group']}>
               <label className={styles['input-label']}>{t.auth.name}</label>
-              <input
-                type="text"
-                className={styles['auth-input']}
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder={t.auth.namePlaceholder}
-              />
+              <input type="text" className={styles['auth-input']} value={name} onChange={e => setName(e.target.value)} placeholder={t.auth.namePlaceholder} />
             </div>
           )}
 
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>{t.auth.password}</label>
+            <div className={styles['label-row']}>
+              <label className={styles['input-label']}>{t.auth.password}</label>
+              {mode === 'login' && (
+                <button type="button" className={styles['forgot-password-btn']} onClick={() => setIsResetModalOpen(true)} tabIndex={-1}>
+                  {t.auth.forgotPassword}
+                </button>
+              )}
+            </div>
             <div className={styles['password-wrapper']}>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className={`${styles['auth-input']} ${styles['password-input']}`}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="****************"
-                required
-              />
-              <button
-                type="button"
-                className={styles['eye-button']}
-                onClick={() => setShowPassword(v => !v)}
-                tabIndex={-1}
-              >
-                {showPassword
-                  ? <EyeOffIcon className={styles['eye-icon']} />
-                  : <EyeIcon className={styles['eye-icon']} />
-                }
+              <input type={showPassword ? 'text' : 'password'} className={`${styles['auth-input']} ${styles['password-input']}`} value={password} onChange={e => setPassword(e.target.value)} placeholder="****************" required />
+              <button type="button" className={styles['eye-button']} onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
+                {showPassword ? <EyeOffIcon className={styles['eye-icon']} /> : <EyeIcon className={styles['eye-icon']} />}
               </button>
             </div>
           </div>
 
           {error && <p className={styles['error-text']}>{error}</p>}
 
-          <button type="submit" className={styles['submit-button']}>
-            {mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}
-          </button>
+          <button type="submit" className={styles['submit-button']}>{mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}</button>
 
-          {/* Перемістили Google кнопку сюди */}
-          <div className={styles['divider']}>
-            <span className={styles['divider-text']}>{t.auth.orDivider}</span>
-          </div>
+          <div className={styles['divider']}><span className={styles['divider-text']}>{t.auth.orDivider}</span></div>
 
           <button type="button" className={styles['google-button']} onClick={handleGoogleLogin}>
-            <GoogleIcon />
-            {t.auth.continueWithGoogle}
+            <GoogleIcon /> {t.auth.continueWithGoogle}
           </button>
-
         </form>
       </div>
 
+      <PasswordResetModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} />
     </div>
-  );
-}
-
-function AuthPageWithParams() {
-  return (
-    <Suspense>
-      <AuthPageContent />
-    </Suspense>
   );
 }
 
 export default function AuthPage() {
   return (
     <LanguageProvider>
-      <AuthPageWithParams />
+      <Suspense><AuthPageContent /></Suspense>
     </LanguageProvider>
   );
 }
