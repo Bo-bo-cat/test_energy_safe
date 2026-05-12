@@ -11,9 +11,11 @@ import { AlertModal } from '../../../../components/AlertModal/AlertModal';
 import { useTranslation } from '../../../../context/LanguageContext';
 
 export default function AddDevicePage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation(); 
   
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  // Стан для відслідковування наведення на картку камери
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleCameraClick = (e: React.MouseEvent) => {
     e.preventDefault(); 
@@ -28,13 +30,18 @@ export default function AddDevicePage() {
         <Link 
           href="#" 
           onClick={handleCameraClick} 
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           className={styles['card']}
         >
           <div className={styles['card-inner']}>
             <span className={styles['icon']}>
               <CameraIcon className={styles['icon-camera']} />
             </span>
-            <h2 className={styles['card-title']}>{t.deviceAdd.photoLabel}</h2>
+            {/* Текст змінюється при наведенні */}
+            <h2 className={styles['card-title']}>
+              {isHovered ? t.deviceAdd.soon : t.deviceAdd.photoLabel}
+            </h2>
           </div>
         </Link>
 
@@ -55,7 +62,6 @@ export default function AddDevicePage() {
         </p>
       </section>
 
-      {/* Акуратний топ-алерт без зайвого тексту */}
       <AlertModal 
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
