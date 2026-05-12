@@ -38,7 +38,7 @@ export function SaveScenarioModal({
           className={styles.input}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder={t.common.model}
+          placeholder={t.scenariosave.input}
           autoFocus
         />
 

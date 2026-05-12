@@ -25,6 +25,12 @@ export const uk = {
     w: 'Вт',
     h: 'год',
   },
+
+  scenariosave: {
+    input: 'Нова назва'
+  },
+
+
   sidebar: {
     home: 'Головна',
     devices: 'Прилади',

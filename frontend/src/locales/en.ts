@@ -25,6 +25,11 @@ export const en = {
     w: 'W',
     h: 'h',
   },
+
+  scenariosave: {
+    input: 'New name'
+  },
+
   sidebar: {
     home: 'Home',
     devices: 'Devices',
