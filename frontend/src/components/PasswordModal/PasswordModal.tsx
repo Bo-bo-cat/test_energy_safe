@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import styles from '../PasswordModal.module.css';
+import styles from './PasswordModal.module.css';
 import { useTranslation } from '../../context/LanguageContext';
 
 export function PasswordModal({ isOpen, onCloseAction }: { isOpen: boolean, onCloseAction: () => void }) {
