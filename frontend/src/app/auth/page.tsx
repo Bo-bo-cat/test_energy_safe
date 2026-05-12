@@ -5,7 +5,7 @@ import styles from './page.module.css';
 
 import { LightningIcon } from '../../components/icons/Lightning';
 import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
-import { PasswordResetModal } from '../../components/PasswordResetModal/PasswordResetModal';
+import { PasswordResetModal } from '../../components/PasswordResetModal/PasswordResetModal'; 
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -32,6 +32,7 @@ function AuthPageContent() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   useEffect(() => {
@@ -41,6 +42,16 @@ function AuthPageContent() {
     }
   }, [params, t.auth.googleDenied, t.auth.googleError]);
 
+  const switchMode = (newMode: 'login' | 'register') => {
+    setMode(newMode);
+    setError('');
+    setEmail('');
+    setName('');
+    setPassword('');
+    setShowPassword(false);
+  };
+
+  // Ця функція виправляй помилку "Cannot find name 'handleGoogleLogin'"
   const handleGoogleLogin = () => {
     window.location.href = `${API}/auth/google`;
   };
@@ -54,23 +65,27 @@ function AuthPageContent() {
       ? { email, password } 
       : { email, name: name.trim() || email.split('@')[0], password, has_inverter: false, inverter_capacity_wh: null };
 
-    const res = await fetch(`${API}${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    try {
+      const res = await fetch(`${API}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-    if (!res.ok) {
-      if (res.status === 409) return setError(t.auth.userExists);
-      return setError(mode === 'login' ? t.auth.invalidCreds : t.auth.regError);
+      if (!res.ok) {
+        if (res.status === 409) return setError(t.auth.userExists);
+        return setError(mode === 'login' ? t.auth.invalidCreds : t.auth.regError);
+      }
+
+      const data = await res.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user_id', data.user_id);
+      localStorage.setItem('user_name', data.user_name);
+      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+      router.push('/');
+    } catch (err) {
+      setError('Помилка з\'єднання з сервером');
     }
-
-    const data = await res.json();
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('user_id', data.user_id);
-    localStorage.setItem('user_name', data.user_name);
-    document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-    router.push('/');
   };
 
   return (
@@ -82,35 +97,78 @@ function AuthPageContent() {
 
       <div className={styles['auth-card']}>
         <div className={styles['mode-tabs']}>
-          <button type="button" className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`} onClick={() => setMode('login')}>{t.auth.loginTab}</button>
-          <button type="button" className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`} onClick={() => setMode('register')}>{t.auth.registerTab}</button>
+          <button
+            type="button"
+            className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`}
+            onClick={() => switchMode('login')}
+          >
+            {t.auth.loginTab}
+          </button>
+          <button
+            type="button"
+            className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`}
+            onClick={() => switchMode('register')}
+          >
+            {t.auth.registerTab}
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
           <div className={styles['input-group']}>
             <label className={styles['input-label']}>{t.auth.email}</label>
-            <input type="email" className={styles['auth-input']} value={email} onChange={e => setEmail(e.target.value)} placeholder="user@gmail.com" required />
+            <input
+              type="email"
+              className={styles['auth-input']}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="user@gmail.com"
+              required
+            />
           </div>
 
           {mode === 'register' && (
             <div className={styles['input-group']}>
               <label className={styles['input-label']}>{t.auth.name}</label>
-              <input type="text" className={styles['auth-input']} value={name} onChange={e => setName(e.target.value)} placeholder={t.auth.namePlaceholder} />
+              <input
+                type="text"
+                className={styles['auth-input']}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder={t.auth.namePlaceholder}
+              />
             </div>
           )}
 
           <div className={styles['input-group']}>
+            {/* ОСЬ ТУТ КНОПКА ДЛЯ ВИКЛИКУ МОДАЛКИ */}
             <div className={styles['label-row']}>
               <label className={styles['input-label']}>{t.auth.password}</label>
               {mode === 'login' && (
-                <button type="button" className={styles['forgot-password-btn']} onClick={() => setIsResetModalOpen(true)} tabIndex={-1}>
-                  {t.auth.forgotPassword}
+                <button 
+                  type="button" 
+                  className={styles['forgot-password-btn']}
+                  onClick={() => setIsResetModalOpen(true)}
+                  tabIndex={-1}
+                >
+                  {t.auth.forgotPassword || 'Забули пароль?'}
                 </button>
               )}
             </div>
             <div className={styles['password-wrapper']}>
-              <input type={showPassword ? 'text' : 'password'} className={`${styles['auth-input']} ${styles['password-input']}`} value={password} onChange={e => setPassword(e.target.value)} placeholder="****************" required />
-              <button type="button" className={styles['eye-button']} onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className={`${styles['auth-input']} ${styles['password-input']}`}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="****************"
+                required
+              />
+              <button
+                type="button"
+                className={styles['eye-button']}
+                onClick={() => setShowPassword(v => !v)}
+                tabIndex={-1}
+              >
                 {showPassword ? <EyeOffIcon className={styles['eye-icon']} /> : <EyeIcon className={styles['eye-icon']} />}
               </button>
             </div>
@@ -118,17 +176,25 @@ function AuthPageContent() {
 
           {error && <p className={styles['error-text']}>{error}</p>}
 
-          <button type="submit" className={styles['submit-button']}>{mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}</button>
+          <button type="submit" className={styles['submit-button']}>
+            {mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}
+          </button>
 
-          <div className={styles['divider']}><span className={styles['divider-text']}>{t.auth.orDivider}</span></div>
+          <div className={styles['divider']}>
+            <span className={styles['divider-text']}>{t.auth.orDivider}</span>
+          </div>
 
           <button type="button" className={styles['google-button']} onClick={handleGoogleLogin}>
-            <GoogleIcon /> {t.auth.continueWithGoogle}
+            <GoogleIcon />
+            {t.auth.continueWithGoogle}
           </button>
         </form>
       </div>
 
-      <PasswordResetModal isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)} />
+      <PasswordResetModal 
+        isOpen={isResetModalOpen} 
+        onClose={() => setIsResetModalOpen(false)} 
+      />
     </div>
   );
 }
@@ -136,7 +202,9 @@ function AuthPageContent() {
 export default function AuthPage() {
   return (
     <LanguageProvider>
-      <Suspense><AuthPageContent /></Suspense>
+      <Suspense>
+        <AuthPageContent />
+      </Suspense>
     </LanguageProvider>
   );
 }
