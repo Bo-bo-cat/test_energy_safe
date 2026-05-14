@@ -53,7 +53,7 @@ class DeviceResponse(BaseModel):
     brand: str
     daily_usage_hours: float
     is_critical: bool
-    tag: str = "Дім"
+    tag: Optional[str] = None
     created_at: datetime
 
 

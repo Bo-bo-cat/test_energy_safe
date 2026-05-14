@@ -103,7 +103,7 @@ export default function DevicesPage() {
 
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
-    return device.tag === activeFilter || device.tag === 'Усі'; 
+    return device.tag === activeFilter;
   });
 
   const groupedDevices = filteredDevices.reduce((acc, device) => {

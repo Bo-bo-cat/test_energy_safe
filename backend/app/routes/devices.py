@@ -32,7 +32,7 @@ def _serialize_device(doc: dict) -> DeviceResponse:
         brand=doc["brand"],
         daily_usage_hours=doc["daily_usage_hours"],
         is_critical=doc["is_critical"],
-        tag=doc.get("tag") or _default_tag(doc["category"]),
+        tag=doc.get("tag"),
         created_at=doc["created_at"],
     )
 
@@ -106,7 +106,7 @@ async def create_device(
         "startup_current_watts": payload.startup_current_watts,
         "daily_usage_hours": payload.daily_usage_hours,
         "is_critical": payload.is_critical,
-        "tag": _default_tag(specs["category"]),
+        "tag": None,
         "created_at": datetime.now(timezone.utc),
     }
     result = await db[col("devices")].insert_one(doc)
