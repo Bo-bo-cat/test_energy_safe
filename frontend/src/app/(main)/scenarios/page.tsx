@@ -15,7 +15,7 @@ export default function ScenariosPage() {
 
   const [scenarios, setScenarios] = useState<any[]>([]);
   
-  // Додаємо стейти для всіх приладів та систем (як на головній)
+  // Стейти для всіх приладів та систем (щоб шукати їхні назви по ID)
   const [allDevices, setAllDevices] = useState<any[]>([]);
   const [allSystems, setAllSystems] = useState<any[]>([]);
   
@@ -31,7 +31,7 @@ export default function ScenariosPage() {
     fetchData();
   }, []);
 
-  // Одночасно завантажуємо сценарії, прилади та системи
+  // Одночасно завантажуємо сценарії, прилади та системи з перевіркою формату (масив чи об'єкт)
   const fetchData = async () => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -42,9 +42,18 @@ export default function ScenariosPage() {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null)
       ]);
 
-      if (scenRes.ok) setScenarios(await scenRes.json());
-      if (devRes.ok) setAllDevices(await devRes.json());
-      if (sysRes && sysRes.ok) setAllSystems(await sysRes.json());
+      if (scenRes && scenRes.ok) {
+        const data = await scenRes.json();
+        setScenarios(Array.isArray(data) ? data : (data.items || data.data || []));
+      }
+      if (devRes && devRes.ok) {
+        const data = await devRes.json();
+        setAllDevices(Array.isArray(data) ? data : (data.items || data.devices || data.data || []));
+      }
+      if (sysRes && sysRes.ok) {
+        const data = await sysRes.json();
+        setAllSystems(Array.isArray(data) ? data : (data.items || data.systems || data.data || []));
+      }
 
     } catch (err) {
       console.error(err);
@@ -57,28 +66,48 @@ export default function ScenariosPage() {
     setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
-  // ФУНКЦІЯ: Зіставляємо ID з реальними назвами перед відкриттям модалки
+  // ФУНКЦІЯ: Бронебійне зіставлення ID з реальними назвами
   const handleOpenInfo = (e: React.MouseEvent, scenario: any) => {
     e.stopPropagation();
 
-    // 1. Знаходимо реальні об'єкти приладів за їх ID
-    const matchedDevices = (scenario.selectedDeviceIds || []).map((id: string) => {
-      const device = allDevices.find(d => d.id === id || d._id === id);
-      if (!device) return null;
+    // Дістаємо ID приладів (враховуємо обидва формати написання)
+    const deviceIds = scenario.selectedDeviceIds || scenario.selected_device_ids || [];
+    
+    const matchedDevices = deviceIds.map((id: any) => {
+      const strId = String(id);
+      const device = allDevices.find(d => String(d.id) === strId || String(d._id) === strId);
+      
+      // Якщо прилад видалений з бази, але залишився в сценарії
+      if (!device) {
+        return { name: `Видалений прилад`, power_watts: 0 };
+      }
+
+      // Шукаємо ім'я та потужність по всіх можливих полях!
       return { 
-        name: device.name, 
-        power_watts: device.power || device.power_watts || 0 
+        name: device.name || device.model || device.title || device.deviceName || 'Прилад без назви', 
+        power_watts: device.power || device.powerW || device.power_watts || device.powerWatts || 0 
       };
-    }).filter(Boolean); // Відкидаємо ті, що не знайшлися
+    });
 
-    // 2. Знаходимо реальний об'єкт системи (ДБЖ) за ID
-    const matchedSystem = allSystems.find(s => s.id === scenario.selectedSystemId || s._id === scenario.selectedSystemId);
+    // Знаходимо ДБЖ
+    const sysId = scenario.selectedSystemId || scenario.selected_system_id;
+    let system_model = null;
+    
+    if (sysId) {
+      const strSysId = String(sysId);
+      const matchedSystem = allSystems.find(s => String(s.id) === strSysId || String(s._id) === strSysId);
+      
+      if (matchedSystem) {
+         system_model = matchedSystem.model || matchedSystem.name || matchedSystem.title || 'Моя система';
+      } else {
+         system_model = `Видалена система`;
+      }
+    }
 
-    // 3. Відкриваємо модалку вже зі "зрозумілими" даними
     setViewingScenario({
       ...scenario,
       devices: matchedDevices,
-      system_model: matchedSystem ? (matchedSystem.model || matchedSystem.name) : null
+      system_model: system_model
     });
   };
 
@@ -107,7 +136,6 @@ export default function ScenariosPage() {
                   <div className={styles.cardTitle}>
                     {scenario.name}
                     
-                    {/* Клік викликає нашу нову функцію зіставлення */}
                     <span 
                       className={styles.infoMarker}
                       onClick={(e) => handleOpenInfo(e, scenario)}
@@ -174,7 +202,6 @@ export default function ScenariosPage() {
         </div>
       )}
 
-      {/* Модалка деталей */}
       <ScenarioDetailsModal 
         isOpen={viewingScenario !== null}
         onClose={() => setViewingScenario(null)}
@@ -192,7 +219,7 @@ export default function ScenariosPage() {
               method: 'DELETE',
               headers: { Authorization: `Bearer ${token}` }
             });
-            fetchData(); // Оновлюємо дані після видалення
+            fetchData();
         }}
         title={t.scenarios.deleteConfirm}
         confirmText={t.common.yes}
@@ -211,7 +238,7 @@ export default function ScenariosPage() {
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
               body: JSON.stringify({ name: newName })
             });
-            fetchData(); // Оновлюємо дані після перейменування
+            fetchData(); 
           } finally {
             setIsRenaming(false);
             setEditingScenario(null);
