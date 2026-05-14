@@ -28,19 +28,16 @@ async def calculate(
 
     db = get_database()
 
-    # Validate and parse device IDs
     try:
         device_oids = [ObjectId(did) for did in payload.selectedDeviceIds]
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
-    # Validate and parse system ID
     try:
         system_oid = ObjectId(payload.selectedSystemId)
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний system_id")
 
-    # Fetch devices and verify they belong to this user
     cursor = db[col("devices")].find({"_id": {"$in": device_oids}})
     devices = [doc async for doc in cursor]
 
@@ -51,28 +48,47 @@ async def calculate(
         if dev["user_id"] != user_id:
             raise HTTPException(status_code=403, detail="Доступ до приладу заборонено")
 
-    # Fetch system and verify it belongs to this user
     system = await db[col("systems")].find_one({"_id": system_oid, "user_id": user_id})
     if not system:
         raise HTTPException(status_code=404, detail="ДБЖ не знайдено або не належить вам")
 
-    # Calculate
-    total_power = sum(dev["power_watts"] for dev in devices)
+    # НОВА ЛОГІКА РОЗРАХУНКУ
+    total_power = 0
+    max_startup_overhead = 0
+
+    for dev in devices:
+        p_watts = dev.get("power_watts", 0)
+        total_power += p_watts
+        
+        # Вираховуємо найбільший стрибок пускового струму
+        s_watts = dev.get("startup_current_watts")
+        if s_watts is None:
+            s_watts = p_watts
+            
+        overhead = max(0, s_watts - p_watts)
+        if overhead > max_startup_overhead:
+            max_startup_overhead = overhead
 
     if total_power == 0:
         raise HTTPException(status_code=400, detail="Сумарна потужність приладів дорівнює нулю")
 
-    load_percent = round((total_power / system["power"]) * 100, 1)
+    # Пікова потужність системи під час запуску найважчого приладу
+    peak_power = total_power + max_startup_overhead
+
+    # Перевантаження інвертора рахується по ПІКОВІЙ потужності
+    load_percent = round((peak_power / system["power"]) * 100, 1)
 
     try:
         battery_wh = _parse_battery_wh(system["battery"])
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
+    # Час автономії рахується по РОБОЧІЙ потужності, бо пуск триває ~2 секунди
     autonomy_hours = round(battery_wh / total_power, 2)
 
     return CalculateResponse(
         totalPowerWatts=round(total_power, 1),
+        peakPowerWatts=round(peak_power, 1),
         loadPercent=load_percent,
         autonomyHours=autonomy_hours,
     )

@@ -41,6 +41,8 @@ class DeviceUpdate(BaseModel):
     daily_usage_hours: Optional[float] = Field(default=None, ge=0, le=24)
     is_critical: Optional[bool] = None
     tag: Optional[str] = None
+    power_watts: Optional[float] = Field(default=None, ge=0)
+    startup_current_watts: Optional[float] = Field(default=None, ge=0)
 
 
 class DeviceResponse(BaseModel):

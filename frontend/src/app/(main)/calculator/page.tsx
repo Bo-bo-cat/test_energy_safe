@@ -67,7 +67,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function CalculatorPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t, lang } = useTranslation(); 
 
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
@@ -81,6 +81,7 @@ export default function CalculatorPage() {
 
   const [calcResult, setCalcResult] = useState<{
     totalPowerWatts: number;
+    peakPowerWatts?: number; // Може приходити з оновленого бекенду
     loadPercent: number;
     autonomyHours: number;
   } | null>(null);
@@ -149,6 +150,50 @@ export default function CalculatorPage() {
       });
   }, [selectedDeviceIds, selectedSystemId]);
 
+  const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
+  
+  // --- РОЗРАХУНОК ПІКОВОГО (ПУСКОВОГО) НАВАНТАЖЕННЯ ---
+  let totalNominalPower = 0;
+  let maxStartupOverhead = 0;
+
+  const selectedDeviceObjs = devices.filter(d => selectedDeviceIds.includes(d.id || d._id));
+  
+  selectedDeviceObjs.forEach(d => {
+    const power = Number(d.power_watts || d.power_watt || d.power || 0);
+    const startup = Number(d.startup_current_watts || d.startup_watts || 0);
+    totalNominalPower += power;
+    
+    // Знаходимо найбільший стрибок вище номіналу серед усіх обраних приладів
+    const overhead = Math.max(0, startup - power);
+    if (overhead > maxStartupOverhead) {
+      maxStartupOverhead = overhead;
+    }
+  });
+
+  // Абсолютний пік = Сума всіх робочих потужностей + найбільший пусковий стрибок
+  // Якщо бекенд вже повернув пік, беремо його, якщо ні - використовуємо наш розрахунок
+  const absolutePeakWatts = calcResult?.peakPowerWatts || (totalNominalPower + maxStartupOverhead);
+  const systemPower = selectedSystem ? Number(selectedSystem.power || 1) : 1;
+  
+  // Відсоток пікового навантаження на інвертор
+  const peakLoadPercent = Math.round((absolutePeakWatts / systemPower) * 100);
+  
+  // Для UI беремо найгірший варіант (перестраховка)
+  const baseLoadPercent = calcResult?.loadPercent || 0;
+  const displayLoadPercentage = calcResult 
+    ? (calcResult.peakPowerWatts ? baseLoadPercent : Math.max(baseLoadPercent, peakLoadPercent)) 
+    : 0;
+  
+  const isOverloaded = displayLoadPercentage > 100;
+  const progressWidth = Math.min(displayLoadPercentage, 100);
+  
+  let progressColor = '#34C759'; 
+  if (displayLoadPercentage > 33 && displayLoadPercentage <= 66) {
+    progressColor = '#FF9500'; 
+  } else if (displayLoadPercentage > 66) {
+    progressColor = '#FF2D55'; 
+  }
+
   const handleSaveScenario = async (scenarioName: string) => {
     setIsSaving(true);
     const token = localStorage.getItem('access_token');
@@ -158,8 +203,8 @@ export default function CalculatorPage() {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
         selectedSystemId: selectedSystemId, 
-        totalPowerWatts: calcResult?.totalPowerWatts || 0,
-        loadPercent: calcResult?.loadPercent || 0,
+        totalPowerWatts: calcResult?.totalPowerWatts || totalNominalPower,
+        loadPercent: displayLoadPercentage, // Зберігаємо саме пікове навантаження
         autonomyHours: calcResult?.autonomyHours || 0
       };
 
@@ -208,21 +253,9 @@ export default function CalculatorPage() {
     setActiveCategory(prev => prev === cat ? null : cat);
   };
 
-  const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   const rawDisplayName = selectedSystem ? (selectedSystem.model || selectedSystem.type || t.common.model) : t.dashboard.chooseSystem;
   const systemDisplayName = selectedSystem ? cleanModelName(rawDisplayName, t.common.model) : rawDisplayName;
 
-  const loadPercentage = calcResult?.loadPercent || 0;
-  const progressWidth = Math.min(loadPercentage, 100);
-  
-  let progressColor = '#34C759'; 
-  if (loadPercentage > 33 && loadPercentage <= 66) {
-    progressColor = '#FF9500'; 
-  } else if (loadPercentage > 66) {
-    progressColor = '#FF2D55'; 
-  }
-
-  // Об'єкти для фільтрів, щоб відділити логіку від тексту
   const locations = [
     { id: 'Усі', label: t.common.all },
     { id: 'Дім', label: t.common.home },
@@ -293,7 +326,7 @@ export default function CalculatorPage() {
                       <span className={styles['device-name']}>{device.model_name || device.name}</span>
                     </div>
                     <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices.startup} ${device.startup_current_watts} ${t.common.w}` : ''}
+                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
                     </div>
                   </div>
                 )
@@ -355,11 +388,17 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
+              {/* ВІЗУАЛІЗАЦІЯ ПІКОВОГО НАВАНТАЖЕННЯ */}
+              {calcResult && maxStartupOverhead > 0 && (
+                <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
+                  {lang === 'uk' ? 'Пік:' : 'Peak:'} {absolutePeakWatts} {t.common.w}
+                </div>
+              )}
             </div>
 
             <div className={styles['stat-box']}>
-              <div className={`${styles['stat-value']} ${loadPercentage > 100 ? styles.error : ''}`}>
-                {calcResult ? calcResult.loadPercent : '0'}%
+              <div className={`${styles['stat-value']} ${isOverloaded ? styles.error : ''}`}>
+                {calcResult ? displayLoadPercentage : '0'}%
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
             </div>
@@ -384,10 +423,10 @@ export default function CalculatorPage() {
 
           <button 
             className={styles['save-btn']}
-            disabled={!calcResult || loadPercentage > 100 || selectedDeviceIds.length === 0}
+            disabled={!calcResult || isOverloaded || selectedDeviceIds.length === 0}
             onClick={() => setIsModalOpen(true)}
           >
-            {loadPercentage > 100 ? t.calculator.overload : t.calculator.saveScenario}
+            {isOverloaded ? t.calculator.overload : t.calculator.saveScenario}
           </button>
         </div>
       </div>
