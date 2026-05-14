@@ -5,6 +5,12 @@
   display: none; 
 }
 
+/* ДОДАНО ДЛЯ ЦЕНТРУВАННЯ ЗАГОЛОВКА */
+.centeredTitle {
+  text-align: center;
+  width: 100%;
+}
+
 /* =========================================
    ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
    ========================================= */
@@ -47,7 +53,6 @@
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
    ========================================= */
 .themeToggleMobile {
-  /* ТУТ БУВ display: flex; - ми його прибрали, щоб не збивав налаштування ПК */
   align-items: center;
   justify-content: space-between;
   padding: 16px;
@@ -98,6 +103,7 @@
 .profileHeader {
   display: flex;
   align-items: center;
+  justify-content: center; /* ДОДАНО: центрує аватарку та блок з ім'ям */
   gap: 24px;
   margin-bottom: 40px;
 }
@@ -119,6 +125,7 @@
 .userInfo {
   display: flex;
   flex-direction: column;
+  align-items: flex-start; /* Вирівнює ім'я і пошту по лівому краю відносно один одного */
   gap: 6px;
 }
 
@@ -160,6 +167,7 @@
   gap: 16px;
   width: 100%;
   max-width: 400px; 
+  margin: 0 auto; /* ДОДАНО: Центрує блок з кнопками посередині екрану */
 }
 
 .changePasswordBtn, .faqBtn {
@@ -172,11 +180,11 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  position: relative; /* Додано для hover-ефекту */
+  position: relative;
   overflow: hidden;
 }
 
-/* МАГІЯ ДЛЯ HOVER: Ховаємо старий текст, показуємо новий */
+/* МАГІЯ ДЛЯ HOVER */
 .changePasswordBtn span {
   display: block;
   transition: opacity 0.2s;
@@ -220,7 +228,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s;
-  margin-top: 40px; /* <--- Відсунули кнопку подалі від інших */
+  margin-top: 40px; 
 }
 
 .deleteBtn:hover {
@@ -233,10 +241,14 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .profileHeader {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center; /* Центруємо аватарку над іменем на мобільному */
     gap: 16px;
   }
   
+  .userInfo {
+    align-items: center; /* Щоб ім'я та пошта були по центру під аватаркою */
+  }
+
   .userName {
     font-size: 28px;
   }
@@ -271,6 +283,7 @@
 @media (max-width: 950px) and (orientation: landscape) {
   .profileHeader {
     flex-direction: row; 
+    justify-content: center; /* Теж центруємо для ландшафту */
     align-items: center;
     gap: 16px;
     margin-bottom: 16px;
@@ -284,6 +297,7 @@
 
   .userInfo {
     gap: 2px;
+    align-items: flex-start;
   }
 
   .userName {

@@ -356,7 +356,6 @@
 }
 
 /* Мобільні телефони (Вертикально) */
-/* Мобільні телефони (Вертикально) */
 @media (max-width: 768px) and (orientation: portrait) {
   .sectionTitle { font-size: 20px; }
   
@@ -376,16 +375,28 @@
     appearance: none;
   }
 
+  /* --- ОНОВЛЕНІ СТИЛІ ДЛЯ КНОПОК --- */
   .addBtn, .customSysBtn {
     width: 100%;
     height: 48px;
     min-height: 48px;
+    -webkit-appearance: none; /* Скидаємо системний дизайн iOS */
+    appearance: none;
+    color: #FFFFFF;           /* Примусово білий колір тексту */
+    font-size: 15px;          /* Фіксуємо розмір */
+    white-space: normal;      /* Дозволяємо тексту переноситись на вузьких екранах */
+    text-align: center;       /* Центруємо текст */
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 }
+
 
 /* Мобільні телефони (Горизонтально / Landscape) */
 @media (max-width: 950px) and (orientation: landscape) {

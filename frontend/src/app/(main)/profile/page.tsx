@@ -64,7 +64,6 @@ export default function ProfilePage() {
     window.location.href = '/auth';
   };
 
-  // --- НОВА ФУНКЦІЯ ВИДАЛЕННЯ АКАУНТУ ---
   const handleDeleteAccount = async () => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -95,7 +94,8 @@ export default function ProfilePage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
+      {/* ДОДАНО КЛАС ЦЕНТРУВАННЯ ЗАГОЛОВКА */}
+      <h1 className={`page-title ${styles.centeredTitle}`}>{t.profile?.title || 'Профіль'}</h1>
 
       <div className={styles.profileHeader}>
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
@@ -171,7 +171,6 @@ export default function ProfilePage() {
         cancelText={t.common?.no || 'Ні'}
       />
 
-      {/* ОНОВЛЕНА МОДАЛКА ВИДАЛЕННЯ (ПІДКЛЮЧЕНА ФУНКЦІЯ) */}
       <DecisionModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
