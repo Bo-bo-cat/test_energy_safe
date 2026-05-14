@@ -8,23 +8,23 @@ import { NameModal } from '../../../components/PasswordModal/NameModal';
 import { PasswordModal } from '../../../components/PasswordModal/PasswordModal';
 import { useTranslation } from '../../../context/LanguageContext';
 
-// Палітра кольорів для аватарки
 const AVATAR_COLORS = [
   '#FF6B00', '#4CAF50', '#2196F3', '#9C27B0', 
-  '#E91E63', '#00BCD4', '#8BC34A', '#FF9800'
+  '#E91E63', '#00BCD4', '#8BC34A', '#FF9800',
+  '#3F51B5', '#795548'
 ];
 
 export default function ProfilePage() {
   const { t, lang, toggleLanguage } = useTranslation();
-  const router = useRouter(); 
+  const router = useRouter();
   
   const [user, setUser] = useState<any>({ name: '...', email: '...' });
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); 
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
-  const [showPassModal, setShowPassModal] = useState(false); 
+  const [showPassModal, setShowPassModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -64,11 +64,33 @@ export default function ProfilePage() {
     window.location.href = '/auth';
   };
 
-  // Генеруємо "випадковий", але стабільний для користувача колір
+  // --- НОВА ФУНКЦІЯ ВИДАЛЕННЯ АКАУНТУ ---
+  const handleDeleteAccount = async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        localStorage.clear();
+        document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.href = '/auth';
+      } else {
+        alert(t.profile?.serverError || 'Помилка при видаленні акаунту');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  };
+
   const avatarColor = useMemo(() => {
-    if (!user.name || user.name === '...') return '#FF6B00'; // Колір за замовчуванням поки вантажиться
-    const charCode = user.name.charCodeAt(0) || 0;
-    return AVATAR_COLORS[charCode % AVATAR_COLORS.length];
+    if (!user.name || user.name === '...') return '#FF6B00';
+    const charCodeSum = user.name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+    return AVATAR_COLORS[charCodeSum % AVATAR_COLORS.length];
   }, [user.name]);
 
   return (
@@ -76,7 +98,6 @@ export default function ProfilePage() {
       <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
 
       <div className={styles.profileHeader}>
-        {/* Аватарка з новим динамічним кольором */}
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
           {user.name?.charAt(0).toUpperCase()}
         </div>
@@ -104,7 +125,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Кнопка "Змінити пароль" з data-hover */}
         <button 
           className={styles.changePasswordBtn} 
           onClick={() => setShowPassModal(true)}
@@ -113,7 +133,6 @@ export default function ProfilePage() {
           <span>{t.profile?.changePassword || 'Змінити пароль'}</span>
         </button>
 
-        {/* Повернута кнопка FAQ */}
         <button 
           className={styles.changePasswordBtn} 
           onClick={() => router.push('/faq')}
@@ -131,7 +150,6 @@ export default function ProfilePage() {
         </button>
       </div>
 
-      {/* МОДАЛКИ */}
       <NameModal 
         isOpen={showNameModal} 
         onClose={() => setShowNameModal(false)} 
@@ -153,11 +171,14 @@ export default function ProfilePage() {
         cancelText={t.common?.no || 'Ні'}
       />
 
+      {/* ОНОВЛЕНА МОДАЛКА ВИДАЛЕННЯ (ПІДКЛЮЧЕНА ФУНКЦІЯ) */}
       <DecisionModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        onConfirm={() => {/* логіка видалення */}}
+        onConfirm={handleDeleteAccount}
         title={t.common?.areYouSure || 'Ви впевнені?'}
+        confirmText={t.common?.delete || 'Видалити'}
+        cancelText={t.common?.no || 'Ні'}
       />
     </div>
   );
