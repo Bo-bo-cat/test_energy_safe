@@ -5,13 +5,48 @@ from bson.errors import InvalidId
 from typing import List, Optional
 
 from app.database import get_database, col
-from app.models.scenario import ScenarioCreate, ScenarioResponse
+from app.models.scenario import ScenarioCreate, ScenarioResponse, DeviceSnapshot, SystemSnapshot
 from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/scenarios", tags=["Scenarios"])
 
 
+def _build_device_snapshot(doc: dict) -> DeviceSnapshot:
+    return DeviceSnapshot(
+        id=str(doc["_id"]),
+        model_name=doc["model_name"],
+        category=doc.get("category", ""),
+        power_watts=doc.get("power_watts", 0.0),
+        startup_current_watts=doc.get("startup_current_watts"),
+        brand=doc.get("brand", ""),
+        is_critical=doc.get("is_critical", False),
+        daily_usage_hours=doc.get("daily_usage_hours", 0.0),
+        tag=doc.get("tag"),
+    )
+
+
+def _build_system_snapshot(doc: dict) -> SystemSnapshot:
+    return SystemSnapshot(
+        id=str(doc["_id"]),
+        model=doc["model"],
+        type=doc.get("type", "ДБЖ"),
+        power=doc["power"],
+        battery=doc.get("battery", ""),
+        autonomy=doc.get("autonomy", ""),
+    )
+
+
 def _serialize_scenario(doc: dict) -> ScenarioResponse:
+    devices_snapshot: Optional[List[DeviceSnapshot]] = None
+    raw_devices = doc.get("devicesSnapshot")
+    if raw_devices is not None:
+        devices_snapshot = [DeviceSnapshot(**d) for d in raw_devices]
+
+    system_snapshot: Optional[SystemSnapshot] = None
+    raw_system = doc.get("systemSnapshot")
+    if raw_system is not None:
+        system_snapshot = SystemSnapshot(**raw_system)
+
     return ScenarioResponse(
         id=str(doc["_id"]),
         userId=doc["userId"],
@@ -21,6 +56,8 @@ def _serialize_scenario(doc: dict) -> ScenarioResponse:
         totalPowerWatts=doc["totalPowerWatts"],
         loadPercent=doc["loadPercent"],
         autonomyHours=doc["autonomyHours"],
+        devicesSnapshot=devices_snapshot,
+        systemSnapshot=system_snapshot,
         createdAt=doc["createdAt"],
     )
 
@@ -52,7 +89,16 @@ async def create_scenario(
             detail=f"Пристрої не знайдено або не належать вам: {', '.join(missing)}"
         )
 
+    # Build device snapshots preserving original order from request
+    device_map = {str(d["_id"]): d for d in devices}
+    devices_snapshot = [
+        _build_device_snapshot(device_map[did]).model_dump()
+        for did in payload.selectedDeviceIds
+    ]
+
     selected_system_id: Optional[str] = None
+    system_snapshot: Optional[dict] = None
+
     if payload.selectedSystemId is not None:
         try:
             system_oid = ObjectId(payload.selectedSystemId)
@@ -62,7 +108,9 @@ async def create_scenario(
         system = await db[col("systems")].find_one({"_id": system_oid, "user_id": user_id})
         if not system:
             raise HTTPException(status_code=404, detail="Систему не знайдено або вона належить іншому користувачу")
+
         selected_system_id = payload.selectedSystemId
+        system_snapshot = _build_system_snapshot(system).model_dump()
 
     doc = {
         "userId": user_id,
@@ -72,6 +120,8 @@ async def create_scenario(
         "totalPowerWatts": payload.totalPowerWatts,
         "loadPercent": payload.loadPercent,
         "autonomyHours": payload.autonomyHours,
+        "devicesSnapshot": devices_snapshot,
+        "systemSnapshot": system_snapshot,
         "createdAt": datetime.now(timezone.utc),
     }
     result = await db[col("scenarios")].insert_one(doc)
