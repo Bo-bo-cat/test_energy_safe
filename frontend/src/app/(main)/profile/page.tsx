@@ -94,8 +94,8 @@ export default function ProfilePage() {
 
   return (
     <div className="global-page-wrap">
-      {/* ДОДАНО КЛАС ЦЕНТРУВАННЯ ЗАГОЛОВКА */}
-      <h1 className={`page-title ${styles.centeredTitle}`}>{t.profile?.title || 'Профіль'}</h1>
+      {/* Повернули стандартний заголовок з вирівнюванням по лівому краю */}
+      <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
 
       <div className={styles.profileHeader}>
         <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>

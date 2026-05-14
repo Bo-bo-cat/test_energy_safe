@@ -5,12 +5,6 @@
   display: none; 
 }
 
-/* ДОДАНО ДЛЯ ЦЕНТРУВАННЯ ЗАГОЛОВКА */
-.centeredTitle {
-  text-align: center;
-  width: 100%;
-}
-
 /* =========================================
    ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
    ========================================= */
@@ -53,6 +47,7 @@
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
    ========================================= */
 .themeToggleMobile {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
@@ -103,7 +98,6 @@
 .profileHeader {
   display: flex;
   align-items: center;
-  justify-content: center; /* ДОДАНО: центрує аватарку та блок з ім'ям */
   gap: 24px;
   margin-bottom: 40px;
 }
@@ -125,7 +119,7 @@
 .userInfo {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Вирівнює ім'я і пошту по лівому краю відносно один одного */
+  align-items: flex-start;
   gap: 6px;
 }
 
@@ -167,7 +161,6 @@
   gap: 16px;
   width: 100%;
   max-width: 400px; 
-  margin: 0 auto; /* ДОДАНО: Центрує блок з кнопками посередині екрану */
 }
 
 .changePasswordBtn, .faqBtn {
@@ -184,7 +177,6 @@
   overflow: hidden;
 }
 
-/* МАГІЯ ДЛЯ HOVER */
 .changePasswordBtn span {
   display: block;
   transition: opacity 0.2s;
@@ -241,12 +233,12 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .profileHeader {
     flex-direction: column;
-    align-items: center; /* Центруємо аватарку над іменем на мобільному */
+    align-items: center; 
     gap: 16px;
   }
   
   .userInfo {
-    align-items: center; /* Щоб ім'я та пошта були по центру під аватаркою */
+    align-items: center; 
   }
 
   .userName {
@@ -283,7 +275,7 @@
 @media (max-width: 950px) and (orientation: landscape) {
   .profileHeader {
     flex-direction: row; 
-    justify-content: center; /* Теж центруємо для ландшафту */
+    justify-content: center; 
     align-items: center;
     gap: 16px;
     margin-bottom: 16px;
