@@ -156,6 +156,47 @@
   color: var(--text-main);
 }
 
+.infoMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 8px;
+  vertical-align: middle;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.infoMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 8px;
+  vertical-align: middle;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.card:hover .infoMarker {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
 /* =========================================
    ВЕРТИКАЛЬНА МОБІЛЬНА ВЕРСІЯ (Portrait)
    ========================================= */

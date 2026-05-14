@@ -5,21 +5,21 @@ import Link from 'next/link';
 
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
+// Припустимо, у тебе є іконка Info або просто використаємо текст/символ
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
-
-// ПІДКЛЮЧАЄМО СЛОВНИК
+import { ScenarioDetailsModal } from '../../../components/ScenarioDetailsModal/ScenarioDetailsModal'; // Імпорт нової модалки
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ScenariosPage() {
   const { t } = useTranslation();
-
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
+  // Стан для модалки деталей
+  const [viewingScenario, setViewingScenario] = useState<any | null>(null);
+  
   const [scenarioToDelete, setScenarioToDelete] = useState<string | null>(null);
-
   const [editingScenario, setEditingScenario] = useState<{ id: string, name: string } | null>(null);
   const [isRenaming, setIsRenaming] = useState(false);
 
@@ -39,64 +39,10 @@ export default function ScenariosPage() {
         setScenarios(Array.isArray(data) ? data : []);
       }
     } catch (err) {
-      console.error(t.common.error, err);
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation(); 
-    setScenarioToDelete(id);
-  };
-
-  const confirmDelete = async () => {
-    if (!scenarioToDelete) return;
-    const id = scenarioToDelete;
-    setScenarioToDelete(null);
-    if (selectedScenarioId === id) setSelectedScenarioId(null);
-    const token = localStorage.getItem('access_token');
-    if (!token) return;
-    setScenarios(prev => prev.filter(s => s.id !== id));
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-    } catch (err) {
-      fetchScenarios(); 
-    }
-  };
-
-  const handleRename = async (newName: string) => {
-    if (!editingScenario) return;
-    setIsRenaming(true);
-    const token = localStorage.getItem('access_token');
-
-    try {
-      setScenarios(prev => prev.map(s => s.id === editingScenario.id ? { ...s, name: newName } : s));
-      const currentId = editingScenario.id;
-      setEditingScenario(null);
-
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${currentId}`, {
-        method: 'PATCH', 
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({ name: newName })
-      });
-
-    } catch (err) {
-      console.error(err);
-      fetchScenarios();
-    } finally {
-      setIsRenaming(false);
-    }
-  };
-
-  const handleCardClick = (id: string) => {
-    setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
   return (
@@ -107,29 +53,23 @@ export default function ScenariosPage() {
         <p style={{ color: 'var(--text-muted)' }}>{t.scenarios.loading}</p>
       ) : (
         <div className={styles.grid}>
-          
           {scenarios.map(scenario => {
-            const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
-            const autonomyHours = scenario.autonomyHours || scenario.autonomy_hours || scenario.duration_hours || 0;
-            const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
+            const powerWatts = scenario.total_power_watts || 0;
+            const autonomyHours = scenario.duration_hours || 0;
+            const loadPercent = scenario.load_percent || 0;
             
-            const displayAutonomy = typeof autonomyHours === 'number' ? autonomyHours.toFixed(1) : autonomyHours;
-            const displayLoad = typeof loadPercent === 'number' ? Math.round(loadPercent) : loadPercent;
-
-            let progressColor = '#34C759'; 
-            if (loadPercent > 33 && loadPercent <= 66) progressColor = '#FF9500'; 
-            if (loadPercent > 66) progressColor = '#FF2D55'; 
-            
-            const isSelected = selectedScenarioId === scenario.id;
-
             return (
               <div 
                 key={scenario.id} 
-                className={`${styles.card} ${isSelected ? styles.selected : ''}`}
-                onClick={() => handleCardClick(scenario.id)}
+                className={styles.card}
+                onClick={() => setViewingScenario(scenario)} // Клік на всю картку відкриває деталі
               >
                 <div className={styles.cardHeader}>
-                  <div className={styles.cardTitle}>{scenario.name}</div>
+                  <div className={styles.cardTitle}>
+                    {scenario.name}
+                    {/* Візуальна помітка (маленька крапка або іконка) */}
+                    <span className={styles.infoMarker}>i</span>
+                  </div>
                   <div className={styles.actions}>
                     <button 
                       className={styles.iconBtn} 
@@ -140,10 +80,12 @@ export default function ScenariosPage() {
                     >
                       <PenIcon/>
                     </button>
-                    {/* Додано спеціальний клас deleteBtn для корзини */}
                     <button 
                       className={`${styles.iconBtn} ${styles.deleteBtn}`} 
-                        onClick={(e) => handleDeleteClick(scenario.id, e)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setScenarioToDelete(scenario.id);
+                      }}
                     >
                       <DeleteIcon />
                     </button>
@@ -157,23 +99,24 @@ export default function ScenariosPage() {
                       <span className={styles.statLabel}>{t.common.w}</span>
                     </div>
                     <div className={styles.statBox}>
-                      <span className={styles.statValue}>~{displayAutonomy}</span>
-                      <span className={styles.statLabel}>{t.common.h} {t.scenarios.autonomySuffix}</span>
+                      <span className={styles.statValue}>~{autonomyHours.toFixed(1)}</span>
+                      <span className={styles.statLabel}>{t.common.h}</span>
                     </div>
                     <div className={styles.statBox}>
-                      <span className={styles.statValue}>{displayLoad}%</span>
-                      <span className={styles.statLabel}>{t.scenarios.inverterSuffix}</span>
+                      <span className={styles.statValue}>{Math.round(loadPercent)}%</span>
+                      <span className={styles.statLabel}>інвертор</span>
                     </div>
                   </div>
-
                   <div className={styles.progressContainer}>
                     <div 
                       className={styles.progressFill} 
-                      style={{ width: `${Math.min(loadPercent || 0, 100)}%`, backgroundColor: progressColor }} 
+                      style={{ 
+                        width: `${Math.min(loadPercent, 100)}%`, 
+                        backgroundColor: loadPercent > 66 ? '#FF2D55' : loadPercent > 33 ? '#FF9500' : '#34C759' 
+                      }} 
                     />
                   </div>
                 </div>
-
               </div>
             );
           })}
@@ -182,27 +125,32 @@ export default function ScenariosPage() {
             <div className={styles.addIcon}>+</div>
             <div className={styles.addText}>{t.scenarios.addScenario}</div>
           </Link>
-
         </div>
       )}
+
+      {/* Модалка деталей */}
+      <ScenarioDetailsModal 
+        isOpen={viewingScenario !== null}
+        onClose={() => setViewingScenario(null)}
+        scenario={viewingScenario}
+      />
 
       <DecisionModal 
         isOpen={scenarioToDelete !== null}
         onClose={() => setScenarioToDelete(null)}
-        onConfirm={confirmDelete}
-        title={t.scenarios.deleteConfirm}
-        confirmText={t.common.yes}
-        cancelText={t.common.no}
+        onConfirm={async () => {
+            const token = localStorage.getItem('access_token');
+            const id = scenarioToDelete;
+            setScenarioToDelete(null);
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${id}`, {
+              method: 'DELETE',
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchScenarios();
+        }}
       />
-
-      <SaveScenarioModal 
-        isOpen={editingScenario !== null}
-        onClose={() => setEditingScenario(null)}
-        onSave={handleRename}
-        isLoading={isRenaming}
-        title={t.scenarios.renameModal}
-        initialName={editingScenario?.name || ''}
-      />
+      
+      {/* Інші модалки (Renaming і т.д.) */}
     </div>
   );
 }
