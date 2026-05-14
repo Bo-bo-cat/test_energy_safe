@@ -3,6 +3,27 @@ from typing import List, Optional
 from datetime import datetime
 
 
+class DeviceSnapshot(BaseModel):
+    id: str
+    model_name: str
+    category: str
+    power_watts: float
+    startup_current_watts: Optional[float] = None
+    brand: str
+    is_critical: bool
+    daily_usage_hours: float
+    tag: Optional[str] = None
+
+
+class SystemSnapshot(BaseModel):
+    id: str
+    model: str
+    type: str
+    power: float
+    battery: str
+    autonomy: str
+
+
 class ScenarioCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
     selectedDeviceIds: List[str] = Field(..., min_length=1)
@@ -32,4 +53,6 @@ class ScenarioResponse(BaseModel):
     totalPowerWatts: float
     loadPercent: float
     autonomyHours: float
+    devicesSnapshot: Optional[List[DeviceSnapshot]] = None
+    systemSnapshot: Optional[SystemSnapshot] = None
     createdAt: datetime
