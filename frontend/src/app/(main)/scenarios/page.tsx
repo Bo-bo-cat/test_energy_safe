@@ -10,7 +10,6 @@ import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveSce
 import { ScenarioDetailsModal } from '../../../components/ScenarioDetailsModal/ScenarioDetailsModal'; 
 import { useTranslation } from '../../../context/LanguageContext';
 
-// Точно така ж функція очищення назви, як на головній сторінці
 const cleanModelName = (name: string, fallback: string) => {
   if (!name) return fallback;
   if (name.includes(' - ')) {
@@ -42,7 +41,6 @@ export default function ScenariosPage() {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     try {
-      // ЗАМІНЕНО: Використовуємо /systems/my як на головній сторінці
       const [scenRes, devRes, sysRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
@@ -73,40 +71,73 @@ export default function ScenariosPage() {
     setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
-  // ТОЧНА ЛОГІКА З ГОЛОВНОЇ СТОРІНКИ
+  // ОНОВЛЕНА ЛОГІКА: Спочатку шукаємо Зліпок (Snapshot), якщо немає - беремо стару логіку
   const handleOpenInfo = (e: React.MouseEvent, scenario: any) => {
     e.stopPropagation();
 
-    // 1. Отримуємо прилади
-    const selectedIds = scenario.selectedDeviceIds || scenario.selected_device_ids || [];
-    const activeDevicesRaw = selectedIds.length > 0 
-      ? allDevices.filter(d => selectedIds.includes(d.id || d._id))
-      : [];
+    let matchedDevices: any[] = [];
+    let systemName = t.dashboard?.unknown || 'Невідомо';
 
-    const matchedDevices = activeDevicesRaw.map(dev => {
-      const qty = scenario.deviceQuantities ? (scenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
-      const power = dev.powerWatts || dev.power_watts || dev.power || 0;
-      const deviceName = dev.model_name || dev.name || dev.model || t.common?.model || 'Прилад';
-      
-      return {
-        name: qty > 1 ? `${qty}x ${deviceName}` : deviceName,
-        power_watts: power * qty
-      };
-    });
+    // 1. ПРИЛАДИ
+    if (scenario.devicesSnapshot && scenario.devicesSnapshot.length > 0) {
+      // Бекенд віддає зліпки для КОЖНОГО id, тому групуємо однакові прилади, щоб показати "2x Ноутбук"
+      const counts: Record<string, number> = {};
+      const uniqueDevices: any[] = [];
 
-    // 2. Отримуємо ДБЖ
-    const linkedSystemId = scenario.selectedSystemId || scenario.systemId;
-    let displaySystem = null;
-    
-    if (linkedSystemId) {
-      displaySystem = allSystems.find(s => String(s.id || s._id) === String(linkedSystemId));
+      scenario.devicesSnapshot.forEach((d: any) => {
+        if (!counts[d.id]) {
+          counts[d.id] = 0;
+          uniqueDevices.push(d);
+        }
+        counts[d.id]++;
+      });
+
+      matchedDevices = uniqueDevices.map(d => {
+        const qty = counts[d.id];
+        const deviceName = d.model_name || d.name || t.common?.model || 'Прилад';
+        return {
+          name: qty > 1 ? `${qty}x ${deviceName}` : deviceName,
+          power_watts: (d.power_watts || 0) * qty
+        };
+      });
+    } else {
+      // Fallback: Стара логіка для сценаріїв без зліпка
+      const selectedIds = scenario.selectedDeviceIds || scenario.selected_device_ids || [];
+      const activeDevicesRaw = selectedIds.length > 0 
+        ? allDevices.filter(d => selectedIds.includes(d.id || d._id))
+        : [];
+
+      matchedDevices = activeDevicesRaw.map(dev => {
+        // Рахуємо кількість повторень ID в масиві
+        const qty = selectedIds.filter((id: string) => id === (dev.id || dev._id)).length || 1;
+        const power = dev.powerWatts || dev.power_watts || dev.power || 0;
+        const deviceName = dev.model_name || dev.name || dev.model || t.common?.model || 'Прилад';
+        
+        return {
+          name: qty > 1 ? `${qty}x ${deviceName}` : deviceName,
+          power_watts: power * qty
+        };
+      });
     }
 
-    const rawSystemName = displaySystem 
-      ? (displaySystem.model || displaySystem.name || t.dashboard?.unknown || 'Невідомо') 
-      : (t.dashboard?.unknown || 'Невідомо');
+    // 2. ДБЖ (СИСТЕМА)
+    if (scenario.systemSnapshot) {
+      systemName = cleanModelName(scenario.systemSnapshot.model || scenario.systemSnapshot.name, t.dashboard?.unknown || 'Невідомо');
+    } else {
+      // Fallback
+      const linkedSystemId = scenario.selectedSystemId || scenario.systemId;
+      let displaySystem = null;
       
-    const systemName = cleanModelName(rawSystemName, t.dashboard?.unknown || 'Невідомо');
+      if (linkedSystemId) {
+        displaySystem = allSystems.find(s => String(s.id || s._id) === String(linkedSystemId));
+      }
+
+      const rawSystemName = displaySystem 
+        ? (displaySystem.model || displaySystem.name || t.dashboard?.unknown || 'Невідомо') 
+        : (t.dashboard?.unknown || 'Невідомо');
+        
+      systemName = cleanModelName(rawSystemName, t.dashboard?.unknown || 'Невідомо');
+    }
 
     setViewingScenario({
       ...scenario,
