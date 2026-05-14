@@ -81,13 +81,21 @@ export default function CalculatorPage() {
 
   const [calcResult, setCalcResult] = useState<{
     totalPowerWatts: number;
-    peakPowerWatts?: number; // Може приходити з оновленого бекенду
+    peakPowerWatts?: number; 
     loadPercent: number;
     autonomyHours: number;
   } | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ
+  const swipeHandlers = {
+    onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchEnd: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchCancel: (e: React.TouchEvent) => e.stopPropagation(),
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -163,22 +171,17 @@ export default function CalculatorPage() {
     const startup = Number(d.startup_current_watts || d.startup_watts || 0);
     totalNominalPower += power;
     
-    // Знаходимо найбільший стрибок вище номіналу серед усіх обраних приладів
     const overhead = Math.max(0, startup - power);
     if (overhead > maxStartupOverhead) {
       maxStartupOverhead = overhead;
     }
   });
 
-  // Абсолютний пік = Сума всіх робочих потужностей + найбільший пусковий стрибок
-  // Якщо бекенд вже повернув пік, беремо його, якщо ні - використовуємо наш розрахунок
   const absolutePeakWatts = calcResult?.peakPowerWatts || (totalNominalPower + maxStartupOverhead);
   const systemPower = selectedSystem ? Number(selectedSystem.power || 1) : 1;
   
-  // Відсоток пікового навантаження на інвертор
   const peakLoadPercent = Math.round((absolutePeakWatts / systemPower) * 100);
   
-  // Для UI беремо найгірший варіант (перестраховка)
   const baseLoadPercent = calcResult?.loadPercent || 0;
   const displayLoadPercentage = calcResult 
     ? (calcResult.peakPowerWatts ? baseLoadPercent : Math.max(baseLoadPercent, peakLoadPercent)) 
@@ -204,7 +207,7 @@ export default function CalculatorPage() {
         selectedDeviceIds: selectedDeviceIds,
         selectedSystemId: selectedSystemId, 
         totalPowerWatts: calcResult?.totalPowerWatts || totalNominalPower,
-        loadPercent: displayLoadPercentage, // Зберігаємо саме пікове навантаження
+        loadPercent: displayLoadPercentage, 
         autonomyHours: calcResult?.autonomyHours || 0
       };
 
@@ -267,10 +270,10 @@ export default function CalculatorPage() {
       <h1 className="page-title">{t.calculator.title}</h1>
 
       <div className={styles.layout}>
-        {/* ЛІВА ЧАСТИНА */}
         <div className={styles['main-content']}>
           
-          <div className={styles['filters-row']}>
+          {/* Обробники свайпу на рядку локацій */}
+          <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
             {locations.map(loc => (
               <div 
                 key={loc.id}
@@ -285,7 +288,8 @@ export default function CalculatorPage() {
             ))}
           </div>
 
-          <div className={styles['icon-filters']}>
+          {/* Обробники свайпу на каруселі іконок-категорій */}
+          <div className={`${styles['icon-filters']} no-swipe`} {...swipeHandlers}>
             {availableIcons.length > 0 ? (
               availableIcons.map(icon => (
                 <div 
@@ -336,8 +340,8 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          {/* Сітка Систем */}
-          <div className={styles['systems-grid']}>
+          {/* Обробники свайпу на каруселі систем ДБЖ */}
+          <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
               <span className={styles['add-icon']}>+</span>
               <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>

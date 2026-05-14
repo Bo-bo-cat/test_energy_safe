@@ -86,7 +86,6 @@ export default function DashboardPage() {
   const systemPower = displaySystem ? Number(displaySystem.power || 0) : 0;
   const systemBattery = displaySystem ? (displaySystem.battery || t.dashboard.unknown) : t.dashboard.unknown;
 
-  // ПРИМУСОВИЙ РОЗРАХУНОК (це виправить баг 150/300 = 19%)
   const calculatedPercent = systemPower > 0 ? (loadWatts / systemPower) * 100 : 0;
   const safePercent = Math.min(Math.round(calculatedPercent), 100);
 
@@ -94,17 +93,24 @@ export default function DashboardPage() {
   const circumference = Math.PI * radius; 
   const strokeDashoffset = circumference - (safePercent / 100) * circumference;
   
-  // ПРАВИЛЬНА ЛОГІКА КОЛЬОРІВ
-  let progressColor = '#34C759'; // Зелений (за замовчуванням, до 33%)
+  let progressColor = '#34C759'; 
   if (safePercent > 33 && safePercent <= 66) {
-    progressColor = '#FF9500'; // Помаранчевий
+    progressColor = '#FF9500'; 
   } else if (safePercent > 66) {
-    progressColor = '#FF2D55'; // Червоний
+    progressColor = '#FF2D55'; 
   }
 
   const activeDevices = activeScenario && activeScenario.selectedDeviceIds
     ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
     : [];
+
+  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ (Зупиняємо спливання подій дотику)
+  const swipeHandlers = {
+    onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchEnd: (e: React.TouchEvent) => e.stopPropagation(),
+    onTouchCancel: (e: React.TouchEvent) => e.stopPropagation(),
+  };
 
   if (isLoading) {
     return (
@@ -117,7 +123,8 @@ export default function DashboardPage() {
   return (
     <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
       
-      <div className={styles.topGrid}>
+      {/* Додаємо обробники до всіх блоків, що можуть скролитися */}
+      <div className={styles.topGrid} {...swipeHandlers}>
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
           <div className={styles.statusContent}>
@@ -186,7 +193,8 @@ export default function DashboardPage() {
       </div>
 
       <div className={styles.middleFlex}>
-        <div className={styles.actionsGroup}>
+        {/* Додаємо обробники до швидких дій */}
+        <div className={styles.actionsGroup} {...swipeHandlers}>
           <Link href="/devices" className={styles.actionBtn}>
             <CameraIcon className={styles.actionIcon} />
             <span className={styles.actionText}>{t.dashboard.addDevice}</span>
@@ -226,7 +234,9 @@ export default function DashboardPage() {
       </div>
 
       <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
-      <div className={`${styles.scenariosFlex} no-swipe`}>
+      
+      {/* Додаємо обробники до сценаріїв */}
+      <div className={`${styles.scenariosFlex} no-swipe`} {...swipeHandlers}>
         {scenarios.length > 0 ? (
           scenarios.map(scen => (
             <div 
@@ -251,7 +261,8 @@ export default function DashboardPage() {
         <div className={styles.activeDevicesWrapper}>
           <h3 className={styles.activeDevicesTitle}>{t.dashboard.devicesInScenario}</h3>
           {activeDevices.length > 0 ? (
-            <div className={`${styles.activeDevicesGrid} no-swipe`}>
+            
+            <div className={`${styles.activeDevicesGrid} no-swipe`} {...swipeHandlers}>
               {activeDevices.map(dev => {
                 const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
                 const power = dev.powerWatts || dev.power_watts || dev.power || 0;

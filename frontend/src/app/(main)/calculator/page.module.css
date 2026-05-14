@@ -346,6 +346,17 @@
     margin-bottom: 0;
   }
 
+  .filters-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-left: -16px; 
+    margin-right: -16px; 
+    padding: 0 16px;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain; /* Блокування свайпу */
+  }
+  .filters-row::-webkit-scrollbar { display: none; }
+
   /* Компенсація відступів глобального контейнера для каруселей */
   .icon-filters {
     flex-wrap: nowrap;
@@ -356,6 +367,7 @@
     margin-top: -8px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    overscroll-behavior-x: contain; /* Блокування свайпу */
   }
   .icon-filters::-webkit-scrollbar { display: none; }
 
@@ -386,6 +398,7 @@
     padding: 4px 16px 16px 16px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    overscroll-behavior-x: contain; /* Блокування свайпу */
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
@@ -463,10 +476,16 @@
     height: 100%; 
   }
 
-  .filters-row { gap: 8px; margin-bottom: 0; }
+  .filters-row { 
+    gap: 8px; 
+    margin-bottom: 0; 
+  }
   .filter-chip { padding: 6px 12px; font-size: 12px; }
   
-  .icon-filters { gap: 8px; margin-top: -6px; }
+  .icon-filters { 
+    gap: 8px; 
+    margin-top: -6px; 
+  }
   .icon-chip { width: 34px; height: 34px; border-radius: 8px; }
   .device-svg { width: 18px; height: 18px; }
 
@@ -487,6 +506,7 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     width: 100%;
+    overscroll-behavior-x: contain; /* Блокування свайпу */
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
@@ -519,8 +539,6 @@
     border-radius: 16px;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    
-    /* ІДЕАЛЬНЕ ВІДЦЕНТРУВАННЯ ТІЛЬКИ ЦІЄЇ ПЛАШКИ */
     align-self: center; 
   }
 
