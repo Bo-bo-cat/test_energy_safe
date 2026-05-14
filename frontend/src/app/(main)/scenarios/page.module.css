@@ -174,27 +174,32 @@
   font-weight: bold;
 }
 
+/* Помітка ( i ) біля назви сценарію */
 .infoMarker {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   background-color: var(--bg-card-inner);
   border: 1px solid var(--border-color);
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-left: 8px;
+  margin-left: 10px;
   vertical-align: middle;
   font-family: serif;
   font-style: italic;
   font-weight: bold;
+  cursor: pointer; /* Робимо курсор як у кнопки */
+  transition: all 0.2s ease;
 }
 
-.card:hover .infoMarker {
+.infoMarker:hover {
   border-color: var(--accent-orange);
   color: var(--accent-orange);
+  background-color: var(--bg-main);
+  transform: scale(1.1); /* Легке збільшення при наведенні */
 }
 
 /* =========================================

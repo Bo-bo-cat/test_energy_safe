@@ -5,16 +5,19 @@ import Link from 'next/link';
 
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
-// Припустимо, у тебе є іконка Info або просто використаємо текст/символ
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
-import { ScenarioDetailsModal } from '../../../components/ScenarioDetailsModal/ScenarioDetailsModal'; // Імпорт нової модалки
+import { ScenarioDetailsModal } from '../../../components/ScenarioDetailsModal/ScenarioDetailsModal'; 
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function ScenariosPage() {
   const { t } = useTranslation();
+
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // ПОВЕРНУТО: Стан для виділення картки
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
   
   // Стан для модалки деталей
   const [viewingScenario, setViewingScenario] = useState<any | null>(null);
@@ -45,6 +48,11 @@ export default function ScenariosPage() {
     }
   };
 
+  // ПОВЕРНУТО: Функція виділення
+  const handleCardClick = (id: string) => {
+    setSelectedScenarioId(prev => prev === id ? null : id);
+  };
+
   return (
     <div className="global-page-wrap">
       <h1 className="page-title">{t.scenarios.title}</h1>
@@ -58,18 +66,31 @@ export default function ScenariosPage() {
             const autonomyHours = scenario.duration_hours || 0;
             const loadPercent = scenario.load_percent || 0;
             
+            // Перевіряємо чи виділена ця картка
+            const isSelected = selectedScenarioId === scenario.id;
+
             return (
               <div 
                 key={scenario.id} 
-                className={styles.card}
-                onClick={() => setViewingScenario(scenario)} // Клік на всю картку відкриває деталі
+                className={`${styles.card} ${isSelected ? styles.selected : ''}`}
+                onClick={() => handleCardClick(scenario.id)} // Клік на картку - виділяє
               >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>
                     {scenario.name}
-                    {/* Візуальна помітка (маленька крапка або іконка) */}
-                    <span className={styles.infoMarker}>i</span>
+                    
+                    {/* Клік на цю іконку відкриває модалку */}
+                    <span 
+                      className={styles.infoMarker}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Зупиняємо клік, щоб не виділялась картка
+                        setViewingScenario(scenario);
+                      }}
+                    >
+                      i
+                    </span>
                   </div>
+                  
                   <div className={styles.actions}>
                     <button 
                       className={styles.iconBtn} 
@@ -148,9 +169,33 @@ export default function ScenariosPage() {
             });
             fetchScenarios();
         }}
+        title={t.scenarios.deleteConfirm}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
       />
       
-      {/* Інші модалки (Renaming і т.д.) */}
+      <SaveScenarioModal 
+        isOpen={editingScenario !== null}
+        onClose={() => setEditingScenario(null)}
+        onSave={async (newName) => {
+          setIsRenaming(true);
+          const token = localStorage.getItem('access_token');
+          try {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${editingScenario?.id}`, {
+              method: 'PATCH', 
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ name: newName })
+            });
+            fetchScenarios();
+          } finally {
+            setIsRenaming(false);
+            setEditingScenario(null);
+          }
+        }}
+        isLoading={isRenaming}
+        title={t.scenarios.renameModal}
+        initialName={editingScenario?.name || ''}
+      />
     </div>
   );
 }
