@@ -61,7 +61,7 @@ body {
   width: 100%;
   max-width: 1440px;
   margin: 0; 
-  padding: 20px;
+  padding: 16px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
