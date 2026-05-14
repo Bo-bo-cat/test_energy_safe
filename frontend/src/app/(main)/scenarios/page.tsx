@@ -14,33 +14,38 @@ export default function ScenariosPage() {
   const { t } = useTranslation();
 
   const [scenarios, setScenarios] = useState<any[]>([]);
+  
+  // Додаємо стейти для всіх приладів та систем (як на головній)
+  const [allDevices, setAllDevices] = useState<any[]>([]);
+  const [allSystems, setAllSystems] = useState<any[]>([]);
+  
   const [isLoading, setIsLoading] = useState(true);
   
-  // ПОВЕРНУТО: Стан для виділення картки
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
-  
-  // Стан для модалки деталей
   const [viewingScenario, setViewingScenario] = useState<any | null>(null);
-  
   const [scenarioToDelete, setScenarioToDelete] = useState<string | null>(null);
   const [editingScenario, setEditingScenario] = useState<{ id: string, name: string } | null>(null);
   const [isRenaming, setIsRenaming] = useState(false);
 
   useEffect(() => {
-    fetchScenarios();
+    fetchData();
   }, []);
 
-  const fetchScenarios = async () => {
+  // Одночасно завантажуємо сценарії, прилади та системи
+  const fetchData = async () => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setScenarios(Array.isArray(data) ? data : []);
-      }
+      const [scenRes, devRes, sysRes] = await Promise.all([
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null)
+      ]);
+
+      if (scenRes.ok) setScenarios(await scenRes.json());
+      if (devRes.ok) setAllDevices(await devRes.json());
+      if (sysRes && sysRes.ok) setAllSystems(await sysRes.json());
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -48,9 +53,33 @@ export default function ScenariosPage() {
     }
   };
 
-  // ПОВЕРНУТО: Функція виділення
   const handleCardClick = (id: string) => {
     setSelectedScenarioId(prev => prev === id ? null : id);
+  };
+
+  // ФУНКЦІЯ: Зіставляємо ID з реальними назвами перед відкриттям модалки
+  const handleOpenInfo = (e: React.MouseEvent, scenario: any) => {
+    e.stopPropagation();
+
+    // 1. Знаходимо реальні об'єкти приладів за їх ID
+    const matchedDevices = (scenario.selectedDeviceIds || []).map((id: string) => {
+      const device = allDevices.find(d => d.id === id || d._id === id);
+      if (!device) return null;
+      return { 
+        name: device.name, 
+        power_watts: device.power || device.power_watts || 0 
+      };
+    }).filter(Boolean); // Відкидаємо ті, що не знайшлися
+
+    // 2. Знаходимо реальний об'єкт системи (ДБЖ) за ID
+    const matchedSystem = allSystems.find(s => s.id === scenario.selectedSystemId || s._id === scenario.selectedSystemId);
+
+    // 3. Відкриваємо модалку вже зі "зрозумілими" даними
+    setViewingScenario({
+      ...scenario,
+      devices: matchedDevices,
+      system_model: matchedSystem ? (matchedSystem.model || matchedSystem.name) : null
+    });
   };
 
   return (
@@ -62,30 +91,26 @@ export default function ScenariosPage() {
       ) : (
         <div className={styles.grid}>
           {scenarios.map(scenario => {
-            const powerWatts = scenario.total_power_watts || 0;
-            const autonomyHours = scenario.duration_hours || 0;
-            const loadPercent = scenario.load_percent || 0;
+            const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
+            const autonomyHours = scenario.autonomyHours || scenario.duration_hours || 0;
+            const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
             
-            // Перевіряємо чи виділена ця картка
             const isSelected = selectedScenarioId === scenario.id;
 
             return (
               <div 
                 key={scenario.id} 
                 className={`${styles.card} ${isSelected ? styles.selected : ''}`}
-                onClick={() => handleCardClick(scenario.id)} // Клік на картку - виділяє
+                onClick={() => handleCardClick(scenario.id)}
               >
                 <div className={styles.cardHeader}>
                   <div className={styles.cardTitle}>
                     {scenario.name}
                     
-                    {/* Клік на цю іконку відкриває модалку */}
+                    {/* Клік викликає нашу нову функцію зіставлення */}
                     <span 
                       className={styles.infoMarker}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Зупиняємо клік, щоб не виділялась картка
-                        setViewingScenario(scenario);
-                      }}
+                      onClick={(e) => handleOpenInfo(e, scenario)}
                     >
                       i
                     </span>
@@ -120,12 +145,12 @@ export default function ScenariosPage() {
                       <span className={styles.statLabel}>{t.common.w}</span>
                     </div>
                     <div className={styles.statBox}>
-                      <span className={styles.statValue}>~{autonomyHours.toFixed(1)}</span>
+                      <span className={styles.statValue}>~{Number(autonomyHours).toFixed(1)}</span>
                       <span className={styles.statLabel}>{t.common.h}</span>
                     </div>
                     <div className={styles.statBox}>
                       <span className={styles.statValue}>{Math.round(loadPercent)}%</span>
-                      <span className={styles.statLabel}>інвертор</span>
+                      <span className={styles.statLabel}>{t.scenarios.inverterSuffix || 'інвертор'}</span>
                     </div>
                   </div>
                   <div className={styles.progressContainer}>
@@ -167,7 +192,7 @@ export default function ScenariosPage() {
               method: 'DELETE',
               headers: { Authorization: `Bearer ${token}` }
             });
-            fetchScenarios();
+            fetchData(); // Оновлюємо дані після видалення
         }}
         title={t.scenarios.deleteConfirm}
         confirmText={t.common.yes}
@@ -186,7 +211,7 @@ export default function ScenariosPage() {
               headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
               body: JSON.stringify({ name: newName })
             });
-            fetchScenarios();
+            fetchData(); // Оновлюємо дані після перейменування
           } finally {
             setIsRenaming(false);
             setEditingScenario(null);
