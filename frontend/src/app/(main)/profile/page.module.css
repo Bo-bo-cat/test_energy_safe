@@ -5,6 +5,10 @@
   display: none; 
 }
 
+.logoutBtn, .themeToggleMobile {
+  display: none; 
+}
+
 /* =========================================
    ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
    ========================================= */
@@ -47,7 +51,6 @@
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
    ========================================= */
 .themeToggleMobile {
-  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
