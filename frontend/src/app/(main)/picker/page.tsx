@@ -208,8 +208,12 @@ export default function SystemsPage() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
             />
-            <button className={styles.addBtn} onClick={handleAddByName}>{t.picker.findSystem}</button>
-            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>{t.picker.addCustomSystem}</button>
+            <button className={styles.addBtn} onClick={handleAddByName}>
+              {t.picker?.findSystem || 'Знайти систему'}
+            </button>
+            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>
+              {t.picker?.addCustomSystem || 'Додати свою систему'}
+            </button>
           </div>
         </>
       )}
