@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import './globals.css';
+import './globals.css'; 
 
+// 1. Імпортуємо реєстратор Service Worker
 import { ServiceWorkerRegister } from '../components/ServiceWorkerRegister/ServiceWorkerRegister';
-import GoogleAnalytics from '@/components/GoogleAnalytics/googleanalytics';
-import { WebVitals } from '@/components/GoogleAnalytics/WebVitals';
 
 // Додаємо колір теми для статус-бару телефону
 export const viewport: Viewport = {
@@ -37,10 +36,10 @@ export default function RootLayout({
   return (
     <html lang="uk">
       <body>
+        {/* 2. Додаємо компонент реєстрації сюди */}
         <ServiceWorkerRegister />
+        
         {children}
-        <GoogleAnalytics />
-        <WebVitals />
       </body>
     </html>
   );
