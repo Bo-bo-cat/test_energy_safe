@@ -4,10 +4,12 @@
 .env
 .env.local
 .env.development.local
+.env.test
 .env.test.local
 .env.production.local
 **/.env.local
 **/.env
+**/.env.test
 # .env.example і .env.exemple НЕ ігноруються — це шаблони для розробників
 *.pem
 
@@ -53,6 +55,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnp/
 .pnp.js
+*.tsbuildinfo
 
 # =========================
 # DOCKER
