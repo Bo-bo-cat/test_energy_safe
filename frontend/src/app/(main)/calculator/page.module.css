@@ -158,15 +158,25 @@
   flex-shrink: 0;
 }
 
-/* --- СИСТЕМИ (ДБЖ) --- */
+/* --- СИСТЕМИ ДБЖ (Карусель) --- */
 .systems-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  /* Перетворюємо сітку на горизонтальну карусель */
+  display: flex; 
+  flex-direction: row; 
+  overflow-x: auto; /* Дозволяємо прокрутку */
+  overscroll-behavior-x: contain; /* Блокуємо свайп всієї сторінки */
+  gap: 16px; 
   width: 100%;
+  padding-bottom: 8px; /* Відступ для скролбару */
 }
+.systems-grid::-webkit-scrollbar { display: none; } /* Ховаємо скролбар Safari/Chrome */
 
 .system-card {
+  /* Фіксована ширина для роботи в каруселі */
+  flex: 0 0 220px; 
+  width: 220px;
+  flex-shrink: 0; /* Забороняємо стиснення */
+  
   background-color: var(--bg-card);
   border: 2px solid var(--border-color);
   border-radius: 16px;
@@ -175,7 +185,6 @@
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
 
 .system-card.selected {
@@ -220,18 +229,35 @@
   color: var(--text-main);
 }
 
+/* --- КАРТКА ДОДАВАННЯ --- */
 .add-system-card {
+  /* Відновлюємо форму картки */
   background-color: var(--bg-card-inner);
-  border: 2px dashed var(--border-color);
+  border: 2px solid var(--border-color); /* Суцільна рамка, не пунктирна */
+  border-radius: 16px; /* Той самий радіус */
+  padding: 20px; /* Ті самі відступи */
+  display: flex; 
+  flex-direction: column;
+  
+  /* Той самий розмір */
+  flex: 0 0 220px; 
+  width: 220px;
+  flex-shrink: 0;
+}
+
+/* Обгортка вмісту для центрування */
+.add-card-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: center; /* Центруємо вміст */
+  justify-content: center; /* Центруємо вміст */
   gap: 12px;
+  flex: 1; /* Заповнюємо висоту картки */
+  width: 100%;
 }
 
 .add-icon {
-  font-size: 48px;
+  font-size: 32px; /* Менший розмір, не такий офсетний */
   font-weight: 800;
   color: var(--accent-orange);
   line-height: 1;
@@ -386,11 +412,10 @@
   .device-power { font-size: 12px; margin-left: 36px; }
   .checkbox { width: 20px; height: 20px; }
 
-  /* Компенсація відступів глобального контейнера для каруселей ДБЖ */
+  /* Карусель ДБЖ на мобільному */
   .systems-grid {
-    display: grid; 
-    grid-auto-flow: column; 
-    grid-auto-columns: 150px; 
+    display: flex; 
+    flex-direction: row; 
     overflow-x: auto;
     gap: 12px;
     margin-left: -16px; 
@@ -403,7 +428,8 @@
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    width: 100%;
+    flex: 0 0 150px; /* Менші картки на мобільному */
+    width: 150px; 
     height: 150px; 
     padding: 14px; 
     scroll-snap-align: center;

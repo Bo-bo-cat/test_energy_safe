@@ -272,7 +272,6 @@ export default function CalculatorPage() {
       <div className={styles.layout}>
         <div className={styles['main-content']}>
           
-          {/* Обробники свайпу на рядку локацій */}
           <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
             {locations.map(loc => (
               <div 
@@ -288,7 +287,6 @@ export default function CalculatorPage() {
             ))}
           </div>
 
-          {/* Обробники свайпу на каруселі іконок-категорій */}
           <div className={`${styles['icon-filters']} no-swipe`} {...swipeHandlers}>
             {availableIcons.length > 0 ? (
               availableIcons.map(icon => (
@@ -307,7 +305,6 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          {/* Список приладів */}
           <div className={styles['device-list']}>
             {!activeCategory ? (
               <p style={{ color: 'var(--text-muted)' }}>{t.calculator.chooseCategory}</p>
@@ -340,11 +337,14 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          {/* Обробники свайпу на каруселі систем ДБЖ */}
+          {/* СІТКА СИСТЕМ (Карусель) */}
           <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
-              <span className={styles['add-icon']}>+</span>
-              <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
+              {/* НОВА ОБГОРТКА ДЛЯ ВМІСТУ */}
+              <div className={styles['add-card-content']}>
+                <span className={styles['add-icon']}>+</span>
+                <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
+              </div>
             </Link>
 
             {systems.map(sys => {
@@ -380,7 +380,6 @@ export default function CalculatorPage() {
           </div>
         </div>
 
-        {/* ПРАВА ЧАСТИНА (Результати) */}
         <div className={styles['summary-panel']}>
           <div className={styles['summary-title']}>
             {systemDisplayName}
@@ -392,7 +391,6 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
-              {/* ВІЗУАЛІЗАЦІЯ ПІКОВОГО НАВАНТАЖЕННЯ */}
               {calcResult && maxStartupOverhead > 0 && (
                 <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
                   {lang === 'uk' ? 'Пік:' : 'Peak:'} {absolutePeakWatts} {t.common.w}
