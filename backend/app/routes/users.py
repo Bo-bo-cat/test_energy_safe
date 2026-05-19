@@ -7,8 +7,9 @@ import bcrypt
 from app.database import get_database, col
 # Імпортуємо всі потрібні моделі, включаючи UserUpdate
 from app.models.user import (
-    UserCreate, UserLogin, UserResponse, TokenResponse, 
-    UserProfileResponse, ChangePasswordRequest, UserUpdate
+    UserCreate, UserLogin, UserResponse, TokenResponse,
+    UserProfileResponse, ChangePasswordRequest, UserUpdate,
+    AddLocationRequest, LocationsResponse,
 )
 from app.auth import create_access_token, get_current_user_id
 
@@ -122,6 +123,43 @@ async def change_password(payload: ChangePasswordRequest, user_id: str = Depends
     await db[col("users")].update_one(
         {"_id": oid}, 
         {"$set": {"password_hash": _hash_password(payload.new_password)}}
+    )
+
+
+@router.get("/me/locations", response_model=LocationsResponse)
+async def get_custom_locations(user_id: str = Depends(get_current_user_id)):
+    db = get_database()
+    doc = await db[col("users")].find_one({"_id": ObjectId(user_id)})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Не знайдено")
+    return LocationsResponse(locations=doc.get("custom_locations", []))
+
+
+@router.post("/me/locations", response_model=LocationsResponse, status_code=201)
+async def add_custom_location(
+    payload: AddLocationRequest,
+    user_id: str = Depends(get_current_user_id),
+):
+    db = get_database()
+    oid = ObjectId(user_id)
+    name = payload.name.strip()
+    await db[col("users")].update_one(
+        {"_id": oid},
+        {"$addToSet": {"custom_locations": name}},
+    )
+    doc = await db[col("users")].find_one({"_id": oid})
+    return LocationsResponse(locations=doc.get("custom_locations", []))
+
+
+@router.delete("/me/locations/{name}", status_code=204)
+async def delete_custom_location(
+    name: str,
+    user_id: str = Depends(get_current_user_id),
+):
+    db = get_database()
+    await db[col("users")].update_one(
+        {"_id": ObjectId(user_id)},
+        {"$pull": {"custom_locations": name}},
     )
 
 

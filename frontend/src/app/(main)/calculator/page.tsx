@@ -66,12 +66,14 @@ const cleanModelName = (name: string, fallback: string) => {
   return name;
 };
 
+
 export default function CalculatorPage() {
-  const { t, lang } = useTranslation(); 
+  const { t, lang } = useTranslation();
 
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [customLocations, setCustomLocations] = useState<string[]>([]);
 
   const [activeLocation, setActiveLocation] = useState('Усі');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -88,6 +90,17 @@ export default function CalculatorPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/locations`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data.locations)) setCustomLocations(data.locations); })
+      .catch(() => {});
+  }, []);
 
   // МАГІЯ БЛОКУВАННЯ СВАЙПІВ
   const swipeHandlers = {
@@ -262,7 +275,8 @@ export default function CalculatorPage() {
   const locations = [
     { id: 'Усі', label: t.common.all },
     { id: 'Дім', label: t.common.home },
-    { id: 'Офіс', label: t.common.office }
+    { id: 'Офіс', label: t.common.office },
+    ...customLocations.map(loc => ({ id: loc, label: loc })),
   ];
 
   return (
