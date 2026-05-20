@@ -1,7 +1,8 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
+import html2canvas from 'html2canvas';
 
 import { CameraIcon } from '../../../components/icons/Camera';
 import { CalcIcon } from '../../../components/icons/Calc';
@@ -19,6 +20,17 @@ const cleanModelName = (name: string, fallback: string) => {
   return name.replace('ДБЖ - ', '').trim();
 };
 
+// Іконка для кнопки Поділитися
+const ShareIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+);
+
 export default function DashboardPage() {
   const { t } = useTranslation();
 
@@ -26,8 +38,11 @@ export default function DashboardPage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false); // Стан для кнопки Поділитися
 
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
+  
+  const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -104,13 +119,46 @@ export default function DashboardPage() {
     ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
     : [];
 
-  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ (Зупиняємо спливання подій дотику)
+  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ
   const swipeHandlers = {
     onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchEnd: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchCancel: (e: React.TouchEvent) => e.stopPropagation(),
   };
+
+  // ЛОГІКА ДЛЯ ЕКСПОРТУ КАРТИНКИ
+  const handleShare = async () => {
+    if (!exportRef.current || !activeScenario) return;
+    setIsExporting(true);
+    try {
+      // html2canvas малює прихований блок
+      const canvas = await html2canvas(exportRef.current, { 
+        scale: 2, // Для високої якості (Retina)
+        useCORS: true,
+        backgroundColor: '#FFFFFF'
+      });
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      
+      // Створюємо тимчасове посилання і завантажуємо картинку
+      const link = document.createElement('a');
+      link.download = `Сценарій_${activeScenario.name.replace(/\s+/g, '_')}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Помилка генерації зображення:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Сортуємо прилади для картинки (по потужності, беремо топ-4)
+  const topExportDevices = [...activeDevices].map(dev => {
+    const qty = activeScenario?.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
+    const power = dev.powerWatts || dev.power_watts || dev.power || 0;
+    return { ...dev, totalPower: power * qty, qty };
+  }).sort((a, b) => b.totalPower - a.totalPower).slice(0, 4);
 
   if (isLoading) {
     return (
@@ -123,10 +171,23 @@ export default function DashboardPage() {
   return (
     <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
       
-      {/* Додаємо обробники до всіх блоків, що можуть скролитися */}
       <div className={styles.topGrid} {...swipeHandlers}>
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
+          {/* Оновлений заголовок із кнопкою Поділитися */}
+          <div className={styles.cardHeaderWithShare}>
+            <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
+            {activeScenario && (
+              <button 
+                className={styles.shareBtn} 
+                onClick={handleShare} 
+                disabled={isExporting}
+                title="Поділитися сценарієм"
+              >
+                {isExporting ? <span className={styles.loader}></span> : <ShareIcon />}
+              </button>
+            )}
+          </div>
+          
           <div className={styles.statusContent}>
             <div className={styles.donutWrapper}>
               <svg width="100%" height="100%" viewBox="0 0 220 120" className={styles.donutSvg}>
@@ -193,7 +254,6 @@ export default function DashboardPage() {
       </div>
 
       <div className={styles.middleFlex}>
-        {/* Додаємо обробники до швидких дій */}
         <div className={styles.actionsGroup} {...swipeHandlers}>
           <Link href="/devices" className={styles.actionBtn}>
             <CameraIcon className={styles.actionIcon} />
@@ -235,7 +295,6 @@ export default function DashboardPage() {
 
       <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
       
-      {/* Додаємо обробники до сценаріїв */}
       <div className={`${styles.scenariosFlex} no-swipe`} {...swipeHandlers}>
         {scenarios.length > 0 ? (
           scenarios.map(scen => (
@@ -284,6 +343,57 @@ export default function DashboardPage() {
           )}
         </div>
       )}
+
+      {/* ПРИХОВАНИЙ ШАБЛОН ДЛЯ ЕКСПОРТУ (html2canvas) */}
+      {activeScenario && (
+        <div ref={exportRef} className={styles.exportWrapper}>
+          <h1 className={styles.exportTitle}>{activeScenario.name}</h1>
+          
+          <div className={styles.exportSystemBox}>
+            <h2 className={styles.exportSystemName}>{systemName}</h2>
+            <div className={styles.exportRow}>
+              <span>Тип</span>
+              <span className={styles.exportValue}>{displaySystem?.type || t.dashboard.portableStation}</span>
+            </div>
+            <div className={styles.exportRow}>
+              <span>Потужність</span>
+              <span className={styles.exportValue}>{systemPower} Вт</span>
+            </div>
+            <div className={styles.exportRow}>
+              <span>Батарея</span>
+              <span className={styles.exportValue}>{systemBattery}</span>
+            </div>
+            <div className={styles.exportRow}>
+              <span>Автономія</span>
+              <span className={styles.exportValue}>{typeof autonomy === 'number' ? autonomy.toFixed(1) : autonomy} Год</span>
+            </div>
+          </div>
+
+          <div className={styles.exportDevicesList}>
+            {topExportDevices.map(d => (
+              <div key={d.id || d._id} className={styles.exportDeviceBox}>
+                <span className={styles.exportDeviceName}>
+                  {d.qty > 1 ? `${d.qty}x ` : ''}{d.model_name || d.name}
+                </span>
+                <span className={styles.exportDevicePower}>{d.totalPower} Вт</span>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.exportProgressContainer}>
+            <div className={styles.exportProgressBar}>
+              <div 
+                className={styles.exportProgressFill} 
+                style={{ width: `${safePercent}%`, backgroundColor: progressColor }} 
+              />
+            </div>
+            <div className={styles.exportProgressText} style={{ color: progressColor }}>
+              {safePercent}% Навантаження
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

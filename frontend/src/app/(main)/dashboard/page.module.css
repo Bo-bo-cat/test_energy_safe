@@ -332,6 +332,168 @@
   flex-shrink: 0; 
 }
 
+/* Оновлений заголовок із кнопкою */
+.cardHeaderWithShare {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cardHeaderWithShare .cardTitle {
+  margin-bottom: 0; /* Перевизначаємо margin, бо він тепер на батьківському блоці */
+}
+
+.shareBtn {
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.shareBtn:hover {
+  background-color: var(--accent-orange);
+  color: #fff;
+  border-color: var(--accent-orange);
+}
+
+.shareBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loader {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid var(--text-main);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =========================================
+   ШАБЛОН ДЛЯ ЕКСПОРТУ КАРТИНКИ (html2canvas)
+   ========================================= */
+.exportWrapper {
+  /* Ховаємо блок від очей користувача, але залишаємо в DOM для html2canvas */
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 450px;
+  background-color: #FFFFFF;
+  padding: 32px 24px;
+  font-family: sans-serif;
+  color: #222222;
+  box-sizing: border-box;
+}
+
+.exportTitle {
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #222222;
+}
+
+.exportSystemBox {
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.exportSystemName {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #222222;
+}
+
+.exportRow {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #E0E0E0;
+  padding: 10px 0;
+  font-size: 13px;
+  color: #666666;
+  font-weight: 600;
+}
+
+.exportRow:last-child {
+  border-bottom: none;
+}
+
+.exportValue {
+  color: #222222;
+  font-weight: 700;
+}
+
+.exportDevicesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.exportDeviceBox {
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exportDeviceName {
+  font-size: 18px;
+  font-weight: 800;
+  color: #222222;
+}
+
+.exportDevicePower {
+  font-size: 16px;
+  font-weight: 700;
+  color: #666666;
+}
+
+.exportProgressContainer {
+  margin-top: 32px;
+}
+
+.exportProgressBar {
+  width: 100%;
+  height: 24px;
+  background-color: #333333;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.exportProgressFill {
+  height: 100%;
+  /* Колір задається інлайн в компоненті */
+}
+
+.exportProgressText {
+  text-align: right;
+  font-size: 16px;
+  font-weight: 800;
+}
+
 
 /* =========================================
    ПЛАНШЕТИ / ПОРТРЕТНІ МОБІЛЬНІ
