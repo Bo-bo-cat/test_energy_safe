@@ -38,6 +38,28 @@
 .icon-chip { width: 54px; }
 .filter-icon { width: 22px; height: 22px; }
 
+.flex-chip {
+  width: auto;
+  padding: 8px 16px;
+}
+
+.location-input {
+  height: 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 16px;
+  outline: none;
+  width: 130px;
+}
+
+.location-input:focus {
+  border-color: var(--accent-orange);
+}
+
 .filter-chip.active {
   background-color: var(--text-main); 
   color: var(--bg-main); 

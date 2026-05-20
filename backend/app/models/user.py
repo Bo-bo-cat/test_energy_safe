@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -58,3 +58,11 @@ class UserProfileResponse(BaseModel):
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str = Field(..., min_length=4)
+
+
+class AddLocationRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=50)
+
+
+class LocationsResponse(BaseModel):
+    locations: List[str]

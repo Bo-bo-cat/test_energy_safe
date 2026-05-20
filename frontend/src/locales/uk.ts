@@ -110,7 +110,9 @@ export const uk = {
     startup: 'пуск',
     loadingDevices: 'Завантаження приладів...',
     noDevicesAdded: 'У вас ще немає доданих приладів.',
-    noDevicesInCategory: 'Немає приладів у категорії'
+    noDevicesInCategory: 'Немає приладів у категорії',
+    addLocation: 'Додати місце',
+    locationPlaceholder: 'Гараж, Кухня...',
   },
   deviceAdd: {
     title: 'Додати прилад',

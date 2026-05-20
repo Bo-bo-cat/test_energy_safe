@@ -109,7 +109,9 @@ export const en = {
     startup: 'startup',
     loadingDevices: 'Loading devices...',
     noDevicesAdded: 'You have no added devices yet.',
-    noDevicesInCategory: 'No devices in category'
+    noDevicesInCategory: 'No devices in category',
+    addLocation: 'Add location',
+    locationPlaceholder: 'Garage, Kitchen...',
   },
   deviceAdd: {
     title: 'Add Device',

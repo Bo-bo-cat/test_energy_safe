@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
 
@@ -11,8 +11,6 @@ import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
 import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
-import { HomeIcon } from '../../../components/icons/Home';
-import { OfficeIcon } from '../../../components/icons/Office';
 import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
@@ -44,6 +42,8 @@ const categoryToIcon: Record<string, string> = {
   'Інше': 'other',
 };
 
+const DEFAULT_LOCATIONS = ['Дім', 'Офіс'];
+
 const renderDeviceIcon = (iconName?: string) => {
   switch (iconName) {
     case 'fridge': return <FridgeIcon className={styles['device-svg']} />;
@@ -70,8 +70,12 @@ export default function DevicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
+
+  const [customLocations, setCustomLocations] = useState<string[]>([]);
+  const [showAddLocation, setShowAddLocation] = useState(false);
+  const [newLocationName, setNewLocationName] = useState('');
+  const newLocationInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -100,6 +104,50 @@ export default function DevicesPage() {
       .catch((err) => console.error(t.common.error, err))
       .finally(() => setIsLoading(false));
   }, [t.common.error]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/locations`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data.locations)) setCustomLocations(data.locations); })
+      .catch(() => {});
+  }, []);
+
+  const allLocations = [...DEFAULT_LOCATIONS, ...customLocations];
+
+  const handleAddLocation = async () => {
+    const name = newLocationName.trim();
+    setShowAddLocation(false);
+    setNewLocationName('');
+    if (!name || allLocations.includes(name)) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/locations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (Array.isArray(data.locations)) setCustomLocations(data.locations);
+    } catch { /* ignore */ }
+  };
+
+  const handleDeleteLocation = async (name: string) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/locations/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCustomLocations(prev => prev.filter(l => l !== name));
+      if (activeFilter === name) setActiveFilter('Усі');
+    } catch { /* ignore */ }
+  };
 
   const filteredDevices = devices.filter((device) => {
     if (activeFilter === 'Усі') return true;
@@ -163,24 +211,54 @@ export default function DevicesPage() {
         <div className={styles['top-section']}>
           
           <div className={styles['filters']}>
-            <button 
-              className={`${styles['filter-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
+            <button
+              className={`${styles['filter-chip']} ${styles['flex-chip']} ${activeFilter === 'Усі' ? styles['active'] : ''}`}
               onClick={() => setActiveFilter('Усі')}
             >
               {t.common.all}
             </button>
-            <button 
-              className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Дім' ? styles['active'] : ''}`}
-              onClick={() => setActiveFilter('Дім')}
-            >
-              <HomeIcon className={styles['filter-icon']} />
-            </button>
-            <button 
-              className={`${styles['filter-chip']} ${styles['icon-chip']} ${activeFilter === 'Офіс' ? styles['active'] : ''}`}
-              onClick={() => setActiveFilter('Офіс')}
-            >
-              <OfficeIcon className={styles['filter-icon']} />
-            </button>
+            {allLocations.map(loc => (
+              <div
+                key={loc}
+                className={`${styles['filter-chip']} ${styles['flex-chip']} ${activeFilter === loc ? styles['active'] : ''}`}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                onClick={() => setActiveFilter(loc)}
+              >
+                <span>{loc}</span>
+                {!DEFAULT_LOCATIONS.includes(loc) && (
+                  <span
+                    style={{ fontSize: '14px', lineHeight: 1, opacity: 0.6 }}
+                    onClick={e => { e.stopPropagation(); handleDeleteLocation(loc); }}
+                  >
+                    ×
+                  </span>
+                )}
+              </div>
+            ))}
+            {showAddLocation ? (
+              <input
+                ref={newLocationInputRef}
+                autoFocus
+                value={newLocationName}
+                onChange={e => setNewLocationName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleAddLocation();
+                  if (e.key === 'Escape') { setShowAddLocation(false); setNewLocationName(''); }
+                }}
+                onBlur={handleAddLocation}
+                placeholder={t.devices.locationPlaceholder}
+                className={styles['location-input']}
+                maxLength={20}
+              />
+            ) : (
+              <button
+                className={`${styles['filter-chip']} ${styles['icon-chip']}`}
+                onClick={() => setShowAddLocation(true)}
+                title={t.devices.addLocation}
+              >
+                +
+              </button>
+            )}
           </div>
 
           <Link href="/devices/add" className={styles['add-btn']}>
@@ -241,25 +319,20 @@ export default function DevicesPage() {
                           </span>
                           
                           <div className={styles['action-group']}>
-                            <button
-                              className={`${styles['action-btn']} ${device.tag === 'Дім' ? styles['active'] : ''}`}
-                              onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Дім'); }}
-                            >
-                              <HomeIcon className={styles['action-icon']} />
-                              {t.common.home}
-                            </button>
-                            <button
-                              className={`${styles['action-btn']} ${device.tag === 'Офіс' ? styles['active'] : ''}`}
-                              onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, 'Офіс'); }}
-                            >
-                              <OfficeIcon className={styles['action-icon']} />
-                              {t.common.office}
-                            </button>
+                            {allLocations.map(loc => (
+                              <button
+                                key={loc}
+                                className={`${styles['action-btn']} ${device.tag === loc ? styles['active'] : ''}`}
+                                onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, loc); }}
+                              >
+                                {loc}
+                              </button>
+                            ))}
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
-                              onClick={(e) => { 
-                                e.stopPropagation(); 
-                                setDeviceToDelete(device.id); 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeviceToDelete(device.id);
                               }}
                             >
                               <DeleteIcon className={styles['action-icon']} />
@@ -277,7 +350,7 @@ export default function DevicesPage() {
           <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>
             {activeFilter === 'Усі' 
               ? t.devices.noDevicesAdded 
-              : `${t.devices.noDevicesInCategory} "${activeFilter === 'Дім' ? t.common.home : t.common.office}".`}
+              : `${t.devices.noDevicesInCategory} "${activeFilter}".`}
           </p>
         )}
       </div>
