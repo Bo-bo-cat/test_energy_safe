@@ -260,6 +260,7 @@
 }
 .delete-btn:hover {
   background-color: rgba(255, 110, 0, 0.1); 
+  border-color: var(--accent-orange);
 }
 
 .action-icon { width: 18px; height: 18px; flex-shrink: 0; }
@@ -347,15 +348,15 @@
   .top-section {
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* <-- Кнопка і фільтри будуть однакової ширини */
+    align-items: stretch;
     gap: 10px; 
     margin-bottom: 0;
-    flex: 0 0 auto; /* <-- Більше не розтягується на всю ліву половину */
-    width: fit-content; /* <-- Ширина суворо по ширині контенту (фільтрів) */
+    flex: 0 0 auto; 
+    width: fit-content;
   }
 
   .filters {
-    flex-wrap: nowrap; /* Гарантуємо, що фільтри в один ряд */
+    flex-wrap: nowrap;
   }
 
   .summary-card {
@@ -366,7 +367,7 @@
   }
   
   .add-btn { 
-    width: 100%; /* <-- Тепер 100% від ширини фільтрів, а не від всього екрану! */
+    width: 100%; 
     padding: 6px 12px; 
     font-size: 12px; 
     height: fit-content; 

@@ -64,7 +64,7 @@ const renderDeviceIcon = (iconName?: string) => {
 };
 
 export default function DevicesPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation(); 
 
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -203,10 +203,8 @@ export default function DevicesPage() {
 
   return (
     <div className="global-page-wrap">
-      {/* 1. Глобальний заголовок */}
       <h1 className="page-title">{t.devices.title}</h1>
       
-      {/* 2. Контейнер з фільтрами та підсумком */}
       <div className={styles['header-container']}>
         <div className={styles['top-section']}>
           
@@ -246,7 +244,7 @@ export default function DevicesPage() {
                   if (e.key === 'Escape') { setShowAddLocation(false); setNewLocationName(''); }
                 }}
                 onBlur={handleAddLocation}
-                placeholder={t.devices.locationPlaceholder}
+                placeholder={t.devices.locationPlaceholder || "Нова локація"}
                 className={styles['location-input']}
                 maxLength={20}
               />
@@ -254,7 +252,7 @@ export default function DevicesPage() {
               <button
                 className={`${styles['filter-chip']} ${styles['icon-chip']}`}
                 onClick={() => setShowAddLocation(true)}
-                title={t.devices.addLocation}
+                title={t.devices.addLocation || "Додати локацію"}
               >
                 +
               </button>
@@ -284,7 +282,6 @@ export default function DevicesPage() {
         </div>
       </div>
 
-      {/* 3. Список приладів */}
       <div className={styles['device-list']}>
         {isLoading ? (
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
@@ -334,6 +331,7 @@ export default function DevicesPage() {
                                 e.stopPropagation();
                                 setDeviceToDelete(device.id);
                               }}
+                              title={t.common.delete || "Видалити"}
                             >
                               <DeleteIcon className={styles['action-icon']} />
                             </button>
