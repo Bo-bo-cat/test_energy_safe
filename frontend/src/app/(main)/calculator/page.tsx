@@ -255,9 +255,18 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
-  const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
-    return categoryToIcon[d.category] === activeCategory;
-  }) : [];
+  // Фільтруємо прилади (всі або лише вибрана категорія)
+  const devicesToDisplay = activeCategory 
+    ? locationFilteredDevices.filter(d => categoryToIcon[d.category] === activeCategory)
+    : locationFilteredDevices;
+
+  // Групуємо прилади за назвою категорії
+  const groupedDevices = devicesToDisplay.reduce((acc, device) => {
+    const cat = device.category || 'Інше';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(device);
+    return acc;
+  }, {} as Record<string, any[]>);
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -319,42 +328,45 @@ export default function CalculatorPage() {
             )}
           </div>
 
-          <div className={styles['device-list']}>
-            {!activeCategory ? (
-              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.chooseCategory}</p>
-            ) : filteredDevices.length > 0 ? (
-              filteredDevices.map(device => {
-                const id = device.id || device._id; 
-                const isSelected = selectedDeviceIds.includes(id);
-                return (
-                  <div 
-                    key={id} 
-                    className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
-                    onClick={() => toggleDevice(id)}
-                  >
-                    <div className={styles['device-left']}>
-                      <div className={styles.checkbox}>
-                        <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
+          <div className={`${styles['device-list']} no-swipe`} {...swipeHandlers}>
+  {Object.keys(groupedDevices).length > 0 ? (
+    Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
+      <div key={categoryName} className={styles['device-category-group']}>
+        <div className={styles['device-category-title']}>{categoryName}</div>
+        
+        {items.map(device => {
+                    const id = device.id || device._id; 
+                    const isSelected = selectedDeviceIds.includes(id);
+                    return (
+                      <div 
+                        key={id} 
+                        className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
+                        onClick={() => toggleDevice(id)}
+                      >
+                        <div className={styles['device-left']}>
+                          <div className={styles.checkbox}>
+                            <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                          <span className={styles['device-name']}>{device.model_name || device.name}</span>
+                        </div>
+                        <div className={styles['device-power']}>
+                          {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                        </div>
                       </div>
-                      <span className={styles['device-name']}>{device.model_name || device.name}</span>
-                    </div>
-                    <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
-                    </div>
-                  </div>
-                )
-              })
+                    )
+                  })}
+                </div>
+              ))
             ) : (
-              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInCategory}</p>
+              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInLocation}</p>
             )}
           </div>
 
           {/* СІТКА СИСТЕМ (Карусель) */}
           <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
-              {/* НОВА ОБГОРТКА ДЛЯ ВМІСТУ */}
               <div className={styles['add-card-content']}>
                 <span className={styles['add-icon']}>+</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
