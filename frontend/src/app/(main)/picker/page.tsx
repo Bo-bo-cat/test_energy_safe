@@ -19,7 +19,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function SystemsPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
@@ -74,7 +74,10 @@ export default function SystemsPage() {
       const res = await fetch(`${API}/systems/by-name`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ model: query })
+        body: JSON.stringify({ 
+          model: query,
+          selected_for_calculation: true // Одразу увімкнено при додаванні
+        })
       });
       if (res.ok) {
         setQuery('');
@@ -87,7 +90,6 @@ export default function SystemsPage() {
     }
   };
 
-  // Оновлена функція, яка приймає готові дані з компонента модалки
   const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string; autonomy: string }) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -99,7 +101,7 @@ export default function SystemsPage() {
           ...formData,
           power: Number(formData.power),
           type: 'ДБЖ / Власна збірка',
-          selected_for_calculation: false
+          selected_for_calculation: true // Одразу увімкнено при додаванні
         }),
       });
       if (res.ok) {
@@ -126,7 +128,7 @@ export default function SystemsPage() {
           power: rec.power, 
           battery: rec.battery, 
           autonomy: rec.autonomy, 
-          selected_for_calculation: false
+          selected_for_calculation: true // Одразу увімкнено при додаванні
         }),
       });
       if (res.ok) {
@@ -264,7 +266,12 @@ export default function SystemsPage() {
 
             {tab === 'my' && (
               <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                <span className={styles.calcLabel}>{t.picker.addToCalc}</span>
+                {/* ДИНАМІЧНИЙ ТЕКСТ ЗАЛЕЖНО ВІД СТАНУ ГАЛОЧКИ */}
+                <span className={styles.calcLabel}>
+                  {item.selected_for_calculation 
+                    ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                    : t.picker.addToCalc}
+                </span>
                 <button className={styles.iconBtn}>
                   {item.selected_for_calculation ? (
                     <CheckboxCheckedIcon className={styles.actionIconOrange} />
@@ -285,7 +292,6 @@ export default function SystemsPage() {
         </div>
       )}
 
-      {/* НОВИЙ КОМПОНЕНТ МОДАЛКИ */}
       <AddSystemModal 
         isOpen={isCustomModalOpen} 
         onClose={() => setIsCustomModalOpen(false)} 

@@ -71,11 +71,27 @@ export default function DevicesPage() {
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
+  
+  // Стан для кастомного дропдауну локацій
+  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const [customLocations, setCustomLocations] = useState<string[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState('');
   const newLocationInputRef = useRef<HTMLInputElement>(null);
+
+  // ПРАВИЛЬНЕ ЗАКРИТТЯ: перевіряємо, чи клік був не по нашому списку
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(`.${styles['custom-select-container']}`)) {
+        return; // Якщо клікнули всередині селекта - нічого не робимо
+      }
+      setOpenDropdownId(null); // Якщо десь інде - закриваємо
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -287,7 +303,12 @@ export default function DevicesPage() {
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
           Object.entries(groupedDevices).map(([categoryName, items]: [string, any[]]) => (
-            <div key={categoryName} className={styles['category-group']}>
+            <div 
+              key={categoryName} 
+              className={styles['category-group']}
+              // МАГІЯ Z-INDEX: підіймаємо ту категорію, де відкритий дропдаун, вище за інші
+              style={{ position: 'relative', zIndex: items.some((d: any) => openDropdownId === d.id) ? 50 : 1 }}
+            >
               <div 
                 className={`${styles['category-header']} ${expandedCategories[categoryName] ? styles['expanded'] : ''}`} 
                 onClick={() => toggleCategory(categoryName)}
@@ -316,15 +337,34 @@ export default function DevicesPage() {
                           </span>
                           
                           <div className={styles['action-group']}>
-                            {allLocations.map(loc => (
-                              <button
-                                key={loc}
-                                className={`${styles['action-btn']} ${device.tag === loc ? styles['active'] : ''}`}
-                                onClick={(e) => { e.stopPropagation(); handleToggleLocation(device.id, loc); }}
+                            
+                            {/* КАСТОМНИЙ DROPDOWN ЗАМІСТЬ СЕЛЕКТА */}
+                            <div className={styles['custom-select-container']}>
+                              <div 
+                                className={`${styles['location-select']} ${openDropdownId === device.id ? styles['active-select'] : ''}`}
+                                onClick={() => setOpenDropdownId(openDropdownId === device.id ? null : device.id)}
                               >
-                                {loc}
-                              </button>
-                            ))}
+                                {device.tag || allLocations[0]}
+                              </div>
+                              
+                              {openDropdownId === device.id && (
+                                <div className={styles['custom-select-dropdown']}>
+                                  {allLocations.map(loc => (
+                                    <div
+                                      key={loc}
+                                      className={`${styles['custom-select-item']} ${device.tag === loc ? styles['selected'] : ''}`}
+                                      onClick={() => {
+                                        handleToggleLocation(device.id, loc);
+                                        setOpenDropdownId(null);
+                                      }}
+                                    >
+                                      {loc}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => {

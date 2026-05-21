@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isExporting, setIsExporting] = useState(false); // Стан для кнопки Поділитися
+  const [isExporting, setIsExporting] = useState(false);
 
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   
@@ -83,12 +83,21 @@ export default function DashboardPage() {
   const loadWatts = activeScenario ? Number(activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
   const autonomy = activeScenario ? Number(activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
   
+  // ==========================================
+  // МАГІЯ СНАПШОТІВ: ДБЖ (СИСТЕМА)
+  // ==========================================
   let displaySystem = null;
   
   if (activeScenario) {
-    const linkedSystemId = activeScenario.selectedSystemId || activeScenario.systemId;
-    if (linkedSystemId) {
-      displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
+    if (activeScenario.systemSnapshot) {
+      // 1. Беремо систему зі збереженого зліпка
+      displaySystem = activeScenario.systemSnapshot;
+    } else {
+      // 2. Fallback: шукаємо серед доступних систем
+      const linkedSystemId = activeScenario.selectedSystemId || activeScenario.systemId;
+      if (linkedSystemId) {
+        displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
+      }
     }
   }
 
@@ -115,11 +124,55 @@ export default function DashboardPage() {
     progressColor = '#FF2D55'; 
   }
 
-  const activeDevices = activeScenario && activeScenario.selectedDeviceIds
-    ? devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id))
-    : [];
+  // ==========================================
+  // МАГІЯ СНАПШОТІВ: ПРИЛАДИ
+  // ==========================================
+  let groupedActiveDevices: any[] = [];
 
-  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ
+  if (activeScenario) {
+    if (activeScenario.devicesSnapshot && activeScenario.devicesSnapshot.length > 0) {
+      // 1. Використовуємо Снапшот (зберігається навіть якщо прилад видалено з профілю)
+      const counts: Record<string, number> = {};
+      const uniqueDevices: any[] = [];
+
+      activeScenario.devicesSnapshot.forEach((d: any) => {
+        if (!counts[d.id]) {
+          counts[d.id] = 0;
+          uniqueDevices.push(d);
+        }
+        counts[d.id]++;
+      });
+
+      groupedActiveDevices = uniqueDevices.map(d => ({
+        ...d,
+        qty: counts[d.id],
+        calculatedPower: (d.power_watts || d.powerWatts || d.power || 0),
+        displayName: d.model_name || d.name || t.common.model
+      }));
+    } else if (activeScenario.selectedDeviceIds) {
+      // 2. Fallback для старих сценаріїв (без зліпка)
+      const selectedIds = activeScenario.selectedDeviceIds;
+      const rawDevices = devices.filter(d => selectedIds.includes(d.id || d._id));
+      
+      groupedActiveDevices = rawDevices.map(dev => {
+        const qty = selectedIds.filter((id: string) => id === (dev.id || dev._id)).length || 1;
+        return {
+          ...dev,
+          qty,
+          calculatedPower: (dev.powerWatts || dev.power_watts || dev.power || 0),
+          displayName: dev.model_name || dev.name || dev.model || t.common.model
+        };
+      });
+    }
+  }
+
+  // Сортуємо прилади для картинки (по потужності, беремо топ-4)
+  const topExportDevices = [...groupedActiveDevices]
+    .map(dev => ({ ...dev, totalPower: dev.calculatedPower * dev.qty }))
+    .sort((a, b) => b.totalPower - a.totalPower)
+    .slice(0, 4);
+
+  // Блокування свайпів для графіків
   const swipeHandlers = {
     onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
@@ -127,21 +180,16 @@ export default function DashboardPage() {
     onTouchCancel: (e: React.TouchEvent) => e.stopPropagation(),
   };
 
-  // ЛОГІКА ДЛЯ ЕКСПОРТУ КАРТИНКИ
   const handleShare = async () => {
     if (!exportRef.current || !activeScenario) return;
     setIsExporting(true);
     try {
-      // html2canvas малює прихований блок
       const canvas = await html2canvas(exportRef.current, { 
-        scale: 2, // Для високої якості (Retina)
+        scale: 2, 
         useCORS: true,
         backgroundColor: '#FFFFFF'
       });
-      
       const dataUrl = canvas.toDataURL('image/png');
-      
-      // Створюємо тимчасове посилання і завантажуємо картинку
       const link = document.createElement('a');
       link.download = `Сценарій_${activeScenario.name.replace(/\s+/g, '_')}.png`;
       link.href = dataUrl;
@@ -152,13 +200,6 @@ export default function DashboardPage() {
       setIsExporting(false);
     }
   };
-
-  // Сортуємо прилади для картинки (по потужності, беремо топ-4)
-  const topExportDevices = [...activeDevices].map(dev => {
-    const qty = activeScenario?.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
-    const power = dev.powerWatts || dev.power_watts || dev.power || 0;
-    return { ...dev, totalPower: power * qty, qty };
-  }).sort((a, b) => b.totalPower - a.totalPower).slice(0, 4);
 
   if (isLoading) {
     return (
@@ -173,7 +214,6 @@ export default function DashboardPage() {
       
       <div className={styles.topGrid} {...swipeHandlers}>
         <div className={styles.card}>
-          {/* Оновлений заголовок із кнопкою Поділитися */}
           <div className={styles.cardHeaderWithShare}>
             <h2 className={styles.cardTitle}>{t.dashboard.systemStatus}</h2>
             {activeScenario && (
@@ -319,24 +359,18 @@ export default function DashboardPage() {
       {activeScenario && (
         <div className={styles.activeDevicesWrapper}>
           <h3 className={styles.activeDevicesTitle}>{t.dashboard.devicesInScenario}</h3>
-          {activeDevices.length > 0 ? (
+          {groupedActiveDevices.length > 0 ? (
             
             <div className={`${styles.activeDevicesGrid} no-swipe`} {...swipeHandlers}>
-              {activeDevices.map(dev => {
-                const qty = activeScenario.deviceQuantities ? (activeScenario.deviceQuantities[dev.id || dev._id] || 1) : 1;
-                const power = dev.powerWatts || dev.power_watts || dev.power || 0;
-                const deviceName = dev.model_name || dev.name || dev.model || t.common.model;
-                
-                return (
-                  <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
-                    <div className={styles.activeDeviceName} title={deviceName}>
-                      {qty > 1 ? <span className={styles.qtyBadge}>{qty}x</span> : null}
-                      <span className={styles.truncateText}>{deviceName}</span>
-                    </div>
-                    <div className={styles.activeDevicePower}>{power * qty} {t.common.w}</div>
+              {groupedActiveDevices.map(dev => (
+                <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
+                  <div className={styles.activeDeviceName} title={dev.displayName}>
+                    {dev.qty > 1 ? <span className={styles.qtyBadge}>{dev.qty}x</span> : null}
+                    <span className={styles.truncateText}>{dev.displayName}</span>
                   </div>
-                );
-              })}
+                  <div className={styles.activeDevicePower}>{dev.calculatedPower * dev.qty} {t.common.w}</div>
+                </div>
+              ))}
             </div>
           ) : (
             <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{t.dashboard.noDevicesInScenario}</p>
@@ -373,7 +407,7 @@ export default function DashboardPage() {
             {topExportDevices.map(d => (
               <div key={d.id || d._id} className={styles.exportDeviceBox}>
                 <span className={styles.exportDeviceName}>
-                  {d.qty > 1 ? `${d.qty}x ` : ''}{d.model_name || d.name}
+                  {d.qty > 1 ? `${d.qty}x ` : ''}{d.displayName}
                 </span>
                 <span className={styles.exportDevicePower}>{d.totalPower} Вт</span>
               </div>
@@ -381,14 +415,14 @@ export default function DashboardPage() {
           </div>
 
           <div className={styles.exportProgressContainer}>
+            <div className={styles.exportProgressText} style={{ color: progressColor }}>
+              {safePercent}%
+            </div>
             <div className={styles.exportProgressBar}>
               <div 
                 className={styles.exportProgressFill} 
                 style={{ width: `${safePercent}%`, backgroundColor: progressColor }} 
               />
-            </div>
-            <div className={styles.exportProgressText} style={{ color: progressColor }}>
-              {safePercent}% Навантаження
             </div>
           </div>
         </div>
