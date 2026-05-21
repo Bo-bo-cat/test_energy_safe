@@ -1,5 +1,5 @@
 // public/sw.js
-/* global clients */
+
 const CACHE_NAME = 'energy-safe-cache-v1';
 
 // 1. Встановлення (Install) - браузер завантажує SW
