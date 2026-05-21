@@ -1,26 +1,100 @@
 /* src/app/(main)/profile/page.module.css */
 
-.wrap {
-  width: 100%;
-  max-width: 1200px;
-  padding-top: 32px;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-main);
-  transition: color 0.3s ease;
-}
-
-/* Ховаємо перемикач теми та логаут на десктопі */
+/* Ховаємо ТІЛЬКИ дублюючі мобільні кнопки на десктопі */
 .logoutBtn, .themeToggleMobile {
   display: none; 
 }
 
-.title {
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  margin: 0 0 32px 0;
+/* =========================================
+   ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
+   ========================================= */
+.languageToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
 }
 
+.languageToggle:hover {
+  background-color: var(--border-color);
+}
+
+.languageIndicator {
+  min-width: 51px;
+  height: 31px;
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
+   ========================================= */
+.themeToggleMobile {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+}
+
+.toggle-switch {
+  width: 51px;
+  height: 31px;
+  background-color: var(--text-muted);
+  border-radius: 16px;
+  position: relative;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.active {
+  background-color: var(--accent-orange);
+}
+
+.toggle-knob {
+  width: 27px;
+  height: 27px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-knob {
+  transform: translateX(20px);
+}
+
+/* =========================================
+   ОСНОВНІ СТИЛІ ПРОФІЛЮ
+   ========================================= */
 .profileHeader {
   display: flex;
   align-items: center;
@@ -37,7 +111,7 @@
   justify-content: center;
   font-size: 40px;
   font-weight: 800;
-  color: #FFFFFF; /* Залишаємо білим, бо фон аватара кольоровий */
+  color: #FFFFFF; 
   text-transform: uppercase;
   user-select: none;
 }
@@ -45,13 +119,14 @@
 .userInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .nameRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .userName {
@@ -65,6 +140,8 @@
   color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s;
+  width: 22px;
+  height: 22px;
 }
 
 .editIcon:hover {
@@ -72,7 +149,7 @@
 }
 
 .userEmail {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-muted);
   margin: 0;
@@ -82,7 +159,25 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 400px; /* Обмежуємо ширину кнопок */
+  width: 100%;
+  max-width: 400px; 
+}
+
+/* --- ОНОВЛЕНІ КНОПКИ (ЯК НА СТОРІНЦІ СИСТЕМ) --- */
+.changePasswordBtn, .faqBtn {
+  background-color: var(--text-main); 
+  color: var(--bg-main);              
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.changePasswordBtn:hover, .faqBtn:hover {
+  opacity: 0.8;
 }
 
 .deleteBtn {
@@ -90,105 +185,144 @@
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
-  padding: 16px 40px;
-  font-size: 18px;
+  padding: 16px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  width: 100%;
+  transition: opacity 0.2s ease;
+  margin-top: 40px; 
 }
 
 .deleteBtn:hover {
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
-.deleteBtn:active {
-  transform: scale(0.98);
-}
-
-/* Адаптація під мобільні (вертикальні + горизонтальні) */
-@media (max-width: 768px), (max-width: 950px) and (orientation: landscape) {
+/* =========================================
+   Адаптація для планшетів та вертикальних мобільних
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
   .profileHeader {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center; 
     gap: 16px;
   }
   
+  .userInfo {
+    align-items: center; 
+  }
+
   .userName {
     font-size: 28px;
   }
   
   .controlsRow {
-    width: 100%;
     max-width: 100%;
   }
 
-  /* Показуємо мобільні елементи */
   .logoutBtn {
     display: block;
     width: 100%;
-    background-color: var(--bg-card); /* Адаптивний фон */
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
+    background-color: var(--accent-orange); 
+    color: #FFFFFF;
+    border: none;
     border-radius: 12px;
     padding: 16px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     text-align: center;
-    transition: background-color 0.2s, border-color 0.3s;
+    transition: opacity 0.2s ease;
   }
 
-  .logoutBtn:active {
-    background-color: var(--bg-card-inner);
+  .logoutBtn:hover {
+    opacity: 0.8;
   }
+}
 
-  /* Мобільний перемикач теми */
-  .themeToggleMobile {
-    display: flex;
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .profileHeader {
+    flex-direction: row; 
+    justify-content: center; 
     align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    gap: 16px;
     margin-bottom: 16px;
-    color: var(--text-main);
-    font-size: 18px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .userInfo {
+    gap: 2px;
+    align-items: flex-start;
+  }
+
+  .userName {
+    font-size: 20px;
+  }
+
+  .editIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .userEmail {
+    font-size: 13px;
+  }
+
+  .controlsRow {
+    gap: 8px; 
+    max-width: 100%;
+  }
+
+  .changePasswordBtn, 
+  .faqBtn, 
+  .deleteBtn, 
+  .logoutBtn, 
+  .themeToggleMobile,
+  .languageToggle {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .logoutBtn {
+    display: block;
+    background-color: var(--accent-orange);
+    color: #FFFFFF;
+    border: none;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s;
-    user-select: none;
+    text-align: center;
+    transition: opacity 0.2s ease;
+  }
+  
+  .logoutBtn:hover {
+    opacity: 0.8;
   }
 
-  /* Сам тумблер (копія з layout.module.css) */
   .toggle-switch {
-    width: 51px;
-    height: 31px;
-    background-color: var(--text-muted);
-    border-radius: 16px;
-    position: relative;
-    transition: background-color 0.3s;
-    flex-shrink: 0;
-  }
-
-  .toggle-switch.active {
-    background-color: var(--accent-orange);
+    width: 44px;
+    height: 26px;
   }
 
   .toggle-knob {
-    width: 27px;
-    height: 27px;
-    background-color: #FFFFFF;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 22px;
+    height: 22px;
   }
 
   .toggle-switch.active .toggle-knob {
-    transform: translateX(20px);
+    transform: translateX(18px);
+  }
+  
+  .languageIndicator {
+    min-width: 44px;
+    height: 26px;
+    font-size: 12px;
   }
 }

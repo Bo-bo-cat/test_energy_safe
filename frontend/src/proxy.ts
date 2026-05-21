@@ -8,25 +8,32 @@ export function proxy(request: NextRequest) {
   // 2. Отримуємо поточний шлях (URL), куди намагається перейти користувач
   const { pathname } = request.nextUrl;
 
-  // 3. Якщо токена НЕМАЄ, і користувач намагається зайти кудись ОКРІМ сторінки /auth
-  if (!token && !pathname.startsWith('/auth')) {
+  // 3. Визначаємо, чи є сторінка публічною (Лендінг '/' або сторінки '/auth')
+  const isPublicPage = pathname === '/' || pathname.startsWith('/auth');
+
+  // 4. Якщо токена НЕМАЄ, і користувач намагається зайти на закриту сторінку
+  if (!token && !isPublicPage) {
     // Перенаправляємо його на сторінку авторизації
     const authUrl = new URL('/auth', request.url);
     return NextResponse.redirect(authUrl);
   }
 
-  // 4. Якщо токен Є, але користувач намагається зайти на сторінку авторизації (/auth)
-  if (token && pathname.startsWith('/auth')) {
-    // Перенаправляємо його на головну сторінку системи
-    const dashboardUrl = new URL('/', request.url);
+  // 5. Якщо токен Є, але користувач намагається зайти на Лендінг або Авторизацію
+  if (token && isPublicPage) {
+    // Перенаправляємо його одразу в робочий кабінет (дашборд)
+    // Увага: переконайся, що твій дашборд тепер лежить за адресою /dashboard
+    const dashboardUrl = new URL('/dashboard', request.url);
     return NextResponse.redirect(dashboardUrl);
   }
 
-  // 5. У всіх інших випадках (токен є і сторінка дозволена) — просто пропускаємо далі
+  // 6. У всіх інших випадках (токен є і сторінка дозволена) — просто пропускаємо далі
   return NextResponse.next();
 }
 
 // Конфіг захищає всі роути, крім системних файлів Next.js
+// Конфіг захищає всі роути, крім системних файлів Next.js та статики (іконок, маніфесту)
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!api|_next/static|_next/image|.*\\.svg|.*\\.png|.*\\.ico|.*\\.json).*)',
+  ],
 };

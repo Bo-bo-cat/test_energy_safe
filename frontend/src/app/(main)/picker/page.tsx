@@ -5,14 +5,33 @@ import styles from './page.module.css';
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
+import { AlertModal } from '../../../components/AlertModal/AlertModal';
+import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
+import { AddSystemModal } from '../../../components/AddSystemModal/AddSystemModal';
+import { useTranslation } from '../../../context/LanguageContext';
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
+const cleanModelName = (name: string, fallback: string) => {
+  if (!name) return fallback;
+  if (name.includes(' - ')) return name.split(' - ')[1].trim();
+  return name;
+};
+
 export default function SystemsPage() {
+  const { t, lang } = useTranslation();
+
   const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [query, setQuery] = useState('');
+  
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertKey, setAlertKey] = useState(0); 
+  const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
+
+  // Тільки стан відкрито/закрито (дані форми тепер живуть всередині модалки)
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   useEffect(() => {
     fetchMySystems();
@@ -22,7 +41,6 @@ export default function SystemsPage() {
   async function fetchMySystems() {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems/my`, { 
         headers: { Authorization: `Bearer ${token}` } 
@@ -32,7 +50,7 @@ export default function SystemsPage() {
         setSystems(data || []);
       }
     } catch (err) { 
-      console.error('Помилка завантаження моїх систем:', err); 
+      console.error(err); 
     }
   }
 
@@ -44,7 +62,7 @@ export default function SystemsPage() {
         setRecommended(data || []);
       }
     } catch (err) { 
-      console.error('Помилка завантаження рекомендованих систем:', err); 
+      console.error(err); 
     }
   }
 
@@ -52,53 +70,81 @@ export default function SystemsPage() {
     if (!query.trim()) return;
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems/by-name`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({ model: query })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ 
+          model: query,
+          selected_for_calculation: true // Одразу увімкнено при додаванні
+        })
       });
       if (res.ok) {
         setQuery('');
         fetchMySystems();
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1);
       }
     } catch (err) { 
-      console.error('Помилка додавання системи за назвою:', err); 
+      console.error(err); 
+    }
+  };
+
+  const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string; autonomy: string }) => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+    try {
+      const res = await fetch(`${API}/systems`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          ...formData,
+          power: Number(formData.power),
+          type: 'ДБЖ / Власна збірка',
+          selected_for_calculation: true // Одразу увімкнено при додаванні
+        }),
+      });
+      if (res.ok) {
+        setIsCustomModalOpen(false);
+        fetchMySystems();
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1);
+      }
+    } catch (err) { 
+      console.error(err); 
     }
   };
 
   const handleAddRecommended = async (rec: any) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    
     try {
       const res = await fetch(`${API}/systems`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           model: rec.model, 
           type: rec.type, 
           power: rec.power, 
           battery: rec.battery, 
           autonomy: rec.autonomy, 
-          selected_for_calculation: false
+          selected_for_calculation: true // Одразу увімкнено при додаванні
         }),
       });
-      if (res.ok) fetchMySystems();
+      if (res.ok) {
+        fetchMySystems();
+        setIsAlertOpen(true);
+        setAlertKey(prev => prev + 1); 
+      }
     } catch (err) { 
-      console.error('Помилка додавання рекомендованої системи:', err); 
+      console.error(err); 
     }
   };
 
-  const handleDelete = async (id: string) => {
-    // Оптимістичне оновлення UI
+  const confirmDelete = async () => {
+    if (!systemToDelete) return;
+    const id = systemToDelete;
+    setSystemToDelete(null); 
     setSystems(prev => prev.filter(s => s.id !== id));
     
     const token = localStorage.getItem('access_token');
@@ -110,126 +156,129 @@ export default function SystemsPage() {
         headers: { Authorization: `Bearer ${token}` } 
       });
     } catch (err) { 
-      console.error('Помилка видалення:', err); 
-      // У разі помилки можна було б перезавантажити список, але поки залишаємо так
+      console.error(err); 
+      fetchMySystems(); 
     }
   };
 
   const handleToggleSelect = async (id: string, currentState: boolean) => {
-    // Оптимістичне оновлення UI
     setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: !currentState } : s));
-    
     const token = localStorage.getItem('access_token');
     if (!token) return;
     
     try {
       await fetch(`${API}/systems/${id}`, {
         method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ selected_for_calculation: !currentState })
       });
     } catch (err) { 
-      console.error('Помилка оновлення статусу:', err); 
+      console.error(err); 
     }
   };
 
   const displayedList = tab === 'my' ? systems : recommended;
 
   return (
-    <div className={styles.wrap}>
-      <h1 className={styles.pageTitle}>
-        {tab === 'my' ? 'Система' : 'Рекомендовані системи'}
-      </h1>
+    <div className="global-page-wrap">
+      <h1 className="page-title">{tab === 'my' ? t.picker.titleMy : t.picker.titleRec}</h1>
 
       <div className={styles.tabs}>
         <button 
-          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`}
+          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`} 
           onClick={() => setTab('my')}
         >
-          Мої системи
+          {t.picker.tabMy}
         </button>
         <button 
-          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`}
+          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`} 
           onClick={() => setTab('recommended')}
         >
-          Рекомендовані
+          {t.picker.tabRec}
         </button>
       </div>
 
       {tab === 'my' && (
         <>
-          <h2 className={styles.sectionTitle}>Введіть вашу систему</h2>
-          <div className={styles.inputRow}>
+          <h2 className={styles.sectionTitle}>{t.picker.enterYours}</h2>
+          <div className={styles.topControls}>
             <input 
               type="text" 
               className={styles.addInput} 
-              placeholder="Наприклад: Ecoflow" 
+              placeholder={t.picker.inputPlaceholder} 
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
             />
             <button className={styles.addBtn} onClick={handleAddByName}>
-              Додати систему
+              {t.picker?.findSystem || 'Знайти систему'}
+            </button>
+            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>
+              {t.picker?.addCustomSystem || 'Додати свою систему'}
             </button>
           </div>
         </>
       )}
 
-      {/* Повідомлення, якщо список порожній */}
       {displayedList.length === 0 && (
-        <p style={{ color: '#A0A0A0', fontWeight: 500, marginBottom: '48px' }}>
-          {tab === 'my' ? 'У вас ще немає збережених систем.' : 'Рекомендовані системи завантажуються...'}
+        <p style={{ color: 'var(--text-muted)', fontWeight: 500, marginBottom: '48px' }}>
+          {tab === 'my' ? t.picker.noSaved : t.picker.loadingRec}
         </p>
       )}
 
       <div className={styles.grid}>
         {displayedList.map((item) => (
           <div key={item.id} className={styles.card}>
-            
             <div className={styles.cardHeader}>
-              <div className={styles.cardTitle}>{item.type} - {item.model}</div>
+              <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
               
-              {tab === 'my' && (
-                <div className={styles.cardActions}>
-                  <button className={styles.iconBtn} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                    {item.selected_for_calculation ? (
-                      <CheckboxCheckedIcon className={styles.actionIconOrange} />
-                    ) : (
-                      <CheckboxIcon className={styles.actionIconGray} />
-                    )}
-                  </button>
-                  <button className={styles.iconBtn} onClick={() => handleDelete(item.id)}>
+              <div className={styles.cardActions}>
+                {tab === 'my' ? (
+                  <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
                     <DeleteIcon className={styles.actionIconOrange} />
                   </button>
-                </div>
-              )}
+                ) : (
+                  <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
+                    <span className={styles.plusIconTop}>+</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className={styles.specs}>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Тип</span>
+                <span className={styles.specLabel}>{t.common.type}</span>
                 <span className={styles.specValue}>{item.type}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Потужність</span>
-                <span className={styles.specValue}>{item.power} Вт</span>
+                <span className={styles.specLabel}>{t.common.power}</span>
+                <span className={styles.specValue}>{item.power} {t.common.w}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Батарея</span>
+                <span className={styles.specLabel}>{t.common.battery}</span>
                 <span className={styles.specValue}>{item.battery}</span>
               </div>
               <div className={styles.specRow}>
-                <span className={styles.specLabel}>Автономія</span>
+                <span className={styles.specLabel}>{t.common.autonomy}</span>
                 <span className={styles.specValue}>{item.autonomy}</span>
               </div>
             </div>
 
-            {tab === 'recommended' && (
-              <div className={styles.plusBtnContainer}>
-                <button className={styles.plusIcon} onClick={() => handleAddRecommended(item)}>+</button>
+            {tab === 'my' && (
+              <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
+                {/* ДИНАМІЧНИЙ ТЕКСТ ЗАЛЕЖНО ВІД СТАНУ ГАЛОЧКИ */}
+                <span className={styles.calcLabel}>
+                  {item.selected_for_calculation 
+                    ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                    : t.picker.addToCalc}
+                </span>
+                <button className={styles.iconBtn}>
+                  {item.selected_for_calculation ? (
+                    <CheckboxCheckedIcon className={styles.actionIconOrange} />
+                  ) : (
+                    <CheckboxIcon className={styles.actionIconOrange} />
+                  )}
+                </button>
               </div>
             )}
           </div>
@@ -238,10 +287,32 @@ export default function SystemsPage() {
 
       {tab === 'recommended' && (
         <div className={styles.hintBox}>
-          <div className={styles.hintTitle}>Підказка</div>
-          <div className={styles.hintText}>Додайте одну з рекомендованих систем, щоб подивитись як це працює</div>
+          <div className={styles.hintTitle}>{t.picker.hintTitle}</div>
+          <div className={styles.hintText}>{t.picker.hintText}</div>
         </div>
       )}
+
+      <AddSystemModal 
+        isOpen={isCustomModalOpen} 
+        onClose={() => setIsCustomModalOpen(false)} 
+        onSave={handleCreateCustomSystem} 
+      />
+
+      <AlertModal 
+        key={alertKey}
+        isOpen={isAlertOpen}
+        onClose={() => setIsAlertOpen(false)}
+        title={t.picker.addedAlert}
+      />
+
+      <DecisionModal 
+        isOpen={systemToDelete !== null}
+        onClose={() => setSystemToDelete(null)}
+        onConfirm={confirmDelete}
+        title={t.picker.deleteSystem}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
+      />
     </div>
   );
 }

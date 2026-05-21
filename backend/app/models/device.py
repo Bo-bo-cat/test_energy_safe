@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from datetime import datetime
 
@@ -17,6 +17,16 @@ class DeviceCreate(BaseModel):
     power_watts: Optional[float] = Field(default=None, ge=0)
     startup_current_watts: Optional[float] = Field(default=None, ge=0)
 
+    @model_validator(mode="after")
+    def startup_must_exceed_power(self):
+        if (
+            self.startup_current_watts is not None
+            and self.power_watts is not None
+            and self.startup_current_watts < self.power_watts
+        ):
+            raise ValueError("Пускова потужність не може бути меншою за робочу")
+        return self
+
     model_config = {"json_schema_extra": {
         "example": {
             "model_name": "Samsung RB34",
@@ -31,6 +41,8 @@ class DeviceUpdate(BaseModel):
     daily_usage_hours: Optional[float] = Field(default=None, ge=0, le=24)
     is_critical: Optional[bool] = None
     tag: Optional[str] = None
+    power_watts: Optional[float] = Field(default=None, ge=0)
+    startup_current_watts: Optional[float] = Field(default=None, ge=0)
 
 
 class DeviceResponse(BaseModel):
@@ -43,7 +55,7 @@ class DeviceResponse(BaseModel):
     brand: str
     daily_usage_hours: float
     is_critical: bool
-    tag: str = "Дім"
+    tag: Optional[str] = None
     created_at: datetime
 
 

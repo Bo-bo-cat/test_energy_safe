@@ -1,42 +1,80 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
+
 import { LightningIcon } from '../../components/icons/Lightning';
 import { EyeIcon, EyeOffIcon } from '../../components/icons/eye';
+import { PasswordResetModal } from '../../components/PasswordResetModal/PasswordResetModal'; 
+import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
-export default function AuthPage() {
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+function GoogleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+  );
+}
+
+function AuthPageContent() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const params = useSearchParams();
+
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
+  
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
-  function switchMode(newMode: 'login' | 'register') {
+  useEffect(() => {
+    const urlError = params.get('error');
+    if (urlError) {
+      setError(urlError === 'google_denied' ? t.auth.googleDenied : t.auth.googleError);
+    }
+  }, [params, t.auth.googleDenied, t.auth.googleError]);
+
+  const switchMode = (newMode: 'login' | 'register') => {
     setMode(newMode);
     setError('');
     setEmail('');
     setName('');
     setPassword('');
     setShowPassword(false);
-  }
+  };
 
-  async function handleSubmit(e: React.FormEvent) {
+  // Ця функція виправляй помилку "Cannot find name 'handleGoogleLogin'"
+  const handleGoogleLogin = () => {
+    window.location.href = `${API}/auth/google`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (mode === 'login') {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+    const endpoint = mode === 'login' ? '/users/login' : '/users';
+    const body = mode === 'login' 
+      ? { email, password } 
+      : { email, name: name.trim() || email.split('@')[0], password, has_inverter: false, inverter_capacity_wh: null };
+
+    try {
+      const res = await fetch(`${API}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
-        setError('Невірний email або пароль');
-        return;
+        if (res.status === 409) return setError(t.auth.userExists);
+        return setError(mode === 'login' ? t.auth.invalidCreds : t.auth.regError);
       }
 
       const data = await res.json();
@@ -45,41 +83,13 @@ export default function AuthPage() {
       localStorage.setItem('user_name', data.user_name);
       document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
       router.push('/');
-    } else {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name: name.trim() || email.split('@')[0],
-          password,
-          has_inverter: false,
-          inverter_capacity_wh: null,
-        }),
-      });
-
-      if (res.status === 409) {
-        setError('Користувач з таким email вже існує');
-        return;
-      }
-
-      if (!res.ok) {
-        setError('Помилка реєстрації. Спробуйте ще раз.');
-        return;
-      }
-
-      const data = await res.json();
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user_id', data.user_id);
-      localStorage.setItem('user_name', data.user_name);
-      document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      router.push('/');
+    } catch (err) {
+      setError('Помилка з\'єднання з сервером');
     }
-  }
+  };
 
   return (
     <div className={styles['page-container']}>
-
       <div className={styles['logo-container']}>
         <LightningIcon className={styles['logo-icon']} />
         <div className={styles['logo-text']}>Energy Safe</div>
@@ -92,46 +102,58 @@ export default function AuthPage() {
             className={`${styles['mode-tab']} ${mode === 'login' ? styles['mode-tab-active'] : ''}`}
             onClick={() => switchMode('login')}
           >
-            Вхід
+            {t.auth.loginTab}
           </button>
           <button
             type="button"
             className={`${styles['mode-tab']} ${mode === 'register' ? styles['mode-tab-active'] : ''}`}
             onClick={() => switchMode('register')}
           >
-            Реєстрація
+            {t.auth.registerTab}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles['auth-form']}>
-
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>Email</label>
+            <label className={styles['input-label']}>{t.auth.email}</label>
             <input
               type="email"
               className={styles['auth-input']}
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="useruser@gmail.com"
+              placeholder="user@gmail.com"
               required
             />
           </div>
 
           {mode === 'register' && (
             <div className={styles['input-group']}>
-              <label className={styles['input-label']}>Ім'я</label>
+              <label className={styles['input-label']}>{t.auth.name}</label>
               <input
                 type="text"
                 className={styles['auth-input']}
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Іван Іваненко"
+                placeholder={t.auth.namePlaceholder}
               />
             </div>
           )}
 
           <div className={styles['input-group']}>
-            <label className={styles['input-label']}>Пароль</label>
+            {/* ОСЬ ТУТ КНОПКА ДЛЯ ВИКЛИКУ МОДАЛКИ */}
+            <div className={styles['label-row']}>
+              <label className={styles['input-label']}>{t.auth.password}</label>
+              {mode === 'login' && (
+                <button 
+                  type="button" 
+                  className={styles['forgot-password-btn']}
+                  onClick={() => setIsResetModalOpen(true)}
+                  tabIndex={-1}
+                >
+                  {t.auth.forgotPassword || 'Забули пароль?'}
+                </button>
+              )}
+            </div>
             <div className={styles['password-wrapper']}>
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -147,10 +169,7 @@ export default function AuthPage() {
                 onClick={() => setShowPassword(v => !v)}
                 tabIndex={-1}
               >
-                {showPassword
-                  ? <EyeOffIcon className={styles['eye-icon']} />
-                  : <EyeIcon className={styles['eye-icon']} />
-                }
+                {showPassword ? <EyeOffIcon className={styles['eye-icon']} /> : <EyeIcon className={styles['eye-icon']} />}
               </button>
             </div>
           </div>
@@ -158,12 +177,34 @@ export default function AuthPage() {
           {error && <p className={styles['error-text']}>{error}</p>}
 
           <button type="submit" className={styles['submit-button']}>
-            {mode === 'login' ? 'Увійти' : 'Зареєструватися'}
+            {mode === 'login' ? t.auth.loginBtn : t.auth.registerBtn}
           </button>
 
+          <div className={styles['divider']}>
+            <span className={styles['divider-text']}>{t.auth.orDivider}</span>
+          </div>
+
+          <button type="button" className={styles['google-button']} onClick={handleGoogleLogin}>
+            <GoogleIcon />
+            {t.auth.continueWithGoogle}
+          </button>
         </form>
       </div>
 
+      <PasswordResetModal 
+        isOpen={isResetModalOpen} 
+        onClose={() => setIsResetModalOpen(false)} 
+      />
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <LanguageProvider>
+      <Suspense>
+        <AuthPageContent />
+      </Suspense>
+    </LanguageProvider>
   );
 }

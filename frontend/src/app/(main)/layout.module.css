@@ -4,15 +4,12 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  /* Використовуємо змінну для основного фону */
   background-color: var(--bg-main); 
   font-family: 'Inter', sans-serif;
   transition: background-color 0.3s ease;
 }
 
 /* Сайдбар */
-/* src/app/(main)/layout.module.css */
-
 .sidebar {
   width: 280px;
   background-color: var(--bg-sidebar); 
@@ -26,17 +23,12 @@
   height: 100vh;
   box-sizing: border-box;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  
-  /* Залишаємо можливість скролу */
   overflow-y: auto; 
   overflow-x: hidden;
-  
-  /* ХОВАЄМО ВІЗУАЛЬНИЙ ПОВЗУНОК */
-  scrollbar-width: none; /* Для Firefox */
-  -ms-overflow-style: none; /* Для IE та Edge */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
 }
 
-/* Ховаємо візуальний повзунок для Chrome, Safari та Edge (на рушії Chromium) */
 .sidebar::-webkit-scrollbar {
   display: none;
 }
@@ -51,14 +43,12 @@
 }
 
 .logo-icon {
-  /* Акцентний колір */
   color: var(--accent-orange);
   width: 24px;
   height: 32px;
 }
 
 .logo-text {
-  /* Акцентний колір */
   color: var(--accent-orange);
   font-size: 28px;
   font-weight: 800;
@@ -72,7 +62,7 @@
   gap: 8px;
 }
 
-/* Базовий стиль для посилань та кнопки логауту */
+/* Базовий стиль для посилань */
 .nav-link, 
 .logout-btn {
   display: flex;
@@ -81,7 +71,6 @@
   padding: 16px 20px;
   border-radius: 16px;
   text-decoration: none;
-  /* Колір основного тексту */
   color: var(--text-main);
   font-size: 18px;
   font-weight: 700;
@@ -94,15 +83,12 @@
   text-align: left;
 }
 
-/* Ефект при наведенні для неактивних посилань та кнопки логауту */
 .nav-link:hover:not(.nav-link-active),
 .logout-btn:hover {
-  /* Використовуємо колір рамки або інший відповідний світлий/темний колір для ховеру */
   background-color: var(--border-color);
   color: var(--text-main); 
 }
 
-/* Зміна кольору іконки при наведенні */
 .nav-link:hover:not(.nav-link-active) .nav-icon,
 .logout-btn:hover .nav-icon {
   color: var(--text-main);
@@ -110,23 +96,19 @@
 
 /* АКТИВНИЙ СТАН */
 .nav-link-active {
-  /* Акцентний колір фону */
   background-color: var(--accent-orange); 
-  /* Текст на помаранчевому фоні залишаємо білим для контрасту (можна захардкодити або використати змінну --bg-main, якщо вона світла) */
   color: #FFFFFF; 
 }
 
-/* Секція логауту - притискає кнопку до низу */
+/* Секція логауту */
 .logout-section {
   margin-top: auto;
   padding-top: 20px;
-  /* Додаємо ці 3 рядки: */
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* Контейнер для іконки */
 .icon-wrapper {
   display: flex;
   align-items: center;
@@ -135,16 +117,13 @@
   height: 24px;
 }
 
-/* Сама іконка */
 .nav-icon {
   width: 100%;
   height: 100%;
-  /* Колір іконок */
   color: var(--text-main);
   transition: color 0.2s ease;
 }
 
-/* Біла іконка в активному стані */
 .nav-link-active .nav-icon {
   color: #FFFFFF;
 }
@@ -156,6 +135,7 @@
   overflow-y: auto;
   box-sizing: border-box;
 }
+
 /* =========================================
    ПЕРЕМИКАЧ ТЕМИ (СЛАЙДЕР)
    ========================================= */
@@ -239,25 +219,19 @@
     flex-direction: row;
     padding: 8px 8px;
     border-right: none;
-    /* Колір рамки */
     border-top: 1px solid var(--border-color);
     z-index: 1000;
     padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
   }
 
-  .logo-container {
-    display: none; 
-  }
+  .logo-container { display: none; }
+  .logout-section { display: none; }
 
   .nav-menu {
     flex-direction: row;
     width: 100%;
     justify-content: space-around; 
     gap: 4px;
-  }
-
-  .logout-section {
-    display: none; 
   }
   
   .nav-link {
@@ -272,8 +246,6 @@
     align-items: center;
   }
   
-  /* Видалено дублюючий блок .nav-link, .logout-btn для мобільних */
-
   .main-content {
     padding: 24px 16px;
     padding-bottom: 100px;
@@ -282,24 +254,43 @@
 
 /* =========================================
    Адаптація для ГОРИЗОНТАЛЬНОГО телефону
+   УЛЬТРА-КОМПАКТНИЙ МІНІ-САЙДБАР
    ========================================= */
 @media (max-width: 950px) and (orientation: landscape) {
   .sidebar {
-    width: 220px;
-    padding: 20px 16px;
+    width: 72px; /* Стискаємо сайдбар до колонки іконок */
+    padding: 16px 8px;
+    align-items: center;
+    justify-content: center; /* Центруємо меню по вертикалі, якщо прибрали логотип */
   }
 
   .logo-container {
-    margin-bottom: 24px;
+    display: none; /* Повністю ховаємо логотип і блискавку */
+  }
+
+  .nav-menu {
+    width: 100%;
+    align-items: center;
   }
 
   .nav-link {
-    padding: 10px 16px;
-    gap: 12px;
+    padding: 12px;
+    justify-content: center;
+    border-radius: 12px;
+    width: 48px;  /* Квадратні кнопки для іконок */
+    height: 48px;
   }
 
-  /* ДОДАЄМО ЦЕ: Ховаємо блок з кнопками виходу та теми */
+  .nav-text {
+    display: none; /* Ховаємо назви пунктів меню */
+  }
+
   .logout-section {
     display: none;
+  }
+
+  .main-content {
+    /* Прибираємо подвійні відступи, щоб компонент сторінки сам ними керував */
+    padding: 0; 
   }
 }

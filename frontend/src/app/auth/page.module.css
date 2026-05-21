@@ -178,7 +178,7 @@
 }
 
 .error-text {
-  color: #D32F2F; /* Залишаємо червоний для помилок (можна теж винести в змінну, якщо хочете) */
+  color: #D32F2F; 
   font-size: 13px;
   font-weight: 600;
   margin: 0;
@@ -187,7 +187,7 @@
 .submit-button {
   /* Фон кнопки */
   background-color: var(--text-main);
-  /* Колір тексту на кнопці (використовуємо інвертований основний фон для контрасту) */
+  /* Колір тексту на кнопці */
   color: var(--bg-main);
   border: none;
   border-radius: 8px;
@@ -201,11 +201,81 @@
 }
 
 .submit-button:hover {
-  /* Трохи інша логіка для hover, оскільки `var(--text-main)` інвертується в темній темі.
-     Можна використовувати `opacity` для універсального ефекту наведення. */
   opacity: 0.8;
 }
 
+/* ОНОВЛЕНА КНОПКА GOOGLE */
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 48px; 
+  background-color: var(--bg-card-inner);
+  color: var(--text-main);
+  border: 1px solid var(--border-color); 
+  border-radius: 8px;
+  font-size: 15px; 
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.google-button:hover {
+  border-color: var(--accent-orange);
+  background-color: var(--bg-card);
+}
+
+/* ОНОВЛЕНИЙ РОЗДІЛЬНИК */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0; 
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.divider-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+/* Рядок для лейблу та кнопки "Забули пароль" */
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+/* Делікатна кнопка "Забули пароль?" */
+.forgot-password-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted); /* Робимо її делікатно-сірою */
+  cursor: pointer;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.forgot-password-btn:hover {
+  color: var(--accent-orange); /* При наведенні стає фірмовою помаранчевою */
+  text-decoration: underline;
+}
 /* =========================================
    МОБІЛЬНА АДАПТАЦІЯ (Розширено до 950px)
    ========================================= */
@@ -228,20 +298,17 @@
     padding: 32px 20px;
     border-radius: 16px; 
     box-shadow: none; 
-    /* Переконуємось, що на мобільних фон такий самий, як і фон сторінки */
     background-color: transparent;
     border: none;
   }
 
   .mode-tabs {
     margin-bottom: 32px;
-    /* Використовуємо змінну для рамки */
     border-bottom: 1px solid var(--border-color); 
   }
 
   .mode-tab {
     font-size: 24px; 
-    /* Колір тексту вкладок на мобільному */
     color: var(--text-main); 
     padding-bottom: 12px;
     margin-bottom: -1px; 
@@ -269,9 +336,15 @@
 
   .submit-button {
     margin-top: 24px;
-    height: 64px; 
+    height: 64px;
     font-size: 20px;
-    border-radius: 12px; 
+    border-radius: 12px;
+  }
+
+  .google-button {
+    height: 52px; 
+    font-size: 16px; 
+    border-radius: 12px;
   }
 }
 

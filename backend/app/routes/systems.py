@@ -4,7 +4,7 @@ from typing import List
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.database import get_database
+from app.database import get_database, col
 from app.models.system import (
     SystemCreate, SystemByName, SystemUpdate,
     SystemResponse, RecommendedSystemResponse,
@@ -51,9 +51,9 @@ _RECOMMENDED_UPS = [
 
 
 async def seed_recommended_systems(db) -> None:
-    existing = await db.systems.count_documents({"is_recommended": True})
+    existing = await db[col("systems")].count_documents({"is_recommended": True})
     if existing == 0:
-        await db.systems.insert_many(_RECOMMENDED_UPS)
+        await db[col("systems")].insert_many(_RECOMMENDED_UPS)
 
 
 def _serialize_system(doc: dict) -> SystemResponse:
@@ -90,7 +90,7 @@ async def get_recommended_systems():
     """Повертає список рекомендованих UPS-моделей. Авторизація не потрібна."""
     db = get_database()
     await seed_recommended_systems(db)
-    cursor = db.systems.find({"is_recommended": True})
+    cursor = db[col("systems")].find({"is_recommended": True})
     return [_serialize_recommended(doc) async for doc in cursor]
 
 
@@ -102,7 +102,7 @@ async def get_recommended_systems():
 async def get_my_systems(user_id: str = Depends(get_current_user_id)):
     """Повертає всі UPS-системи, які створив поточний користувач."""
     db = get_database()
-    cursor = db.systems.find({"user_id": user_id, "is_recommended": False})
+    cursor = db[col("systems")].find({"user_id": user_id, "is_recommended": False})
     return [_serialize_system(doc) async for doc in cursor]
 
 
@@ -114,7 +114,7 @@ async def get_my_systems(user_id: str = Depends(get_current_user_id)):
 async def get_selected_systems(user_id: str = Depends(get_current_user_id)):
     """Повертає тільки ті системи користувача, де selected_for_calculation=True."""
     db = get_database()
-    cursor = db.systems.find({
+    cursor = db[col("systems")].find({
         "user_id": user_id,
         "is_recommended": False,
         "selected_for_calculation": True,
@@ -135,7 +135,7 @@ async def add_system_by_name(
     """Шукає характеристики ДБЖ/генератора через Groq і зберігає систему користувача."""
     db = get_database()
 
-    count = await db.systems.count_documents({"user_id": user_id, "is_recommended": False})
+    count = await db[col("systems")].count_documents({"user_id": user_id, "is_recommended": False})
     if count >= 6:
         raise HTTPException(status_code=400, detail="Максимум 6 систем на користувача")
 
@@ -152,7 +152,7 @@ async def add_system_by_name(
         "is_recommended": False,
         "created_at": datetime.now(timezone.utc),
     }
-    result = await db.systems.insert_one(doc)
+    result = await db[col("systems")].insert_one(doc)
     doc["_id"] = result.inserted_id
     return _serialize_system(doc)
 
@@ -170,7 +170,7 @@ async def create_system(
     """Створює нову UPS-систему з усіма полями і прив'язує її до поточного користувача."""
     db = get_database()
 
-    count = await db.systems.count_documents({"user_id": user_id, "is_recommended": False})
+    count = await db[col("systems")].count_documents({"user_id": user_id, "is_recommended": False})
     if count >= 6:
         raise HTTPException(status_code=400, detail="Максимум 6 систем на користувача")
 
@@ -185,7 +185,7 @@ async def create_system(
         "is_recommended": False,
         "created_at": datetime.now(timezone.utc),
     }
-    result = await db.systems.insert_one(doc)
+    result = await db[col("systems")].insert_one(doc)
     doc["_id"] = result.inserted_id
     return _serialize_system(doc)
 
@@ -208,7 +208,7 @@ async def update_system(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний system_id")
 
-    doc = await db.systems.find_one({"_id": oid, "user_id": user_id, "is_recommended": False})
+    doc = await db[col("systems")].find_one({"_id": oid, "user_id": user_id, "is_recommended": False})
     if not doc:
         raise HTTPException(status_code=404, detail="Систему не знайдено")
 
@@ -216,7 +216,7 @@ async def update_system(
     if not update_data:
         raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 
-    result = await db.systems.find_one_and_update(
+    result = await db[col("systems")].find_one_and_update(
         {"_id": oid},
         {"$set": update_data},
         return_document=True,
@@ -241,8 +241,8 @@ async def delete_system(
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний system_id")
 
-    doc = await db.systems.find_one({"_id": oid, "user_id": user_id, "is_recommended": False})
+    doc = await db[col("systems")].find_one({"_id": oid, "user_id": user_id, "is_recommended": False})
     if not doc:
         raise HTTPException(status_code=404, detail="Систему не знайдено")
 
-    await db.systems.delete_one({"_id": oid})
+    await db[col("systems")].delete_one({"_id": oid})

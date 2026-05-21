@@ -1,0 +1,129 @@
+/* src/app/(main)/faq/page.module.css */
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  /* Компенсуємо відступ від глобального заголовка (margin-bottom: 24px), щоб текст був ближче */
+  margin: -16px 0 32px 0; 
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 800px; /* Зберігаємо обмеження ширини списку для кращої читабельності */
+}
+
+.item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.item.open {
+  border-color: var(--accent-orange);
+}
+
+.question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  transition: color 0.2s;
+  font-family: inherit;
+}
+
+.question:hover {
+  color: var(--accent-orange);
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.25s ease;
+}
+
+.open .chevron {
+  transform: rotate(180deg);
+  color: var(--accent-orange);
+}
+
+.answer {
+  padding: 0 24px 20px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ Мобільних (Вертикально)
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+  .subtitle {
+    font-size: 14px;
+    margin-top: -8px;
+    margin-bottom: 24px;
+  }
+
+  .question {
+    font-size: 15px;
+    padding: 16px 18px;
+  }
+
+  .answer {
+    padding: 0 18px 16px;
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .subtitle {
+    font-size: 13px; 
+    margin-top: -6px;
+    margin-bottom: 16px; 
+  }
+
+  .list {
+    gap: 8px; 
+    padding-bottom: 24px;
+  }
+
+  .item {
+    border-radius: 12px; 
+  }
+
+  .question {
+    font-size: 14px; 
+    padding: 12px 16px; 
+  }
+
+  .chevron {
+    width: 16px; 
+    height: 16px;
+  }
+
+  .answer {
+    padding: 0 16px 12px; 
+    font-size: 13px; 
+    line-height: 1.4; 
+  }
+}

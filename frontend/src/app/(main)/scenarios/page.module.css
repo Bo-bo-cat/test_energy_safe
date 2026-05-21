@@ -1,0 +1,276 @@
+/* src/app/(main)/scenarios/page.module.css */
+
+/* Сітка карток */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* Картка сценарію */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.05);
+  border-color: var(--text-muted);
+}
+
+/* Шапка картки (Назва + Кнопки) */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Оновлені іконки: базовий колір 2c2c2c */
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #2c2c2c; /* ЗМІНЕНО: тепер графітовий замість світло-сірого */
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  background-color: var(--bg-card-inner);
+}
+
+/* Корзина завжди помаранчева */
+.deleteBtn {
+  color: var(--accent-orange);
+}
+
+/* --- ОНОВЛЕНА СТАТИСТИКА (3 Колонки) --- */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.statBox {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: 20px; 
+  font-weight: 800;
+  color: var(--accent-orange);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.statLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* Прогрес бар - ТЕПЕР ПЛАСКИЙ */
+.progressContainer {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border-color); 
+  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+/* Картка "Додати сценарій" */
+.addCard {
+  background-color: var(--bg-main);
+  border: 2px dashed var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.addCard:hover {
+  border-color: var(--accent-orange);
+  background-color: var(--bg-card);
+}
+
+/* Підсвічування обраного сценарію */
+.card.selected {
+  border-color: var(--accent-orange);
+  background-color: var(--bg-card); 
+  box-shadow: 0 0 0 1px var(--accent-orange), 0px 8px 24px rgba(255, 110, 0, 0.15); 
+}
+
+.addIcon {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  line-height: 0.8;
+}
+
+.addText {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.infoMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: 8px;
+  vertical-align: middle;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+}
+
+/* Помітка ( i ) біля назви сценарію */
+.infoMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-left: 10px;
+  vertical-align: middle;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+  cursor: pointer; /* Робимо курсор як у кнопки */
+  transition: all 0.2s ease;
+}
+
+.infoMarker:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+  background-color: var(--bg-main);
+  transform: scale(1.1); /* Легке збільшення при наведенні */
+}
+
+/* =========================================
+   ВЕРТИКАЛЬНА МОБІЛЬНА ВЕРСІЯ (Portrait)
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* =========================================
+   ГОРИЗОНТАЛЬНА ВЕРСІЯ (ЛАНДШАФТ) - КОМПАКТНА
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+    gap: 12px;
+  }
+
+  .card {
+    padding: 12px 16px;
+    min-height: auto; 
+    border-radius: 12px;
+  }
+
+  .cardHeader {
+    margin-bottom: 12px; 
+    gap: 8px;
+    align-items: center; 
+  }
+
+  .cardTitle {
+    font-size: 16px; 
+    line-height: 1.1;
+  }
+
+  .iconBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+  
+  .iconBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .statsRow {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .statValue { font-size: 16px; }
+  .statLabel { font-size: 9px; }
+
+  .progressContainer {
+    height: 6px; 
+    border-radius: 0; /* Плаский на мобільних теж */
+  }
+  
+  .progressFill {
+    border-radius: 0; 
+  }
+
+  .addCard {
+    min-height: 100px; 
+    gap: 8px;
+  }
+
+  .addIcon { font-size: 32px; }
+  .addText { font-size: 14px; }
+}

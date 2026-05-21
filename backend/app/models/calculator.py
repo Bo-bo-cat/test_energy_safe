@@ -16,5 +16,6 @@ class CalculateRequest(BaseModel):
 
 class CalculateResponse(BaseModel):
     totalPowerWatts: float
+    peakPowerWatts: float
     loadPercent: float
     autonomyHours: float

@@ -1,0 +1,310 @@
+/* src/app/page.module.css */
+
+.wrap {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFFFFF; /* Світла тема */
+  color: #111827; 
+  font-family: 'Inter', sans-serif;
+  padding: 40px 24px; 
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.wrap * {
+  box-sizing: border-box;
+}
+
+/* --- GRID СІТКА ДЛЯ ПК (Десктоп) --- */
+.container {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Дві колонки */
+  /* 5 рядків, останній забирає вільне місце, щоб елементи ліворуч не розповзалися */
+  grid-template-rows: auto auto auto auto 1fr; 
+  column-gap: 60px;
+}
+
+.logoWrap {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.logoIcon {
+  width: 24px;
+  height: 28px;
+  color: #FF6B00; 
+  flex-shrink: 0;
+  overflow: visible; /* Блискавка більше не обрізається! */
+}
+
+.logoText {
+  color: #FF6B00; 
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.mainTitle {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.2; 
+  margin-bottom: 24px;
+  color: #111827;
+}
+
+.highlight {
+  color: #FF6B00;
+}
+
+.desc {
+  grid-column: 1;
+  grid-row: 3;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #6B7280; 
+  margin-bottom: 32px;
+  max-width: 500px;
+}
+
+.startBtn {
+  grid-column: 1;
+  grid-row: 4;
+  justify-self: start;
+  background-color: #FF6B00;
+  color: #FFFFFF;
+  text-decoration: none;
+  padding: 16px 48px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 800;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.2);
+}
+
+/* Картки йдуть у другу колонку і займають усі 5 рядків */
+.rightContent {
+  grid-column: 2;
+  grid-row: 1 / span 5;
+  align-self: center; 
+  background-color: #F9FAFB; 
+  border: 1px solid #E5E7EB; 
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); 
+}
+
+.featuresTitle {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 32px;
+  color: #111827;
+}
+
+.featureCards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background-color: #FFFFFF; 
+  border: 1px solid #E5E7EB;
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: #FF6B00;
+  background-color: rgba(255, 107, 0, 0.01);
+  transform: translateX(4px);
+}
+
+.cardIconWrap {
+  width: 56px;
+  height: 56px;
+  background-color: rgba(255, 107, 0, 0.08); 
+  color: #FF6B00;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardIcon {
+  width: 28px;
+  height: 28px;
+  color: currentColor; 
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.cardDesc {
+  font-size: 14px;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   АДАПТАЦІЯ ДЛЯ Мобільних (ПОРТРЕТ - 1 колонка)
+   ========================================================= */
+@media (max-width: 950px) and (orientation: portrait) {
+  .wrap {
+    padding: 24px 16px; 
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column; 
+    gap: 0; 
+  }
+
+  .logoWrap {
+    margin-bottom: 24px;
+  }
+  
+  .logoText { font-size: 20px; }
+
+  .mainTitle {
+    font-size: 32px; 
+    margin-bottom: 24px; 
+  }
+
+  .rightContent {
+    padding: 24px; 
+    border-radius: 20px;
+    margin-bottom: 24px; 
+    width: 100%;
+  }
+
+  .featuresTitle {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+
+  .featureCards { gap: 12px; }
+
+  .card {
+    padding: 16px;
+    gap: 16px;
+    border-radius: 12px;
+  }
+  .cardIconWrap { width: 44px; height: 44px; }
+  .cardIcon { width: 22px; height: 22px; }
+  .cardTitle { font-size: 16px; }
+  .cardDesc { font-size: 13px; }
+
+  .desc {
+    font-size: 16px;
+    margin-bottom: 24px; 
+  }
+
+  .startBtn {
+    width: 100%; 
+    padding: 16px;
+    font-size: 18px;
+  }
+}
+
+/* Фікс для дуже малих портретних екранів */
+@media (max-width: 480px) and (orientation: portrait) {
+  .mainTitle {
+    font-size: 28px;
+  }
+}
+
+/* =========================================================
+   АДАПТАЦІЯ ДЛЯ Мобільних (ЛАНДСКЕЙП - 1 в 1 як десктоп)
+   ========================================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .wrap {
+    padding: 12px 24px; 
+    min-height: 100vh;
+  }
+  
+  .container {
+    /* Автоматично успадковує display: grid та 2 колонки від десктопу! */
+    column-gap: 24px; /* Зменшуємо відстань між колонками */
+  }
+
+  .logoWrap {
+    margin-bottom: 16px;
+  }
+  
+  .logoIcon { width: 20px; height: 24px; }
+  .logoText { font-size: 18px; }
+
+  .mainTitle {
+    font-size: 26px; /* Масштабуємо заголовок */
+    margin-bottom: 12px;
+  }
+
+  .desc {
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .startBtn {
+    padding: 10px 24px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .rightContent {
+    padding: 20px; /* Зменшуємо блок з картками */
+    border-radius: 16px;
+  }
+
+  .featuresTitle {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .featureCards { gap: 8px; }
+
+  .card {
+    padding: 12px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+
+  .cardIconWrap { width: 36px; height: 36px; border-radius: 10px; }
+  .cardIcon { width: 18px; height: 18px; }
+  
+  .cardTitle { 
+    font-size: 14px; 
+    margin-bottom: 2px;
+  }
+  
+  .cardDesc { 
+    font-size: 11px; 
+    line-height: 1.3;
+  }
+}
