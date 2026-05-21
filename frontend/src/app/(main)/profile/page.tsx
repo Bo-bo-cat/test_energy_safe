@@ -94,7 +94,6 @@ export default function ProfilePage() {
 
   return (
     <div className="global-page-wrap">
-      {/* Повернули стандартний заголовок з вирівнюванням по лівому краю */}
       <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
 
       <div className={styles.profileHeader}>
@@ -128,17 +127,15 @@ export default function ProfilePage() {
         <button 
           className={styles.changePasswordBtn} 
           onClick={() => setShowPassModal(true)}
-          data-hover={t.profile?.changePassword || 'Змінити пароль'}
         >
-          <span>{t.profile?.changePassword || 'Змінити пароль'}</span>
+          {t.profile?.changePassword || 'Змінити пароль'}
         </button>
 
         <button 
-          className={styles.changePasswordBtn} 
+          className={styles.faqBtn} 
           onClick={() => router.push('/faq')}
-          data-hover="FAQ"
         >
-          <span>FAQ</span>
+          FAQ
         </button>
 
         <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>

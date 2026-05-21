@@ -169,7 +169,7 @@
 }
 .arrow-up { transform: rotate(180deg); }
 
-/* --- ВИПАДАЮЧИЙ СПИСОК --- */
+/* --- ВИПАДАЮЧИЙ СПИСОК КАРТОК --- */
 .dropdown-container {
   background-color: var(--bg-card-inner); 
   border: 1px solid var(--border-color);
@@ -197,9 +197,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 200px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: visible !important; 
+  max-height: none !important;
 }
 
 .dropdown-item {
@@ -231,35 +230,114 @@
 }
 
 .item-controls { display: flex; align-items: center; gap: 16px; }
-.action-group { display: flex; gap: 8px; }
+.action-group { display: flex; gap: 8px; align-items: center; }
+
+/* =========================================
+   КАСТОМНИЙ DROPDOWN (КОМПАКТНА ВЕРСІЯ)
+   ========================================= */
+.custom-select-container {
+  position: relative;
+  width: auto;
+}
+
+.location-select {
+  height: 30px; /* Зменшено висоту для компактності */
+  box-sizing: border-box;
+  padding: 0 28px 0 10px; /* Менші внутрішні відступи */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 12px; /* Менший шрифт для компактності */
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  
+  display: inline-flex;
+  align-items: center;
+  
+  /* Фірмова помаранчева стрілка */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center; /* Стрілка ближче до краю */
+  background-size: 12px; /* Зменшено розмір стрілки */
+  transition: all 0.2s ease;
+  
+  min-width: 80px; /* Зменшено мінімальну ширину */
+  max-width: 110px; /* Зменшено максимальну ширину */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.location-select:hover,
+.active-select {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.15);
+}
+
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px); /* Список трохи ближче до вікна */
+  left: 0; /* Вирівнюємо по лівому краю для акуратності */
+  width: 100%; /* Список такої самої ширини, як вікно вибору */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px; /* Трохи менше заокруглення */
+  z-index: 100;
+  max-height: 180px; /* Коротший список */
+  overflow-y: auto;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06); /* Легша тінь */
+  padding: 6px 0; /* Менші відступи */
+  overflow-x: hidden; /* Запобігаємо горизонтальному скролу */
+}
+
+.custom-select-dropdown::-webkit-scrollbar { width: 4px; } /* Тонкий скролбар */
+.custom-select-dropdown::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 2px;
+}
+
+.custom-select-item {
+  padding: 8px 12px; /* Менші відступи для компактності */
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 13px; /* Менший шрифт */
+  transition: background-color 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-item:hover {
+  background-color: var(--bg-main);
+}
+
+.custom-select-item.selected {
+  color: var(--accent-orange);
+  background-color: var(--bg-main);
+}
+
+/* ========================================= */
 
 .action-btn {
-  height: 36px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 10px;
   background: var(--bg-card); 
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-main);
-  white-space: nowrap;
   transition: all 0.2s ease;
-}
-
-.action-btn.active { 
-  background: var(--text-main); 
-  color: var(--bg-main); 
-  border-color: var(--text-main); 
 }
 
 .delete-btn { 
   color: var(--accent-orange); 
-  padding: 0 10px; 
 }
 .delete-btn:hover {
   background-color: rgba(255, 110, 0, 0.1); 
+  border-color: var(--accent-orange);
 }
 
 .action-icon { width: 18px; height: 18px; flex-shrink: 0; }
@@ -268,7 +346,6 @@
 /* =========================================
    АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (Портрет)
    ========================================= */
-
 @media (max-width: 1024px) {
   .top-section {
     flex-direction: column;
@@ -321,10 +398,18 @@
     width: 100%; 
     justify-content: space-between; 
   }
+  
+  .custom-select-container {
+    flex: 1;
+  }
 
-  .action-btn { 
-    flex: 1; 
-    justify-content: center; 
+  .location-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .custom-select-dropdown {
+    width: 100%;
   }
 
   .delete-btn { 
@@ -347,15 +432,15 @@
   .top-section {
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* <-- Кнопка і фільтри будуть однакової ширини */
+    align-items: stretch;
     gap: 10px; 
     margin-bottom: 0;
-    flex: 0 0 auto; /* <-- Більше не розтягується на всю ліву половину */
-    width: fit-content; /* <-- Ширина суворо по ширині контенту (фільтрів) */
+    flex: 0 0 auto; 
+    width: fit-content;
   }
 
   .filters {
-    flex-wrap: nowrap; /* Гарантуємо, що фільтри в один ряд */
+    flex-wrap: nowrap;
   }
 
   .summary-card {
@@ -366,7 +451,7 @@
   }
   
   .add-btn { 
-    width: 100%; /* <-- Тепер 100% від ширини фільтрів, а не від всього екрану! */
+    width: 100%; 
     padding: 6px 12px; 
     font-size: 12px; 
     height: fit-content; 
@@ -395,8 +480,10 @@
     flex-shrink: 0 !important;
   }
 
-  .dropdown-container { padding: 8px; }
-  .dropdown-scroll { max-height: 40vh; }
+  .dropdown-scroll { 
+    overflow: visible !important; 
+    max-height: none !important; 
+  }
   
   .dropdown-item {
     flex-direction: row;
@@ -415,5 +502,17 @@
   .item-power { font-size: 12px; }
   .item-controls { width: auto; justify-content: flex-end; }
   .action-group { width: auto; }
+  
+  .location-select {
+    height: 28px; /* Ще компактніше для ландшафту */
+    font-size: 11px;
+    min-width: 70px;
+  }
+
+  .custom-select-item {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
   .action-btn { height: 30px; padding: 0 8px; font-size: 11px; }
 }

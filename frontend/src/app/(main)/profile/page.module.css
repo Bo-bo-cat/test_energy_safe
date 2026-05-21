@@ -5,10 +5,6 @@
   display: none; 
 }
 
-.logoutBtn, .themeToggleMobile {
-  display: none; 
-}
-
 /* =========================================
    ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
    ========================================= */
@@ -51,6 +47,7 @@
    БАЗОВІ СТИЛІ ТУМБЛЕРА ТЕМИ 
    ========================================= */
 .themeToggleMobile {
+  display: none;
   align-items: center;
   justify-content: space-between;
   padding: 16px;
@@ -166,6 +163,7 @@
   max-width: 400px; 
 }
 
+/* --- ОНОВЛЕНІ КНОПКИ (ЯК НА СТОРІНЦІ СИСТЕМ) --- */
 .changePasswordBtn, .faqBtn {
   background-color: var(--text-main); 
   color: var(--bg-main);              
@@ -175,42 +173,11 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
+  transition: opacity 0.2s ease;
 }
 
-.changePasswordBtn span {
-  display: block;
-  transition: opacity 0.2s;
-}
-
-.changePasswordBtn::after {
-  content: attr(data-hover);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-  color: var(--accent-orange);
-  font-weight: 800;
-}
-
-.changePasswordBtn:hover span {
-  opacity: 0;
-}
-
-.changePasswordBtn:hover::after {
-  opacity: 1;
-}
-
-.faqBtn:hover {
-  opacity: 0.9;
+.changePasswordBtn:hover, .faqBtn:hover {
+  opacity: 0.8;
 }
 
 .deleteBtn {
@@ -222,12 +189,12 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease;
   margin-top: 40px; 
 }
 
 .deleteBtn:hover {
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 /* =========================================
@@ -264,11 +231,11 @@
     font-weight: 700;
     cursor: pointer;
     text-align: center;
-    transition: all 0.2s;
+    transition: opacity 0.2s ease;
   }
 
   .logoutBtn:hover {
-    opacity: 0.9;
+    opacity: 0.8;
   }
 }
 
@@ -332,6 +299,11 @@
     font-weight: 700;
     cursor: pointer;
     text-align: center;
+    transition: opacity 0.2s ease;
+  }
+  
+  .logoutBtn:hover {
+    opacity: 0.8;
   }
 
   .toggle-switch {
