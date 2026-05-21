@@ -72,6 +72,7 @@ body {
   font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
+  margin-top: 0; /* ДОДАНО: Прибираємо стандартний відступ браузера зверху */
   margin-bottom: 8px;
   letter-spacing: -0.02em;
   text-align: left;
@@ -84,6 +85,7 @@ body {
   }
   .page-title {
     font-size: 36px;
+    margin-top: 0;
     margin-bottom: 16px;
   }
 }
@@ -97,6 +99,7 @@ body {
   }
   .page-title {
     font-size: 36px;
+    margin-top: 0;
     margin-bottom: 12px;
   }
 }
