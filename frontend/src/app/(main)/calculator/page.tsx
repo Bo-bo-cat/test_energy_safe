@@ -68,7 +68,7 @@ const cleanModelName = (name: string, fallback: string) => {
 
 
 export default function CalculatorPage() {
-  const { t, lang } = useTranslation();
+  const { t } = useTranslation();
 
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
@@ -173,33 +173,7 @@ export default function CalculatorPage() {
 
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
-  // --- РОЗРАХУНОК ПІКОВОГО (ПУСКОВОГО) НАВАНТАЖЕННЯ ---
-  let totalNominalPower = 0;
-  let maxStartupOverhead = 0;
-
-  const selectedDeviceObjs = devices.filter(d => selectedDeviceIds.includes(d.id || d._id));
-  
-  selectedDeviceObjs.forEach(d => {
-    const power = Number(d.power_watts || d.power_watt || d.power || 0);
-    const startup = Number(d.startup_current_watts || d.startup_watts || 0);
-    totalNominalPower += power;
-    
-    const overhead = Math.max(0, startup - power);
-    if (overhead > maxStartupOverhead) {
-      maxStartupOverhead = overhead;
-    }
-  });
-
-  const absolutePeakWatts = calcResult?.peakPowerWatts || (totalNominalPower + maxStartupOverhead);
-  const systemPower = selectedSystem ? Number(selectedSystem.power || 1) : 1;
-  
-  const peakLoadPercent = Math.round((absolutePeakWatts / systemPower) * 100);
-  
-  const baseLoadPercent = calcResult?.loadPercent || 0;
-  const displayLoadPercentage = calcResult 
-    ? (calcResult.peakPowerWatts ? baseLoadPercent : Math.max(baseLoadPercent, peakLoadPercent)) 
-    : 0;
-  
+  const displayLoadPercentage = calcResult?.loadPercent || 0;
   const isOverloaded = displayLoadPercentage > 100;
   const progressWidth = Math.min(displayLoadPercentage, 100);
   
@@ -219,7 +193,7 @@ export default function CalculatorPage() {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
         selectedSystemId: selectedSystemId, 
-        totalPowerWatts: calcResult?.totalPowerWatts || totalNominalPower,
+        totalPowerWatts: calcResult!.totalPowerWatts,
         loadPercent: displayLoadPercentage, 
         autonomyHours: calcResult?.autonomyHours || 0
       };
@@ -405,9 +379,9 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
-              {calcResult && maxStartupOverhead > 0 && (
+              {calcResult && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
-                  {lang === 'uk' ? 'Пік:' : 'Peak:'} {absolutePeakWatts} {t.common.w}
+                  {t.calculator.peakLabel} {calcResult.peakPowerWatts} {t.common.w}
                 </div>
               )}
             </div>
@@ -417,6 +391,11 @@ export default function CalculatorPage() {
                 {calcResult ? displayLoadPercentage : '0'}%
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
+              {calcResult && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', lineHeight: 1.1 }}>
+                  {t.calculator.noStartup}
+                </div>
+              )}
             </div>
 
             <div className={styles['stat-box']}>

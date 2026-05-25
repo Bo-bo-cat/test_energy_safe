@@ -324,8 +324,8 @@ export default function DashboardPage() {
           </div>
           <div className={styles.smallStatBox}>
             <div className={styles.smallStatValue}>
-              {devices.length > 0 && activeScenario?.selectedDeviceIds 
-                ? Math.round((activeScenario.selectedDeviceIds.length / devices.length) * 100) 
+              {devices.length > 0 && activeScenario?.selectedDeviceIds
+                ? Math.round((devices.filter(d => activeScenario.selectedDeviceIds.includes(d.id || d._id)).length / devices.length) * 100)
                 : 0}%
             </div>
             <div className={styles.smallStatLabel} dangerouslySetInnerHTML={{ __html: t.dashboard.devicesIncluded.replace(' ', '<br/>') }} />

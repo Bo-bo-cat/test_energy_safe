@@ -9,6 +9,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
+# Increment to invalidate all cached catalog entries (e.g. after prompt improvements)
+_CATALOG_VERSION = 2
+
 # Per-category validated ranges: (min_watts, max_watts, (startup_min_mult, startup_max_mult) or None)
 # Startup power is real physics: inrush current for induction motors, null for resistive/electronic loads.
 _CATEGORY_SPECS: dict[str, tuple] = {
@@ -141,6 +144,12 @@ async def _groq_classify(model_name: str) -> dict:
         "     LED bulb=10W, LED strip 5m=25W\n"
         "     Phone charger=20W, Laptop charger=65W\n"
         "4. brand (string): manufacturer name only (e.g. 'Samsung', 'LG', 'Bosch', 'DeLonghi').\n\n"
+        "IMPORTANT category rules:\n"
+        "- Portable power stations, battery stations, power banks, UPS devices, inverters, generators "
+        "(brands: EcoFlow, Jackery, Bluetti, Anker Solix, Goal Zero, Ugreen PowerRoam, etc.) "
+        "→ MUST use category \"Інше\". They have no induction motor, so no startup surge.\n"
+        "- Only use \"Пральна машина\", \"Холодильник\", \"Кондиціонер\", \"Посудомийна машина\" "
+        "for devices that actually ARE that appliance — not for things that merely have similar power draw.\n\n"
         "Respond ONLY with valid JSON, no markdown, no explanation:\n"
         "{\"is_valid\": bool, \"category\": \"string\", \"power_watts\": number, \"brand\": \"string\"}\n\n"
         f"Device: \"{model_name}\""
