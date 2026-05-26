@@ -1,18 +1,36 @@
-'use client';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import styles from './page.module.css';
-
 
 import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
 import { ScenarioIcon } from '../components/icons/Scenario';
 
+export const metadata: Metadata = {
+  title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+  description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу. Безкоштовно та без реєстрації.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
+    url: '/',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
+  },
+};
+
 export default function LandingPage() {
   return (
     <div className={styles.wrap}>
       <div className={styles.container}>
-        
+
         {/* 1. Логотип */}
         <div className={styles.logoWrap}>
           <LightningIcon className={styles.logoIcon} />
