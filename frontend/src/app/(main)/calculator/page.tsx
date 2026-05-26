@@ -171,7 +171,32 @@ export default function CalculatorPage() {
 
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
-  const displayLoadPercentage = calcResult?.loadPercent || 0;
+  let totalNominalPower = 0;
+  let maxStartupOverhead = 0;
+
+  const selectedDeviceObjs = devices.filter(d => selectedDeviceIds.includes(d.id || d._id));
+  
+  selectedDeviceObjs.forEach(d => {
+    const power = Number(d.power_watts || d.power_watt || d.power || 0);
+    const startup = Number(d.startup_current_watts || d.startup_watts || 0);
+    totalNominalPower += power;
+    
+    const overhead = Math.max(0, startup - power);
+    if (overhead > maxStartupOverhead) {
+      maxStartupOverhead = overhead;
+    }
+  });
+
+  const absolutePeakWatts = calcResult?.peakPowerWatts || (totalNominalPower + maxStartupOverhead);
+  const systemPower = selectedSystem ? Number(selectedSystem.power || 1) : 1;
+  
+  const peakLoadPercent = Math.round((absolutePeakWatts / systemPower) * 100);
+  
+  const baseLoadPercent = calcResult?.loadPercent || 0;
+  const displayLoadPercentage = calcResult 
+    ? (calcResult.peakPowerWatts ? baseLoadPercent : Math.max(baseLoadPercent, peakLoadPercent)) 
+    : 0;
+  
   const isOverloaded = displayLoadPercentage > 100;
   const progressWidth = Math.min(displayLoadPercentage, 100);
   
@@ -227,10 +252,16 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
+<<<<<<< HEAD
   // ЗМІНА ТУТ: Показуємо всі прилади, якщо категорія не обрана
   const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
     return categoryToIcon[d.category] === activeCategory;
   }) : locationFilteredDevices;
+=======
+  const devicesToDisplay = activeCategory 
+    ? locationFilteredDevices.filter(d => categoryToIcon[d.category] === activeCategory)
+    : locationFilteredDevices;
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -292,9 +323,16 @@ export default function CalculatorPage() {
             )}
           </div>
 
+<<<<<<< HEAD
           <div className={styles['device-list']}>
             {filteredDevices.length > 0 ? (
               filteredDevices.map(device => {
+=======
+          {/* КОМПАКТНИЙ СПИСОК БЕЗ ГРУПУВАННЯ */}
+          <div className={`${styles['device-list']} no-swipe`} {...swipeHandlers}>
+            {devicesToDisplay.length > 0 ? (
+              devicesToDisplay.map(device => {
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
                 const id = device.id || device._id; 
                 const isSelected = selectedDeviceIds.includes(id);
                 return (
@@ -318,7 +356,11 @@ export default function CalculatorPage() {
                 )
               })
             ) : (
+<<<<<<< HEAD
               <p style={{ color: 'var(--text-muted)' }}>{(t.calculator as any)?.noDevicesInCategory || 'Немає приладів для відображення'}</p>
+=======
+              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInLocation}</p>
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
             )}
           </div>
 

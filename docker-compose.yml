@@ -15,11 +15,13 @@ services:
     build:
       context: ./frontend
       args:
-        - NEXT_PUBLIC_API_URL=http://localhost:8080
+        - NEXT_PUBLIC_API_URL=https://api.energyapp.fun
+        - NEXT_PUBLIC_APP_URL=https://energyapp.fun
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8080
+      - NEXT_PUBLIC_API_URL=https://api.energyapp.fun
+      - NEXT_PUBLIC_APP_URL=https://energyapp.fun
     depends_on:
       - backend
     restart: unless-stopped

@@ -1,4 +1,4 @@
-'use client';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -7,14 +7,40 @@ import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
 import { ScenarioIcon } from '../components/icons/Scenario';
 
+export const metadata: Metadata = {
+  title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+  description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу. Безкоштовно та без реєстрації.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
+    url: '/',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
+    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
+  },
+};
+
 export default function LandingPage() {
   return (
     <main className={styles.wrap}>
       <div className={styles.container}>
+<<<<<<< HEAD
         
         {/* 1. Логотип (Семантичний header) */}
         <header className={styles.logoWrap}>
           <LightningIcon className={styles.logoIcon} aria-hidden="true" />
+=======
+
+        {/* 1. Логотип */}
+        <div className={styles.logoWrap}>
+          <LightningIcon className={styles.logoIcon} />
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
           <span className={styles.logoText}>Energy Safe</span>
         </header>
 
