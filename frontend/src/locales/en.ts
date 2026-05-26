@@ -58,6 +58,7 @@ export const en = {
     googleDenied: 'You denied access via Google.',
     googleError: 'Google login error. Please try again.',
     forgotPassword: "Forgot password?",
+    passwordHint: "At least 6 characters",
   resetTitle: "Password Reset",
   confirmTitle: "Set New Password",
   resetDesc: "Enter your email and we will send you a confirmation code.",

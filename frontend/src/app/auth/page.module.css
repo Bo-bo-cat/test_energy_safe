@@ -177,8 +177,15 @@
   height: 20px;
 }
 
+.password-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0;
+}
+
 .error-text {
-  color: #D32F2F; 
+  color: #D32F2F;
   font-size: 13px;
   font-weight: 600;
   margin: 0;

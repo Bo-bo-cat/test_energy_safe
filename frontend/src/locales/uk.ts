@@ -59,6 +59,7 @@ export const uk = {
     googleDenied: 'Ви відмовили у доступі через Google.',
     googleError: 'Помилка входу через Google. Спробуйте ще раз.',
     forgotPassword: "Забули пароль?",
+    passwordHint: "Мінімум 6 символів",
   resetTitle: "Відновлення паролю",
   confirmTitle: "Встановлення паролю",
   resetDesc: "Введіть вашу пошту, і ми надішлемо вам код підтвердження.",
