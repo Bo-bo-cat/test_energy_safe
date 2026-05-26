@@ -3,7 +3,7 @@ import { useState } from 'react';
 import styles from './page.module.css';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
-import { useTranslation } from '../../../context/LanguageContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 export default function FaqPage() {
   const { t } = useTranslation(); // Ініціалізуємо переклад
