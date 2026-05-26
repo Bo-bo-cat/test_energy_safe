@@ -37,9 +37,12 @@ def _serialize_device(doc: dict) -> DeviceResponse:
     )
 
 
+_CATALOG_VERSION = 2
+
+
 async def _get_specs_with_cache(db, model_name: str) -> dict:
     """Check device_catalog first; call AI only on cache miss."""
-    model_key = model_name.strip().lower()
+    model_key = f"v{_CATALOG_VERSION}:{model_name.strip().lower()}"
     cached = await db["device_catalog"].find_one({"model_key": model_key})
     if cached:
         return {

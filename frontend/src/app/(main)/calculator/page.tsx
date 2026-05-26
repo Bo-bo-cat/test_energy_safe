@@ -68,7 +68,7 @@ const cleanModelName = (name: string, fallback: string) => {
 
 
 export default function CalculatorPage() {
-  const { t, lang } = useTranslation();
+  const { t } = useTranslation();
 
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
@@ -217,7 +217,7 @@ export default function CalculatorPage() {
         name: scenarioName,
         selectedDeviceIds: selectedDeviceIds,
         selectedSystemId: selectedSystemId, 
-        totalPowerWatts: calcResult?.totalPowerWatts || totalNominalPower,
+        totalPowerWatts: calcResult!.totalPowerWatts,
         loadPercent: displayLoadPercentage, 
         autonomyHours: calcResult?.autonomyHours || 0
       };
@@ -401,9 +401,9 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
-              {calcResult && maxStartupOverhead > 0 && (
+              {calcResult && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
-                  {lang === 'uk' ? 'Пік:' : 'Peak:'} {absolutePeakWatts} {t.common.w}
+                  {t.calculator.peakLabel} {calcResult.peakPowerWatts} {t.common.w}
                 </div>
               )}
             </div>
@@ -413,6 +413,11 @@ export default function CalculatorPage() {
                 {calcResult ? displayLoadPercentage : '0'}%
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
+              {calcResult && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', lineHeight: 1.1 }}>
+                  {t.calculator.noStartup}
+                </div>
+              )}
             </div>
 
             <div className={styles['stat-box']}>

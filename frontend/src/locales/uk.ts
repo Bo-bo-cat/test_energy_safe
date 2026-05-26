@@ -102,7 +102,9 @@ export const uk = {
     fromInverter: 'Від інвертора',
     autonomyH: 'Автономія, Год',
     overload: 'Перевантаження',
-    saveScenario: 'Зберегти сценарій'
+    saveScenario: 'Зберегти сценарій',
+    peakLabel: 'Пік:',
+    noStartup: 'без пуску'
   },
   devices: {
     title: 'Мої прилади',

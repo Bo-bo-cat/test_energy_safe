@@ -101,7 +101,9 @@ export const en = {
     fromInverter: 'From inverter',
     autonomyH: 'Autonomy, H',
     overload: 'Overload',
-    saveScenario: 'Save scenario'
+    saveScenario: 'Save scenario',
+    peakLabel: 'Peak:',
+    noStartup: 'no startup'
   },
   devices: {
     title: 'My Devices',

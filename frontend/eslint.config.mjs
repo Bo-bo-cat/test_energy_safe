@@ -11,6 +11,11 @@ export default defineConfig([
   pluginReact.configs.flat.recommended,
 
   {
+    files: ["public/sw.js"],
+    languageOptions: { globals: { ...globals.browser, ...globals.serviceworker } }
+  },
+
+  {
     ignores: [
       ".next/**",
       "node_modules/**",
