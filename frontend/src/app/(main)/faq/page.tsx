@@ -6,13 +6,12 @@ import styles from './page.module.css';
 import { useTranslation } from '../../../context/LanguageContext';
 
 export default function FaqPage() {
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t } = useTranslation(); 
   
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
-  // Переносимо масив всередину, щоб мати доступ до перекладів `t`
   const faqs = [
     { question: t.faq.q1, answer: t.faq.a1 },
     { question: t.faq.q2, answer: t.faq.a2 },
@@ -39,11 +38,11 @@ export default function FaqPage() {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <polyline points="6 9 12 15 18 9" />
+                <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
             {openIndex === i && (

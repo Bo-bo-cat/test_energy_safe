@@ -28,69 +28,83 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <div className={styles.wrap}>
+    <main className={styles.wrap}>
       <div className={styles.container}>
+<<<<<<< HEAD
+        
+        {/* 1. Логотип (Семантичний header) */}
+        <header className={styles.logoWrap}>
+          <LightningIcon className={styles.logoIcon} aria-hidden="true" />
+=======
 
         {/* 1. Логотип */}
         <div className={styles.logoWrap}>
           <LightningIcon className={styles.logoIcon} />
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
           <span className={styles.logoText}>Energy Safe</span>
-        </div>
+        </header>
 
-        {/* 2. Заголовок */}
+        {/* 2. Головний заголовок (H1 - головний ключ для SEO) */}
         <h1 className={styles.mainTitle}>
           Плануйте енергозабезпечення<br />
           <span className={styles.highlight}>без складних розрахунків</span>
         </h1>
 
-        {/* 3. Що можна робити (Картки) */}
-        <div className={styles.rightContent}>
-          <h2 className={styles.featuresTitle}>Що можна зробити?</h2>
+        {/* 3. Короткий опис (Збагачено SEO-ключами: ДБЖ, резервне живлення, станції) */}
+        <p className={styles.desc}>
+          Energy Safe допомагає швидко оцінити енергоспоживання приладів, 
+          підібрати надійну систему резервного живлення (ДБЖ, зарядні станції) 
+          та зберігати власні сценарії для дому чи офісу.
+        </p>
+
+        {/* 4. Група кнопок: Головна дія (CTA) + Перехід до FAQ */}
+        <div className={styles.btnGroup}>
+          <Link href="/auth?mode=register" className={styles.startBtn}>
+            Почати розрахунок
+          </Link>
+          <Link href="/faq" className={styles.faqBtn}>
+            Часті запитання (FAQ)
+          </Link>
+        </div>
+
+        {/* 5. Що можна робити (Секція з картками-статтями для SEO) */}
+        <section className={styles.rightContent} aria-labelledby="features-title">
+          <h2 id="features-title" className={styles.featuresTitle}>Що можна зробити?</h2>
+          
           <div className={styles.featureCards}>
-            <div className={styles.card}>
-              <div className={styles.cardIconWrap}>
+            <article className={styles.card}>
+              <div className={styles.cardIconWrap} aria-hidden="true">
                 <CalcIcon className={styles.cardIcon} />
               </div>
               <div>
                 <h3 className={styles.cardTitle}>Розрахувати навантаження</h3>
-                <p className={styles.cardDesc}>Обери прилади та отримай енергоспоживання</p>
+                <p className={styles.cardDesc}>Оберіть ваші прилади та миттєво отримайте їхнє сумарне енергоспоживання.</p>
               </div>
-            </div>
+            </article>
 
-            <div className={styles.card}>
-              <div className={styles.cardIconWrap}>
+            <article className={styles.card}>
+              <div className={styles.cardIconWrap} aria-hidden="true">
                 <SystemIcon className={styles.cardIcon} />
               </div>
               <div>
-                <h3 className={styles.cardTitle}>Підібрати систему</h3>
-                <p className={styles.cardDesc}>Отримай рекомендацію ДБЖ під свої потреби</p>
+                <h3 className={styles.cardTitle}>Підібрати систему живлення</h3>
+                <p className={styles.cardDesc}>Отримайте точну рекомендацію резервного ДБЖ або станції під ваші потреби.</p>
               </div>
-            </div>
+            </article>
 
-            <div className={styles.card}>
-              <div className={styles.cardIconWrap}>
+            <article className={styles.card}>
+              <div className={styles.cardIconWrap} aria-hidden="true">
                 <ScenarioIcon className={styles.cardIcon} />
               </div>
               <div>
                 <h3 className={styles.cardTitle}>Зберігати сценарії</h3>
-                <p className={styles.cardDesc}>Створюй різні варіанти для дому або офісу</p>
+                <p className={styles.cardDesc}>Створюйте, зберігайте та порівнюйте різні варіанти для дому або офісу.</p>
               </div>
-            </div>
+            </article>
           </div>
-        </div>
-
-        {/* 4. Короткий опис */}
-        <p className={styles.desc}>
-          Наш застосунок допомагає швидко оцінити енергоспоживання,
-          підібрати систему резервного живлення та зберігати сценарії.
-        </p>
-
-        {/* 5. Кнопка "Почати" */}
-        <Link href="/auth?mode=register" className={styles.startBtn}>
-          Почати
-        </Link>
+        </section>
 
       </div>
-    </div>
+    </main>
   );
 }

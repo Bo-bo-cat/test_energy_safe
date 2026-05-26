@@ -66,7 +66,6 @@ const cleanModelName = (name: string, fallback: string) => {
   return name;
 };
 
-
 export default function CalculatorPage() {
   const { t } = useTranslation();
 
@@ -253,9 +252,16 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
+<<<<<<< HEAD
+  // ЗМІНА ТУТ: Показуємо всі прилади, якщо категорія не обрана
+  const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
+    return categoryToIcon[d.category] === activeCategory;
+  }) : locationFilteredDevices;
+=======
   const devicesToDisplay = activeCategory 
     ? locationFilteredDevices.filter(d => categoryToIcon[d.category] === activeCategory)
     : locationFilteredDevices;
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -317,10 +323,16 @@ export default function CalculatorPage() {
             )}
           </div>
 
+<<<<<<< HEAD
+          <div className={styles['device-list']}>
+            {filteredDevices.length > 0 ? (
+              filteredDevices.map(device => {
+=======
           {/* КОМПАКТНИЙ СПИСОК БЕЗ ГРУПУВАННЯ */}
           <div className={`${styles['device-list']} no-swipe`} {...swipeHandlers}>
             {devicesToDisplay.length > 0 ? (
               devicesToDisplay.map(device => {
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
                 const id = device.id || device._id; 
                 const isSelected = selectedDeviceIds.includes(id);
                 return (
@@ -338,13 +350,17 @@ export default function CalculatorPage() {
                       <span className={styles['device-name']}>{device.model_name || device.name}</span>
                     </div>
                     <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
                     </div>
                   </div>
                 )
               })
             ) : (
+<<<<<<< HEAD
+              <p style={{ color: 'var(--text-muted)' }}>{(t.calculator as any)?.noDevicesInCategory || 'Немає приладів для відображення'}</p>
+=======
               <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInLocation}</p>
+>>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
             )}
           </div>
 
@@ -401,9 +417,9 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
-              {calcResult && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
+              {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
-                  {t.calculator.peakLabel} {calcResult.peakPowerWatts} {t.common.w}
+                  {(t.calculator as any)?.peakLabel || 'Пік'} {calcResult.peakPowerWatts} {t.common.w}
                 </div>
               )}
             </div>
@@ -413,9 +429,9 @@ export default function CalculatorPage() {
                 {calcResult ? displayLoadPercentage : '0'}%
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
-              {calcResult && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
+              {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', lineHeight: 1.1 }}>
-                  {t.calculator.noStartup}
+                  {(t.calculator as any)?.noStartup || 'Без пускових'}
                 </div>
               )}
             </div>

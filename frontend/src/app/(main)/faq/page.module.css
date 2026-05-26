@@ -3,7 +3,6 @@
 .subtitle {
   font-size: 16px;
   color: var(--text-muted);
-  /* Компенсуємо відступ від глобального заголовка (margin-bottom: 24px), щоб текст був ближче */
   margin: -16px 0 32px 0; 
 }
 
@@ -12,7 +11,7 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
-  max-width: 800px; /* Зберігаємо обмеження ширини списку для кращої читабельності */
+  max-width: 800px;
 }
 
 .item {
@@ -89,41 +88,5 @@
   .answer {
     padding: 0 18px 16px;
     font-size: 14px;
-  }
-}
-
-/* =========================================
-   Ультра-компактна адаптація для ЛАНДШАФТУ
-   ========================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .subtitle {
-    font-size: 13px; 
-    margin-top: -6px;
-    margin-bottom: 16px; 
-  }
-
-  .list {
-    gap: 8px; 
-    padding-bottom: 24px;
-  }
-
-  .item {
-    border-radius: 12px; 
-  }
-
-  .question {
-    font-size: 14px; 
-    padding: 12px 16px; 
-  }
-
-  .chevron {
-    width: 16px; 
-    height: 16px;
-  }
-
-  .answer {
-    padding: 0 16px 12px; 
-    font-size: 13px; 
-    line-height: 1.4; 
   }
 }

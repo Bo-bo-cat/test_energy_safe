@@ -85,19 +85,22 @@
   flex-direction: column;
   gap: 12px; 
   width: 100%;
-  max-height: 45vh; /* Блок тепер має фіксовану висоту і не розтягує сторінку */
-  overflow-y: auto; /* Додано внутрішній скрол */
-  padding-right: 8px; /* Відступ для скролбару */
-  overscroll-behavior: contain;
+  max-height: 450px; /* ЗМІНА: Обмеження висоти для десктопу */
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior-y: contain; /* Блокує прокрутку сторінки */
 }
 
-/* Кастомний дизайн скролбару */
+/* ЗМІНА: Кастомний скролбар для списку приладів */
 .device-list::-webkit-scrollbar {
   width: 6px;
 }
+.device-list::-webkit-scrollbar-track {
+  background: transparent;
+}
 .device-list::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
-  border-radius: 4px;
+  border-radius: 10px;
 }
 
 .device-item {
@@ -182,7 +185,7 @@
   width: 100%;
   padding-bottom: 8px; 
 }
-.systems-grid::-webkit-scrollbar { display: none; }
+.systems-grid::-webkit-scrollbar { display: none; } 
 
 .system-card {
   flex: 0 0 220px; 
@@ -243,7 +246,7 @@
 /* --- КАРТКА ДОДАВАННЯ --- */
 .add-system-card {
   background-color: var(--bg-card-inner);
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--border-color); 
   border-radius: 16px; 
   padding: 20px; 
   display: flex; 
@@ -410,8 +413,9 @@
     height: 40px;
   }
 
+  /* ЗМІНА: Менша висота списку для телефону */
   .device-list {
-    max-height: 40vh; /* Менше висоти для мобільних */
+    max-height: 320px; 
   }
 
   .device-item {
@@ -422,6 +426,7 @@
   .device-power { font-size: 12px; margin-left: 36px; }
   .checkbox { width: 20px; height: 20px; }
 
+  /* Карусель ДБЖ на мобільному (з фіксом відступів) */
   .systems-grid {
     display: flex; 
     flex-direction: row; 
@@ -429,19 +434,26 @@
     gap: 12px;
     margin-left: -16px; 
     margin-right: -16px; 
-    padding: 4px 16px 16px 16px;
+    padding: 4px 16px 16px 16px; 
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     overscroll-behavior-x: contain; 
   }
+  
+  .systems-grid::after {
+    content: '';
+    flex: 0 0 4px; 
+    width: 4px;
+  }
+
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0 150px; 
-    width: 150px; 
+    flex: 0 0 160px; 
+    width: 160px; 
     height: 150px; 
     padding: 14px; 
-    scroll-snap-align: center;
+    scroll-snap-align: start; 
     border-radius: 16px;
   }
 
@@ -525,7 +537,7 @@
 
   .device-list { 
     gap: 8px; 
-    max-height: 40vh; /* Менша висота для ландшафту */
+    max-height: 200px; /* ЗМІНА: Ще менше для ландшафту */
   }
   .device-item { padding: 8px 12px; border-radius: 10px; }
   .device-name { font-size: 14px; }
