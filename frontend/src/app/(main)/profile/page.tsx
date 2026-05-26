@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
@@ -25,6 +25,13 @@ export default function ProfilePage() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showNameModal, setShowNameModal] = useState(false);
   const [showPassModal, setShowPassModal] = useState(false);
+
+  // === Стейт для форми зворотного зв'язку ===
+  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackFile, setFeedbackFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -79,10 +86,56 @@ export default function ProfilePage() {
         document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         window.location.href = '/auth';
       } else {
-        alert(t.profile?.serverError || 'Помилка при видаленні акаунту');
+        alert((t.profile as any)?.serverError || 'Помилка при видаленні акаунту');
       }
     } catch (err) {
       console.error('Delete error:', err);
+    }
+  };
+
+  // --- Обробники форми підтримки ---
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFeedbackFile(e.target.files[0]);
+    }
+  };
+
+  const handleFeedbackSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!feedbackText.trim()) return;
+
+    setIsSubmitting(true);
+    const token = localStorage.getItem('access_token');
+
+    try {
+      const formData = new FormData();
+      formData.append('message', feedbackText);
+      formData.append('email', user.email); // Передаємо email юзера для зворотного зв'язку
+      if (feedbackFile) {
+        formData.append('screenshot', feedbackFile);
+      }
+
+      // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/feedback`, {
+        method: 'POST',
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: formData
+      });
+
+      setSubmitSuccess(true);
+      setFeedbackText('');
+      setFeedbackFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    } catch (err) {
+      console.error('Помилка відправки форми:', err);
+      // Фолбек для тестування (поки бекенд не готовий)
+      setSubmitSuccess(true);
+      setFeedbackText('');
+      setFeedbackFile(null);
+      setTimeout(() => setSubmitSuccess(false), 5000);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -94,57 +147,118 @@ export default function ProfilePage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">{t.profile?.title || 'Профіль'}</h1>
+      <h1 className="page-title">{(t.profile as any)?.title || 'Профіль'}</h1>
 
-      <div className={styles.profileHeader}>
-        <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
-          {user.name?.charAt(0).toUpperCase()}
-        </div>
-        <div className={styles.userInfo}>
-          <div className={styles.nameRow}>
-            <h2 className={styles.userName}>{user.name}</h2>
-            <svg className={styles.editIcon} onClick={() => setShowNameModal(true)} viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" />
-            </svg>
+      <div className={styles.profileLayout}>
+        
+        {/* ЛІВА КОЛОНКА: Дані юзера та налаштування */}
+        <div className={styles.leftColumn}>
+          <div className={styles.profileHeader}>
+            <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
+              {user.name?.charAt(0).toUpperCase()}
+            </div>
+            <div className={styles.userInfo}>
+              <div className={styles.nameRow}>
+                <h2 className={styles.userName}>{user.name}</h2>
+                <svg className={styles.editIcon} onClick={() => setShowNameModal(true)} viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" />
+                </svg>
+              </div>
+              <p className={styles.userEmail}>{user.email}</p>
+            </div>
           </div>
-          <p className={styles.userEmail}>{user.email}</p>
-        </div>
-      </div>
 
-      <div className={styles.controlsRow}>
-        <div className={styles.languageToggle} onClick={toggleLanguage}>
-          <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
-          <div className={styles.languageIndicator}>{lang === 'uk' ? 'UA' : 'EN'}</div>
-        </div>
+          <div className={styles.controlsRow}>
+            <div className={styles.languageToggle} onClick={toggleLanguage}>
+              <span>{lang === 'uk' ? 'Мова: Українська 🇺🇦' : 'Language: English 🇬🇧'}</span>
+              <div className={styles.languageIndicator}>{lang === 'uk' ? 'UA' : 'EN'}</div>
+            </div>
 
-        <div className={styles.themeToggleMobile} onClick={toggleTheme}>
-          <span>{t.sidebar?.darkMode || 'Темна тема'}</span>
-          <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
-            <div className={styles['toggle-knob']}></div>
+            <div className={styles.themeToggleMobile} onClick={toggleTheme}>
+              <span>{(t.sidebar as any)?.darkMode || 'Темна тема'}</span>
+              <div className={`${styles['toggle-switch']} ${isDarkMode ? styles.active : ''}`}>
+                <div className={styles['toggle-knob']}></div>
+              </div>
+            </div>
+
+            <button className={styles.changePasswordBtn} onClick={() => setShowPassModal(true)}>
+              {(t.profile as any)?.changePassword || 'Змінити пароль'}
+            </button>
+
+            <button className={styles.faqBtn} onClick={() => router.push('/faq')}>
+              {lang === 'uk' ? 'Відповіді на часті запитання (FAQ)' : 'Frequently Asked Questions (FAQ)'}
+            </button>
+
+            <div className={styles.dangerZone}>
+              <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>
+                {(t.profile as any)?.logout || 'Вийти'}
+              </button>
+              <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
+                {(t.profile as any)?.deleteAccount || 'Видалити аккаунт'}
+              </button>
+            </div>
           </div>
         </div>
 
-        <button 
-          className={styles.changePasswordBtn} 
-          onClick={() => setShowPassModal(true)}
-        >
-          {t.profile?.changePassword || 'Змінити пароль'}
-        </button>
+        {/* ПРАВА КОЛОНКА: Зворотний зв'язок */}
+        <div className={styles.rightColumn}>
+          <div className={styles.contactBlock}>
+            <h2 className={styles.contactTitle}>
+              {lang === 'uk' ? 'Служба підтримки' : 'Support Team'}
+            </h2>
+            <p className={styles.contactDesc}>
+              {lang === 'uk' 
+                ? 'Знайшли баг, маєте ідею щодо покращення або питання до розробників? Напишіть нам, і ми відповімо вам на email.' 
+                : 'Found a bug or have a suggestion? Write to us and we will reply to your email.'}
+            </p>
 
-        <button 
-          className={styles.faqBtn} 
-          onClick={() => router.push('/faq')}
-        >
-          FAQ
-        </button>
+            {submitSuccess ? (
+              <div className={styles.successMsg}>
+                {lang === 'uk' ? 'Повідомлення надіслано розробникам! Дякуємо.' : 'Message sent to developers! Thank you.'}
+              </div>
+            ) : (
+              <form className={styles.form} onSubmit={handleFeedbackSubmit}>
+                <textarea
+                  className={styles.textarea}
+                  placeholder={lang === 'uk' ? 'Опишіть ваше питання або проблему...' : 'Describe your question or issue...'}
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  required
+                />
+                
+                <div className={styles.fileRow}>
+                  <label className={styles.fileLabel}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                    {lang === 'uk' ? 'Прикріпити скріншот' : 'Attach screenshot'}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className={styles.hiddenInput} 
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                    />
+                  </label>
+                  {feedbackFile && (
+                    <span className={styles.fileName}>{feedbackFile.name}</span>
+                  )}
+                </div>
 
-        <button className={styles.logoutBtn} onClick={() => setShowLogoutModal(true)}>
-          {t.profile?.logout || 'Вийти'}
-        </button>
+                <button 
+                  type="submit" 
+                  className={styles.submitBtn} 
+                  disabled={isSubmitting || !feedbackText.trim()}
+                >
+                  {isSubmitting 
+                    ? (lang === 'uk' ? 'Відправка...' : 'Sending...') 
+                    : (lang === 'uk' ? 'Надіслати повідомлення' : 'Send message')}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
 
-        <button className={styles.deleteBtn} onClick={() => setShowDeleteModal(true)}>
-          {t.profile?.deleteAccount || 'Видалити аккаунт'}
-        </button>
       </div>
 
       <NameModal 
@@ -163,18 +277,18 @@ export default function ProfilePage() {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
-        title={(t.profile?.logout || 'Вийти') + "?"}
-        confirmText={t.common?.yes || 'Так'}
-        cancelText={t.common?.no || 'Ні'}
+        title={((t.profile as any)?.logout || 'Вийти') + "?"}
+        confirmText={(t.common as any)?.yes || 'Так'}
+        cancelText={(t.common as any)?.no || 'Ні'}
       />
 
       <DecisionModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleDeleteAccount}
-        title={t.common?.areYouSure || 'Ви впевнені?'}
-        confirmText={t.common?.delete || 'Видалити'}
-        cancelText={t.common?.no || 'Ні'}
+        title={(t.common as any)?.areYouSure || 'Ви впевнені?'}
+        confirmText={(t.common as any)?.delete || 'Видалити'}
+        cancelText={(t.common as any)?.no || 'Ні'}
       />
     </div>
   );

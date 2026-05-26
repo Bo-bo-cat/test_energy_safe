@@ -12,12 +12,12 @@ import { ScenarioIcon } from '../../components/icons/Scenario';
 import { SystemIcon } from '../../components/icons/System';
 import { ProfileIcon } from '../../components/icons/Profile';
 import { LogOutIcon } from '../../components/icons/LogOut';
+import { LogInIcon } from '../../components/icons/Log-in'; 
 
 import { DecisionModal } from '../../components/DecisionModal/DecisionModal' ;
 import { MobileSwipeNav } from '../../components/MobileSwipeNav/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
-// НОВЕ: Імпорт модалки встановлення
 import { InstallPrompt } from '../../components/InstallPrompt/InstallPrompt';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
@@ -25,27 +25,22 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { t } = useTranslation(); 
   
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Перевіряємо, чи є токен у localStorage
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+
+    // Застосовуємо тему при завантаженні
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
-      setIsDarkMode(true);
       document.documentElement.setAttribute('data-theme', 'dark');
     }
   }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode ? 'dark' : 'light';
-    setIsDarkMode(!isDarkMode);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  };
 
   const navItems = [
     { href: '/dashboard', label: t.sidebar.home, Icon: HomeIcon },
@@ -60,6 +55,14 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
     localStorage.clear();
     document.cookie = 'access_token=; path=/; max-age=0';
     router.push('/auth');
+  };
+
+  const handleAuthClick = () => {
+    if (isLoggedIn) {
+      setShowLogoutModal(true); 
+    } else {
+      router.push('/auth'); 
+    }
   };
 
   return (
@@ -90,18 +93,15 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className={styles['logout-section']}>
-          <div className={styles['theme-toggle-row']} onClick={toggleTheme}>
-            <span>{t.sidebar.darkMode}</span>
-            <div className={`${styles['toggle-switch']} ${isDarkMode ? styles['active'] : ''}`}>
-              <div className={styles['toggle-knob']}></div>
-            </div>
-          </div>
-
-          <button onClick={() => setShowLogoutModal(true)} className={styles['logout-btn']}>
+          <button onClick={handleAuthClick} className={styles['logout-btn']}>
             <div className={styles['icon-wrapper']}>
-              <LogOutIcon className={styles['nav-icon']} />
+              {isLoggedIn ? (
+                <LogOutIcon className={styles['nav-icon']} />
+              ) : (
+                <LogInIcon className={styles['nav-icon']} />
+              )}
             </div>
-            {t.sidebar.logout}
+            {isLoggedIn ? t.sidebar.logout : ((t.sidebar as any)?.login || 'Увійти')}
           </button>
         </div>
       </aside>
@@ -121,7 +121,6 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
         cancelText={t.common.no}
       />
 
-      {/* НОВЕ: Компонент встановлення */}
       <InstallPrompt />
     </div>
   );

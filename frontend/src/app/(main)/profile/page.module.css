@@ -1,18 +1,40 @@
 /* src/app/(main)/profile/page.module.css */
 
+/* =========================================
+   НОВИЙ ДЕСКТОПНИЙ GRID-LAYOUT
+   ========================================= */
+.profileLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Дві однакові колонки */
+  gap: 40px;
+  align-items: start;
+  width: 100%;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Ховаємо ТІЛЬКИ дублюючі мобільні кнопки на десктопі */
-.logoutBtn, .themeToggleMobile {
+.logoutBtn {
   display: none; 
 }
 
 /* =========================================
-   ПЕРЕМИКАЧ МОВИ (Завжди видимий на всіх екранах)
+   ПЕРЕМИКАЧ МОВИ
    ========================================= */
 .languageToggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 16px 20px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -50,7 +72,7 @@
   display: none;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 16px 20px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
@@ -93,27 +115,31 @@
 }
 
 /* =========================================
-   ОСНОВНІ СТИЛІ ПРОФІЛЮ
+   ОСНОВНІ СТИЛІ ПРОФІЛЮ (ЛІВА КОЛОНКА)
    ========================================= */
 .profileHeader {
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 40px;
+  background-color: var(--bg-card);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: 32px;
   font-weight: 800;
   color: #FFFFFF; 
   text-transform: uppercase;
   user-select: none;
+  flex-shrink: 0;
 }
 
 .userInfo {
@@ -121,6 +147,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
+  min-width: 0; /* Щоб довгий текст не ламав сітку */
 }
 
 .nameRow {
@@ -130,18 +157,22 @@
 }
 
 .userName {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--text-main);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .editIcon {
   color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .editIcon:hover {
@@ -149,38 +180,161 @@
 }
 
 .userEmail {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text-muted);
   margin: 0;
+  word-break: break-all;
 }
 
 .controlsRow {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
-  max-width: 400px; 
 }
 
-/* --- ОНОВЛЕНІ КНОПКИ (ЯК НА СТОРІНЦІ СИСТЕМ) --- */
 .changePasswordBtn, .faqBtn {
   background-color: var(--text-main); 
   color: var(--bg-main);              
   border: none;
   border-radius: 12px;
-  padding: 16px;
+  padding: 16px 20px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s ease;
+  text-align: left; /* Вирівнювання по лівому краю */
 }
 
 .changePasswordBtn:hover, .faqBtn:hover {
   opacity: 0.8;
 }
 
+.dangerZone {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .deleteBtn {
+  background-color: transparent;
+  color: #FF2D55;
+  border: 1px solid #FF2D55;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteBtn:hover {
+  background-color: rgba(255, 45, 85, 0.1);
+}
+
+/* =========================================
+   ФОРМА ЗВОРОТНОГО ЗВ'ЯЗКУ (ПРАВА КОЛОНКА)
+   ========================================= */
+.contactBlock {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.contactTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.contactDesc {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea:focus {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 110, 0, 0.1);
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fileLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px dashed var(--border-color);
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fileLabel:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.fileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-orange);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.submitBtn {
   background-color: var(--accent-orange);
   color: #FFFFFF;
   border: none;
@@ -190,21 +344,49 @@
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s ease;
-  margin-top: 40px; 
 }
 
-.deleteBtn:hover {
+.submitBtn:hover:not(:disabled) {
   opacity: 0.8;
 }
 
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successMsg {
+  padding: 24px;
+  background-color: rgba(51, 147, 0, 0.1);
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* =========================================
-   Адаптація для планшетів та вертикальних мобільних
+   Адаптація для планшетів та мобільних
    ========================================= */
-@media (max-width: 768px) and (orientation: portrait) {
+@media (max-width: 950px) {
+  .profileLayout {
+    grid-template-columns: 1fr; /* Перехід в одну колонку */
+    gap: 24px;
+  }
+
   .profileHeader {
     flex-direction: column;
     align-items: center; 
-    gap: 16px;
+    text-align: center;
+    padding: 24px 16px;
   }
   
   .userInfo {
@@ -212,18 +394,13 @@
   }
 
   .userName {
-    font-size: 28px;
+    font-size: 24px;
   }
   
-  .controlsRow {
-    max-width: 100%;
-  }
-
   .logoutBtn {
     display: block;
-    width: 100%;
-    background-color: var(--accent-orange); 
-    color: #FFFFFF;
+    background-color: var(--border-color); 
+    color: var(--text-main);
     border: none;
     border-radius: 12px;
     padding: 16px;
@@ -234,95 +411,15 @@
     transition: opacity 0.2s ease;
   }
 
-  .logoutBtn:hover {
-    opacity: 0.8;
-  }
-}
-
-/* =========================================
-   Ультра-компактна адаптація для ЛАНДШАФТУ
-   ========================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .profileHeader {
-    flex-direction: row; 
-    justify-content: center; 
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+  .themeToggleMobile {
+    display: flex; /* Показуємо тільки на мобільних */
   }
 
-  .avatar {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .userInfo {
-    gap: 2px;
-    align-items: flex-start;
-  }
-
-  .userName {
-    font-size: 20px;
-  }
-
-  .editIcon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .userEmail {
-    font-size: 13px;
-  }
-
-  .controlsRow {
-    gap: 8px; 
-    max-width: 100%;
-  }
-
-  .changePasswordBtn, 
-  .faqBtn, 
-  .deleteBtn, 
-  .logoutBtn, 
-  .themeToggleMobile,
-  .languageToggle {
-    padding: 10px 16px;
-    font-size: 13px;
-    border-radius: 10px;
-  }
-
-  .logoutBtn {
-    display: block;
-    background-color: var(--accent-orange);
-    color: #FFFFFF;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
+  .changePasswordBtn, .faqBtn {
     text-align: center;
-    transition: opacity 0.2s ease;
-  }
-  
-  .logoutBtn:hover {
-    opacity: 0.8;
   }
 
-  .toggle-switch {
-    width: 44px;
-    height: 26px;
-  }
-
-  .toggle-knob {
-    width: 22px;
-    height: 22px;
-  }
-
-  .toggle-switch.active .toggle-knob {
-    transform: translateX(18px);
-  }
-  
-  .languageIndicator {
-    min-width: 44px;
-    height: 26px;
-    font-size: 12px;
+  .dangerZone {
+    margin-top: 24px;
   }
 }

@@ -1,0 +1,302 @@
+/* src/app/(main)/faq/page.module.css */
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  /* Компенсуємо відступ від глобального заголовка (margin-bottom: 24px), щоб текст був ближче */
+  margin: -16px 0 32px 0; 
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 800px; /* Зберігаємо обмеження ширини списку для кращої читабельності */
+}
+
+.item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.item.open {
+  border-color: var(--accent-orange);
+}
+
+.question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  transition: color 0.2s;
+  font-family: inherit;
+}
+
+.question:hover {
+  color: var(--accent-orange);
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.25s ease;
+}
+
+.open .chevron {
+  transform: rotate(180deg);
+  color: var(--accent-orange);
+}
+
+.answer {
+  padding: 0 24px 20px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+/* =========================================
+   ФОРМА ЗВОРОТНОГО ЗВ'ЯЗКУ
+   ========================================= */
+.contactBlock {
+  margin-top: 40px;
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 800px; /* Ширина як у блоку FAQ */
+}
+
+.contactTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.contactDesc {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin: 0 0 8px 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea:focus {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 110, 0, 0.1);
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fileLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px dashed var(--text-muted);
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fileLabel:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.fileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-orange);
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.submitBtn {
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  align-self: flex-start;
+}
+
+.submitBtn:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.successMsg {
+  padding: 20px;
+  background-color: rgba(51, 147, 0, 0.1);
+  color: var(--accent-green);
+  border: 1px solid var(--accent-green);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ ФОРМИ
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+  .contactBlock {
+    padding: 20px;
+    margin-top: 32px;
+  }
+  .contactTitle {
+    font-size: 20px;
+  }
+  .submitBtn {
+    align-self: stretch; /* Розтягує кнопку на всю ширину на мобільному */
+  }
+}
+
+@media (max-width: 950px) and (orientation: landscape) {
+  .contactBlock {
+    margin-top: 24px;
+    padding: 16px;
+  }
+  .contactTitle {
+    font-size: 18px;
+  }
+  .textarea {
+    min-height: 80px;
+    padding: 12px;
+  }
+  .submitBtn {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ Мобільних (Вертикально)
+   ========================================= */
+@media (max-width: 768px) and (orientation: portrait) {
+  .subtitle {
+    font-size: 14px;
+    margin-top: -8px;
+    margin-bottom: 24px;
+  }
+
+  .question {
+    font-size: 15px;
+    padding: 16px 18px;
+  }
+
+  .answer {
+    padding: 0 18px 16px;
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .subtitle {
+    font-size: 13px; 
+    margin-top: -6px;
+    margin-bottom: 16px; 
+  }
+
+  .list {
+    gap: 8px; 
+    padding-bottom: 24px;
+  }
+
+  .item {
+    border-radius: 12px; 
+  }
+
+  .question {
+    font-size: 14px; 
+    padding: 12px 16px; 
+  }
+
+  .chevron {
+    width: 16px; 
+    height: 16px;
+  }
+
+  .answer {
+    padding: 0 16px 12px; 
+    font-size: 13px; 
+    line-height: 1.4; 
+  }
+}

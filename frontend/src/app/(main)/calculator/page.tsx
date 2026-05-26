@@ -66,7 +66,6 @@ const cleanModelName = (name: string, fallback: string) => {
   return name;
 };
 
-
 export default function CalculatorPage() {
   const { t } = useTranslation();
 
@@ -102,7 +101,6 @@ export default function CalculatorPage() {
       .catch(() => {});
   }, []);
 
-  // МАГІЯ БЛОКУВАННЯ СВАЙПІВ
   const swipeHandlers = {
     onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
@@ -229,9 +227,10 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
+  // ЗМІНА ТУТ: Показуємо всі прилади, якщо категорія не обрана
   const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
     return categoryToIcon[d.category] === activeCategory;
-  }) : [];
+  }) : locationFilteredDevices;
 
   const toggleDevice = (id: string) => {
     setSelectedDeviceIds(prev => 
@@ -294,9 +293,7 @@ export default function CalculatorPage() {
           </div>
 
           <div className={styles['device-list']}>
-            {!activeCategory ? (
-              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.chooseCategory}</p>
-            ) : filteredDevices.length > 0 ? (
+            {filteredDevices.length > 0 ? (
               filteredDevices.map(device => {
                 const id = device.id || device._id; 
                 const isSelected = selectedDeviceIds.includes(id);
@@ -315,20 +312,19 @@ export default function CalculatorPage() {
                       <span className={styles['device-name']}>{device.model_name || device.name}</span>
                     </div>
                     <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${t.devices?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
                     </div>
                   </div>
                 )
               })
             ) : (
-              <p style={{ color: 'var(--text-muted)' }}>{t.calculator.noDevicesInCategory}</p>
+              <p style={{ color: 'var(--text-muted)' }}>{(t.calculator as any)?.noDevicesInCategory || 'Немає приладів для відображення'}</p>
             )}
           </div>
 
           {/* СІТКА СИСТЕМ (Карусель) */}
           <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
             <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
-              {/* НОВА ОБГОРТКА ДЛЯ ВМІСТУ */}
               <div className={styles['add-card-content']}>
                 <span className={styles['add-icon']}>+</span>
                 <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
@@ -379,9 +375,9 @@ export default function CalculatorPage() {
                 {calcResult ? calcResult.totalPowerWatts : '0'}
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
-              {calcResult && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
+              {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
-                  {t.calculator.peakLabel} {calcResult.peakPowerWatts} {t.common.w}
+                  {(t.calculator as any)?.peakLabel || 'Пік'} {calcResult.peakPowerWatts} {t.common.w}
                 </div>
               )}
             </div>
@@ -391,9 +387,9 @@ export default function CalculatorPage() {
                 {calcResult ? displayLoadPercentage : '0'}%
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
-              {calcResult && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
+              {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
                 <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', lineHeight: 1.1 }}>
-                  {t.calculator.noStartup}
+                  {(t.calculator as any)?.noStartup || 'Без пускових'}
                 </div>
               )}
             </div>
