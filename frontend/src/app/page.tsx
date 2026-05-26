@@ -30,17 +30,10 @@ export default function LandingPage() {
   return (
     <main className={styles.wrap}>
       <div className={styles.container}>
-<<<<<<< HEAD
         
         {/* 1. Логотип (Семантичний header) */}
         <header className={styles.logoWrap}>
           <LightningIcon className={styles.logoIcon} aria-hidden="true" />
-=======
-
-        {/* 1. Логотип */}
-        <div className={styles.logoWrap}>
-          <LightningIcon className={styles.logoIcon} />
->>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
           <span className={styles.logoText}>Energy Safe</span>
         </header>
 
