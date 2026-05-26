@@ -11,6 +11,8 @@ interface AlertModalProps {
   message?: string | React.ReactNode;
   buttonText?: string;
   autoClose?: boolean;
+  duration?: number; // Додано: можливість керувати часом
+  isAccent?: boolean; // Додано: акцентний колір
 }
 
 export function AlertModal({ 
@@ -19,7 +21,9 @@ export function AlertModal({
   title, 
   message, 
   buttonText,
-  autoClose = true
+  autoClose = true,
+  duration = 2500, // Змінено дефолтний час з 1000 на 2500 (2.5 сек)
+  isAccent = false // За замовчуванням вимкнено
 }: AlertModalProps) {
   const { t } = useTranslation();
   
@@ -27,20 +31,23 @@ export function AlertModal({
     if (isOpen && autoClose) {
       const timer = setTimeout(() => {
         onClose();
-      }, 1000); 
+      }, duration); 
       return () => clearTimeout(timer);
     }
-  }, [isOpen, autoClose, onClose]);
+  }, [isOpen, autoClose, onClose, duration]);
 
   if (!isOpen) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {title && <h3 className={styles.title}>{title}</h3>}
+        {title && (
+          <h3 className={`${styles.title} ${isAccent ? styles.titleAccent : ''}`}>
+            {title}
+          </h3>
+        )}
         {message && <div className={styles.message}>{message}</div>}
         
-        {/* Кнопка закриття, якщо автозакриття вимкнено */}
         {!autoClose && (
           <button className={styles.btn} onClick={onClose}>
             {buttonText || t.common.gotIt}

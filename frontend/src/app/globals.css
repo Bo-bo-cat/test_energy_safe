@@ -61,11 +61,7 @@ body {
   width: 100%;
   max-width: 1440px;
   margin: 0; 
-<<<<<<< HEAD
   padding: 8px; /* Встановлюємо чіткий відступ 24px з усіх боків */
-=======
-  padding: 8px;
->>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -77,11 +73,7 @@ body {
   font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
-<<<<<<< HEAD
   margin-top: 0; /* Обнуляємо стандартний відступ H1 від браузера */
-=======
-  margin-top: 0; /* ДОДАНО: Прибираємо стандартний відступ браузера зверху */
->>>>>>> 362df213cc8aff0c0c7339827d539f3fc300f1a5
   margin-bottom: 8px;
   letter-spacing: -0.02em;
   text-align: left;
