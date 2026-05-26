@@ -303,6 +303,7 @@ export default function SystemsPage() {
         isOpen={isAlertOpen}
         onClose={() => setIsAlertOpen(false)}
         title={t.picker.addedAlert}
+        isAccent={true} 
       />
 
       <DecisionModal 
