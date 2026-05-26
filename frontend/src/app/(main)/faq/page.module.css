@@ -71,6 +71,121 @@
 }
 
 /* =========================================
+   FEEDBACK FORM
+   ========================================= */
+.contactBlock {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 40px;
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+}
+
+.contactTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 6px 0;
+}
+
+.contactSubtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 24px 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fieldWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--text-main);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--accent-orange);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.inputError {
+  border-color: #e53e3e;
+}
+
+.errorText {
+  font-size: 12px;
+  color: #e53e3e;
+}
+
+.errorMsg {
+  font-size: 14px;
+  color: #e53e3e;
+  margin: 0;
+}
+
+.successMsg {
+  font-size: 15px;
+  color: #38a169;
+  padding: 16px;
+  background: rgba(56, 161, 105, 0.1);
+  border-radius: 12px;
+  margin: 0;
+}
+
+.submitBtn {
+  padding: 14px 24px;
+  background: var(--accent-orange);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+
+.submitBtn:hover {
+  opacity: 0.9;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
    АДАПТАЦІЯ ДЛЯ Мобільних (Вертикально)
    ========================================= */
 @media (max-width: 768px) and (orientation: portrait) {
@@ -88,5 +203,55 @@
   .answer {
     padding: 0 18px 16px;
     font-size: 14px;
+  }
+
+  .contactBlock {
+    padding: 20px 16px;
+    margin-top: 28px;
+  }
+
+  .contactTitle {
+    font-size: 17px;
+  }
+
+  .submitBtn {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+/* =========================================
+   Ультра-компактна адаптація для ЛАНДШАФТУ
+   ========================================= */
+@media (max-width: 950px) and (orientation: landscape) {
+  .subtitle {
+    font-size: 13px;
+    margin-top: -6px;
+    margin-bottom: 16px;
+  }
+
+  .list {
+    gap: 8px;
+    padding-bottom: 24px;
+  }
+
+  .item {
+    border-radius: 12px;
+  }
+
+  .question {
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+  }
+
+  .answer {
+    padding: 0 16px 12px;
+    font-size: 13px;
+    line-height: 1.4;
   }
 }
