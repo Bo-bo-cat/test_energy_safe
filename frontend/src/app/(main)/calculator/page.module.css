@@ -79,12 +79,25 @@
   height: 24px;
 }
 
-/* --- СПИСОК ПРИЛАДІВ --- */
+/* --- СКРОЛ-СПИСОК ПРИЛАДІВ (БЕЗ ГРУП) --- */
 .device-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 12px; 
   width: 100%;
+  max-height: 45vh; /* Блок тепер має фіксовану висоту і не розтягує сторінку */
+  overflow-y: auto; /* Додано внутрішній скрол */
+  padding-right: 8px; /* Відступ для скролбару */
+  overscroll-behavior: contain;
+}
+
+/* Кастомний дизайн скролбару */
+.device-list::-webkit-scrollbar {
+  width: 6px;
+}
+.device-list::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
 }
 
 .device-item {
@@ -98,6 +111,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
+  flex-shrink: 0; /* Щоб картки не стискалися */
 }
 
 .device-item.selected {
@@ -142,7 +156,7 @@
 }
 
 .device-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-main);
   white-space: nowrap;
@@ -160,23 +174,20 @@
 
 /* --- СИСТЕМИ ДБЖ (Карусель) --- */
 .systems-grid {
-  /* Перетворюємо сітку на горизонтальну карусель */
   display: flex; 
   flex-direction: row; 
-  overflow-x: auto; /* Дозволяємо прокрутку */
-  overscroll-behavior-x: contain; /* Блокуємо свайп всієї сторінки */
+  overflow-x: auto; 
+  overscroll-behavior-x: contain; 
   gap: 16px; 
   width: 100%;
-  padding-bottom: 8px; /* Відступ для скролбару */
+  padding-bottom: 8px; 
 }
-.systems-grid::-webkit-scrollbar { display: none; } /* Ховаємо скролбар Safari/Chrome */
+.systems-grid::-webkit-scrollbar { display: none; }
 
 .system-card {
-  /* Фіксована ширина для роботи в каруселі */
   flex: 0 0 220px; 
   width: 220px;
-  flex-shrink: 0; /* Забороняємо стиснення */
-  
+  flex-shrink: 0; 
   background-color: var(--bg-card);
   border: 2px solid var(--border-color);
   border-radius: 16px;
@@ -231,33 +242,29 @@
 
 /* --- КАРТКА ДОДАВАННЯ --- */
 .add-system-card {
-  /* Відновлюємо форму картки */
   background-color: var(--bg-card-inner);
-  border: 2px solid var(--border-color); /* Суцільна рамка, не пунктирна */
-  border-radius: 16px; /* Той самий радіус */
-  padding: 20px; /* Ті самі відступи */
+  border: 2px solid var(--border-color);
+  border-radius: 16px; 
+  padding: 20px; 
   display: flex; 
   flex-direction: column;
-  
-  /* Той самий розмір */
   flex: 0 0 220px; 
   width: 220px;
   flex-shrink: 0;
 }
 
-/* Обгортка вмісту для центрування */
 .add-card-content {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Центруємо вміст */
-  justify-content: center; /* Центруємо вміст */
+  align-items: center; 
+  justify-content: center; 
   gap: 12px;
-  flex: 1; /* Заповнюємо висоту картки */
+  flex: 1; 
   width: 100%;
 }
 
 .add-icon {
-  font-size: 32px; /* Менший розмір, не такий офсетний */
+  font-size: 32px; 
   font-weight: 800;
   color: var(--accent-orange);
   line-height: 1;
@@ -379,11 +386,10 @@
     margin-right: -16px; 
     padding: 0 16px;
     scrollbar-width: none;
-    overscroll-behavior-x: contain; /* Блокування свайпу */
+    overscroll-behavior-x: contain; 
   }
   .filters-row::-webkit-scrollbar { display: none; }
 
-  /* Компенсація відступів глобального контейнера для каруселей */
   .icon-filters {
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -393,7 +399,7 @@
     margin-top: -8px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    overscroll-behavior-x: contain; /* Блокування свайпу */
+    overscroll-behavior-x: contain; 
   }
   .icon-filters::-webkit-scrollbar { display: none; }
 
@@ -404,6 +410,10 @@
     height: 40px;
   }
 
+  .device-list {
+    max-height: 40vh; /* Менше висоти для мобільних */
+  }
+
   .device-item {
     padding: 10px 14px;
     gap: 10px;
@@ -412,7 +422,6 @@
   .device-power { font-size: 12px; margin-left: 36px; }
   .checkbox { width: 20px; height: 20px; }
 
-  /* Карусель ДБЖ на мобільному */
   .systems-grid {
     display: flex; 
     flex-direction: row; 
@@ -423,12 +432,12 @@
     padding: 4px 16px 16px 16px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    overscroll-behavior-x: contain; /* Блокування свайпу */
+    overscroll-behavior-x: contain; 
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
   .system-card, .add-system-card {
-    flex: 0 0 150px; /* Менші картки на мобільному */
+    flex: 0 0 150px; 
     width: 150px; 
     height: 150px; 
     padding: 14px; 
@@ -491,7 +500,6 @@
     padding-bottom: 8px;
   }
 
-  /* ЛІВА КОЛОНКА (Скрол) */
   .main-content {
     flex: 1;
     display: flex;
@@ -515,13 +523,15 @@
   .icon-chip { width: 34px; height: 34px; border-radius: 8px; }
   .device-svg { width: 18px; height: 18px; }
 
-  .device-list { gap: 8px; }
+  .device-list { 
+    gap: 8px; 
+    max-height: 40vh; /* Менша висота для ландшафту */
+  }
   .device-item { padding: 8px 12px; border-radius: 10px; }
   .device-name { font-size: 14px; }
   .device-power { font-size: 12px; }
   .checkbox { width: 18px; height: 18px; }
 
-  /* КАРУСЕЛЬ ДБЖ */
   .systems-grid {
     display: flex;
     flex-direction: row;
@@ -532,7 +542,7 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     width: 100%;
-    overscroll-behavior-x: contain; /* Блокування свайпу */
+    overscroll-behavior-x: contain; 
   }
   .systems-grid::-webkit-scrollbar { display: none; }
 
@@ -551,7 +561,6 @@
   .spec-label { font-size: 9px; }
   .spec-value { font-size: 10px; }
 
-  /* ПРАВА ПЛАШКА (Відцентрована) */
   .summary-panel {
     width: 280px; 
     flex-shrink: 0;

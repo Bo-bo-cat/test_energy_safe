@@ -61,7 +61,7 @@ body {
   width: 100%;
   max-width: 1440px;
   margin: 0; 
-  padding: 16px;
+  padding: 8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -72,6 +72,7 @@ body {
   font-size: 40px;
   font-weight: 800;
   color: var(--accent-orange);
+  margin-top: 0; /* ДОДАНО: Прибираємо стандартний відступ браузера зверху */
   margin-bottom: 8px;
   letter-spacing: -0.02em;
   text-align: left;
@@ -84,6 +85,7 @@ body {
   }
   .page-title {
     font-size: 36px;
+    margin-top: 0;
     margin-bottom: 16px;
   }
 }
@@ -91,12 +93,13 @@ body {
 /* --- АДАПТАЦІЯ ДЛЯ МОБІЛЬНИХ (ЛАНДШАФТ) --- */
 @media (max-width: 950px) and (orientation: landscape) {
   .global-page-wrap {
-    padding: 16px 20px;
+    padding: 8px 20px;
     height: 100vh;
     overflow-y: auto;
   }
   .page-title {
     font-size: 36px;
+    margin-top: 0;
     margin-bottom: 12px;
   }
 }
