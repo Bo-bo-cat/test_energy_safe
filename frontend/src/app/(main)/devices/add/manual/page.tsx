@@ -24,7 +24,7 @@ const ArrowIcon = ({ className }: { className?: string }) => (
 
 export default function ManualAddDevicePage() {
   const router = useRouter();
-  const { t } = useTranslation(); // Ініціалізуємо переклад
+  const { t, lang } = useTranslation(); 
 
   const [formData, setFormData] = useState({
     name: '',
@@ -173,6 +173,10 @@ export default function ManualAddDevicePage() {
     }
   };
 
+  // ЗМІНА ТУТ: Логіка відображення підказки
+  // Підказка показується, якщо хоча б одне з ключових полів порожнє
+  const showHint = !formData.name.trim() || !formData.category || !formData.power;
+
   return (
     <div className="global-page-wrap">
       <h1 className="page-title">{t.deviceManual.title}</h1>
@@ -181,6 +185,23 @@ export default function ManualAddDevicePage() {
         {/* Назва приладу */}
         <div className={styles['input-group']}>
           <label htmlFor="name" className={styles['label']}>{t.deviceManual.deviceName}</label>
+          
+          {/* Динамічний інфо-блок */}
+          {showHint && (
+            <div className={styles['info-box']}>
+              <svg className={styles['info-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <p className={styles['info-text']}>
+                {lang === 'uk' 
+                  ? "Введіть модель або серійний номер приладу та натисніть «Знайти», щоб система автоматично визначила характеристики."
+                  : "Enter the model or serial number of the device and press 'Search' for the system to automatically determine the characteristics."}
+              </p>
+            </div>
+          )}
+
           <div className={styles['search-row']}>
             <input
               type="text"
