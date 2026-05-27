@@ -18,6 +18,37 @@
   color: var(--text-main); 
 }
 
+/* =========================================
+   ІНФО-БЛОК (ПІДКАЗКА)
+   ========================================= */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: rgba(255, 110, 0, 0.08); /* Дуже легкий помаранчевий фон */
+  border: 1px solid rgba(255, 110, 0, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.info-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--accent-orange);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-main); /* Робимо текст трохи контрастнішим за muted */
+  font-weight: 500;
+}
+
 .input {
   background-color: var(--bg-card); 
   border: 1px solid var(--border-color); 
