@@ -1,3 +1,4 @@
+import logging
 import os
 import smtplib
 from datetime import datetime
@@ -5,6 +6,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from fastapi import APIRouter, HTTPException
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel, EmailStr, field_validator
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
@@ -31,6 +34,7 @@ async def send_feedback(data: FeedbackRequest):
     smtp_password = os.getenv("SMTP_PASSWORD")
 
     if not smtp_email or not smtp_password:
+        logger.error("SMTP not configured: SMTP_EMAIL=%s, SMTP_PASSWORD set=%s", smtp_email, bool(smtp_password))
         raise HTTPException(status_code=500, detail="Email service is not configured")
 
     sender_name = data.name.strip() if data.name and data.name.strip() else "Анонімний користувач"
@@ -77,9 +81,11 @@ async def send_feedback(data: FeedbackRequest):
             server.ehlo()
             server.login(smtp_email, smtp_password)
             server.sendmail(smtp_email, SUPPORT_EMAIL, msg.as_string())
-    except smtplib.SMTPAuthenticationError:
+    except smtplib.SMTPAuthenticationError as e:
+        logger.error("SMTP auth failed: %s", e)
         raise HTTPException(status_code=500, detail="Email authentication failed")
     except Exception as e:
+        logger.error("SMTP error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
 
     return {"status": "success"}
