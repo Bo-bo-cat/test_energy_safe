@@ -1,16 +1,14 @@
 import logging
 import os
-import smtplib
 from datetime import datetime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
+import resend
 from fastapi import APIRouter, HTTPException
-
-logger = logging.getLogger(__name__)
 from pydantic import BaseModel, EmailStr, field_validator
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
+
+logger = logging.getLogger(__name__)
 
 SUPPORT_EMAIL = "energyappsf@gmail.com"
 
@@ -30,20 +28,15 @@ class FeedbackRequest(BaseModel):
 
 @router.post("/")
 async def send_feedback(data: FeedbackRequest):
-    smtp_email = os.getenv("SMTP_EMAIL")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-
-    if not smtp_email or not smtp_password:
-        logger.error("SMTP not configured: SMTP_EMAIL=%s, SMTP_PASSWORD set=%s", smtp_email, bool(smtp_password))
+    api_key = os.getenv("RESEND_API_KEY")
+    if not api_key:
+        logger.error("RESEND_API_KEY is not set")
         raise HTTPException(status_code=500, detail="Email service is not configured")
+
+    resend.api_key = api_key
 
     sender_name = data.name.strip() if data.name and data.name.strip() else "Анонімний користувач"
     now = datetime.now().strftime("%d.%m.%Y %H:%M")
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Energy Safe — нове звернення від {data.email}"
-    msg["From"] = smtp_email
-    msg["To"] = SUPPORT_EMAIL
 
     html = f"""
     <html>
@@ -72,20 +65,16 @@ async def send_feedback(data: FeedbackRequest):
     </html>
     """
 
-    msg.attach(MIMEText(html, "html"))
-
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(smtp_email, smtp_password)
-            server.sendmail(smtp_email, SUPPORT_EMAIL, msg.as_string())
-    except smtplib.SMTPAuthenticationError as e:
-        logger.error("SMTP auth failed: %s", e)
-        raise HTTPException(status_code=500, detail="Email authentication failed")
+        resend.Emails.send({
+            "from": "Energy Safe <onboarding@resend.dev>",
+            "to": SUPPORT_EMAIL,
+            "reply_to": data.email,
+            "subject": f"Energy Safe — нове звернення від {data.email}",
+            "html": html,
+        })
     except Exception as e:
-        logger.error("SMTP error: %s", e, exc_info=True)
+        logger.error("Resend error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
 
     return {"status": "success"}
