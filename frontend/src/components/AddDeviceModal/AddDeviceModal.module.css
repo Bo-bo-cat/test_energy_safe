@@ -1,0 +1,156 @@
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 800px;
+  padding: 40px 32px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.3s ease-out forwards;
+  color: var(--text-main);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.closeBtn:hover {
+  color: var(--text-main);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  margin: 0 0 32px 0;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.card {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.card:hover {
+  background-color: var(--bg-card-inner);
+  border-color: var(--text-main);
+  transform: translateY(-2px);
+}
+
+.cardInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.icon {
+  color: var(--text-main);
+}
+
+.iconCamera, .iconSearch {
+  width: 72px;
+  height: 72px;
+  color: currentColor;
+}
+
+.hint {
+  width: 100%;
+  background: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.hintTitle {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.hintText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+  .modal {
+    padding: 32px 20px;
+  }
+  .title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  .cards {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card {
+    padding: 24px 16px;
+  }
+}

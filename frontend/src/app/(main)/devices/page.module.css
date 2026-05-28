@@ -233,6 +233,54 @@
 .action-group { display: flex; gap: 8px; align-items: center; }
 
 /* =========================================
+   ПОРОЖНІЙ СТАН (EMPTY STATE)
+   ========================================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 20px;
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  margin-top: 16px;
+}
+
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 400px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.empty-btn {
+  background-color: var(--accent-orange);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.empty-btn:hover {
+  opacity: 0.8;
+}
+
+/* =========================================
    КАСТОМНИЙ DROPDOWN (КОМПАКТНА ВЕРСІЯ)
    ========================================= */
 .custom-select-container {

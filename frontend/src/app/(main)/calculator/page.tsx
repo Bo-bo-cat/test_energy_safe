@@ -19,6 +19,7 @@ import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
+import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';
@@ -67,7 +68,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function CalculatorPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const [devices, setDevices] = useState<any[]>([]);
   const [systems, setSystems] = useState<any[]>([]);
@@ -252,7 +253,6 @@ export default function CalculatorPage() {
     new Set(locationFilteredDevices.map(d => categoryToIcon[d.category]).filter(Boolean))
   );
 
-  // ЗМІНА ТУТ: Показуємо всі прилади, якщо категорія не обрана
   const filteredDevices = activeCategory ? locationFilteredDevices.filter(d => {
     return categoryToIcon[d.category] === activeCategory;
   }) : locationFilteredDevices;
@@ -279,114 +279,140 @@ export default function CalculatorPage() {
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title">{t.calculator.title}</h1>
-
+      
       <div className={styles.layout}>
         <div className={styles['main-content']}>
           
-          <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
-            {locations.map(loc => (
-              <div 
-                key={loc.id}
-                className={`${styles['filter-chip']} ${activeLocation === loc.id ? styles.active : ''}`}
-                onClick={() => {
-                  setActiveLocation(loc.id);
-                  setActiveCategory(null); 
-                }}
-              >
-                {loc.label}
-              </div>
-            ))}
-          </div>
+          {/* ЗМІНА: Заголовок перенесено всередину лівої колонки */}
+          <h1 className="page-title" style={{ margin: '0 0 24px 0' }}>{t.calculator.title}</h1>
 
-          <div className={`${styles['icon-filters']} no-swipe`} {...swipeHandlers}>
-            {availableIcons.length > 0 ? (
-              availableIcons.map(icon => (
+          <div className={styles.devicesSection}>
+            <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
+              {locations.map(loc => (
                 <div 
-                  key={icon}
-                  className={`${styles['icon-chip']} ${activeCategory === icon ? styles.active : ''}`}
-                  onClick={() => toggleCategory(icon)}
+                  key={loc.id}
+                  className={`${styles['filter-chip']} ${activeLocation === loc.id ? styles.active : ''}`}
+                  onClick={() => {
+                    setActiveLocation(loc.id);
+                    setActiveCategory(null); 
+                  }}
                 >
-                  {renderDeviceIcon(icon)}
+                  {loc.label}
                 </div>
-              ))
-            ) : (
-              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-                {t.calculator.noDevicesInLocation}
-              </span>
+              ))}
+            </div>
+
+            {availableIcons.length > 0 && (
+              <div className={`${styles['icon-filters']} no-swipe`} {...swipeHandlers}>
+                {availableIcons.map(icon => (
+                  <div 
+                    key={icon}
+                    className={`${styles['icon-chip']} ${activeCategory === icon ? styles.active : ''}`}
+                    onClick={() => toggleCategory(icon)}
+                  >
+                    {renderDeviceIcon(icon)}
+                  </div>
+                ))}
+              </div>
             )}
+
+            <div className={styles['device-list']}>
+              {isLoading ? (
+                 <p style={{ color: 'var(--text-muted)' }}>Завантаження...</p>
+              ) : filteredDevices.length > 0 ? (
+                filteredDevices.map(device => {
+                  const id = device.id || device._id; 
+                  const isSelected = selectedDeviceIds.includes(id);
+                  return (
+                    <div 
+                      key={id} 
+                      className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
+                      onClick={() => toggleDevice(id)}
+                    >
+                      <div className={styles['device-left']}>
+                        <div className={styles.checkbox}>
+                          <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        </div>
+                        <span className={styles['device-name']}>{device.model_name || device.name}</span>
+                      </div>
+                      <div className={styles['device-power']}>
+                        {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                      </div>
+                    </div>
+                  )
+                })
+              ) : (
+                <div className={styles['empty-state']}>
+                  <AnimatedEmptyIcon />
+                  <h3 className={styles['empty-title']}>
+                    {devices.length === 0 
+                      ? (lang === 'uk' ? 'Немає приладів' : 'No devices found')
+                      : (lang === 'uk' ? 'Немає приладів у цій категорії' : 'No devices in this category')}
+                  </h3>
+                  <p className={styles['empty-desc']}>
+                    {devices.length === 0 
+                      ? (lang === 'uk' ? 'Для розрахунку необхідно додати хоча б один прилад. Перейдіть до розділу "Прилади", щоб створити свій список.' : 'You need to add at least one device for calculation. Go to the "Devices" section to create your list.')
+                      : (lang === 'uk' ? 'У цій локації або категорії ще немає жодного приладу. Оберіть інший фільтр.' : 'There are no devices in this location or category yet. Choose another filter.')}
+                  </p>
+                  {devices.length === 0 && (
+                    <Link href="/devices" className={styles['empty-btn']}>
+                      {lang === 'uk' ? 'Перейти до приладів' : 'Go to devices'}
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className={styles['device-list']}>
-            {filteredDevices.length > 0 ? (
-              filteredDevices.map(device => {
-                const id = device.id || device._id; 
-                const isSelected = selectedDeviceIds.includes(id);
+          <div className={styles.systemsSection}>
+            <h2 className={styles.subSectionTitle}>
+              {lang === 'uk' ? 'Система живлення' : 'Power System'}
+            </h2>
+            <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
+              <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
+                <div className={styles['add-card-content']}>
+                  <span className={styles['add-icon']}>+</span>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)', textAlign: 'center' }}>
+                    {t.calculator.addMyUPS}
+                  </span>
+                </div>
+              </Link>
+
+              {systems.map(sys => {
+                const id = sys.id || sys._id;
+                const isSelected = selectedSystemId === id;
+                
+                const rawSysName = sys.model || t.common.model;
+                const cleanName = cleanModelName(rawSysName, t.common.model);
+                
                 return (
                   <div 
                     key={id} 
-                    className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
-                    onClick={() => toggleDevice(id)}
+                    className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
+                    onClick={() => setSelectedSystemId(id)}
                   >
-                    <div className={styles['device-left']}>
-                      <div className={styles.checkbox}>
-                        <svg className={styles['check-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                      </div>
-                      <span className={styles['device-name']}>{device.model_name || device.name}</span>
+                    <div className={styles['system-title']}>{cleanName}</div>
+                    
+                    <div className={styles['system-spec']}>
+                      <span className={styles['spec-label']}>{t.common.type}</span>
+                      <span className={styles['spec-value']}>{sys.type || t.dashboard.portableStation}</span>
                     </div>
-                    <div className={styles['device-power']}>
-                      {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                    <div className={styles['system-spec']}>
+                      <span className={styles['spec-label']}>{t.common.power}</span>
+                      <span className={styles['spec-value']}>{sys.power} {t.common.w}</span>
+                    </div>
+                    <div className={styles['system-spec']}>
+                      <span className={styles['spec-label']}>{t.common.battery}</span>
+                      <span className={styles['spec-value']}>{sys.battery}</span>
                     </div>
                   </div>
                 )
-              })
-            ) : (
-              <p style={{ color: 'var(--text-muted)' }}>{(t.calculator as any)?.noDevicesInCategory || 'Немає приладів для відображення'}</p>
-            )}
+              })}
+            </div>
           </div>
 
-          {/* СІТКА СИСТЕМ (Карусель) */}
-          <div className={`${styles['systems-grid']} no-swipe`} {...swipeHandlers}>
-            <Link href="/picker" className={`${styles['system-card']} ${styles['add-system-card']}`} style={{ textDecoration: 'none' }}>
-              <div className={styles['add-card-content']}>
-                <span className={styles['add-icon']}>+</span>
-                <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)' }}>{t.calculator.addMyUPS}</span>
-              </div>
-            </Link>
-
-            {systems.map(sys => {
-              const id = sys.id || sys._id;
-              const isSelected = selectedSystemId === id;
-              
-              const rawSysName = sys.model || t.common.model;
-              const cleanName = cleanModelName(rawSysName, t.common.model);
-              
-              return (
-                <div 
-                  key={id} 
-                  className={`${styles['system-card']} ${isSelected ? styles.selected : ''}`}
-                  onClick={() => setSelectedSystemId(id)}
-                >
-                  <div className={styles['system-title']}>{cleanName}</div>
-                  
-                  <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>{t.common.type}</span>
-                    <span className={styles['spec-value']}>{sys.type || t.dashboard.portableStation}</span>
-                  </div>
-                  <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>{t.common.power}</span>
-                    <span className={styles['spec-value']}>{sys.power} {t.common.w}</span>
-                  </div>
-                  <div className={styles['system-spec']}>
-                    <span className={styles['spec-label']}>{t.common.battery}</span>
-                    <span className={styles['spec-value']}>{sys.battery}</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
         </div>
 
         <div className={styles['summary-panel']}>

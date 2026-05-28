@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
-import { useTranslation } from '../../../../../context/LanguageContext';
+import { useTranslation } from '../../../../context/LanguageContext';
 
 const CATEGORIES = [
   'Холодильник', 'Телевізор', 'Пральна машина', 'Мікрохвильовка',

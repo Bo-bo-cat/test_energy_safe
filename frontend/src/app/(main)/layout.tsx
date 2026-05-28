@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './layout.module.css';
+import { Toaster } from 'react-hot-toast'; // ДОДАНО: Імпорт Toaster
 
 import { LightningIcon } from '../../components/icons/Lightning';
 import { HomeIcon } from '../../components/icons/Home';
@@ -29,13 +30,10 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Перевіряємо, чи є токен у localStorage
     const token = localStorage.getItem('access_token');
     if (token) {
       setIsLoggedIn(true);
     }
-
-    // Застосовуємо тему при завантаженні
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
@@ -68,6 +66,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles['layout-container']}>
       <aside className={styles['sidebar']}>
+        {/* ... (Ваш попередній код сайдбару залишається без змін) ... */}
         <div className={styles['logo-container']}>
           <LightningIcon className={styles['logo-icon']} />
           <div className={styles['logo-text']}>Energy Safe</div>
@@ -122,6 +121,23 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       />
 
       <InstallPrompt />
+      
+      {/* ДОДАНО: Глобальний Toaster для нотифікацій */}
+      <Toaster 
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-main)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            fontWeight: 600,
+          },
+          success: {
+            iconTheme: { primary: 'var(--accent-orange)', secondary: '#fff' },
+          }
+        }}
+      />
     </div>
   );
 }
