@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useMemo, useRef, FormEvent } from 'react';
+import { useEffect, useState, useMemo, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
@@ -31,10 +31,8 @@ export default function ProfilePage() {
 
   // === Стейт для форми зворотного зв'язку ===
   const [feedbackText, setFeedbackText] = useState('');
-  const [feedbackFile, setFeedbackFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -96,12 +94,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFeedbackFile(e.target.files[0]);
-    }
-  };
-
   const handleFeedbackSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!feedbackText.trim()) return;
@@ -113,9 +105,6 @@ export default function ProfilePage() {
       const formData = new FormData();
       formData.append('message', feedbackText);
       formData.append('email', user.email);
-      if (feedbackFile) {
-        formData.append('screenshot', feedbackFile);
-      }
 
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/feedback`, {
         method: 'POST',
@@ -125,10 +114,7 @@ export default function ProfilePage() {
 
       setSubmitSuccess(true);
       setFeedbackText('');
-      setFeedbackFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
       
-      // Закриваємо мобілку після 3 секунд успіху
       setTimeout(() => {
         setSubmitSuccess(false);
         setIsMobileSupportOpen(false);
@@ -138,7 +124,6 @@ export default function ProfilePage() {
       console.error('Помилка відправки форми:', err);
       setSubmitSuccess(true);
       setFeedbackText('');
-      setFeedbackFile(null);
       setTimeout(() => {
         setSubmitSuccess(false);
         setIsMobileSupportOpen(false);
@@ -198,7 +183,6 @@ export default function ProfilePage() {
               {lang === 'uk' ? 'Відповіді на часті запитання (FAQ)' : 'Frequently Asked Questions (FAQ)'}
             </button>
 
-            {/* НОВА КНОПКА ТІЛЬКИ ДЛЯ МОБІЛЬНИХ */}
             <button className={styles.supportBtnMobile} onClick={() => setIsMobileSupportOpen(true)}>
               {lang === 'uk' ? 'Служба підтримки' : 'Support Team'}
             </button>
@@ -214,10 +198,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ПРАВА КОЛОНКА (АБО СКОПІЙОВАНЕ ВІКНО НА МОБІЛЬНОМУ) */}
+        {/* ПРАВА КОЛОНКА */}
         <div className={`${styles.rightColumn} ${isMobileSupportOpen ? styles.mobileOpen : ''}`}>
-          
-          {/* Темний фон-підложка для мобільної версії */}
           <div className={styles.mobileBackdrop} onClick={() => setIsMobileSupportOpen(false)}></div>
           
           <div className={styles.contactBlock}>
@@ -225,7 +207,6 @@ export default function ProfilePage() {
               <h2 className={styles.contactTitle}>
                 {lang === 'uk' ? 'Служба підтримки' : 'Support Team'}
               </h2>
-              {/* Хрестик для закриття (видно тільки на мобільному) */}
               <button className={styles.closeSupportBtn} onClick={() => setIsMobileSupportOpen(false)}>
                 &times;
               </button>
@@ -251,25 +232,6 @@ export default function ProfilePage() {
                   required
                 />
                 
-                <div className={styles.fileRow}>
-                  <label className={styles.fileLabel}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
-                    </svg>
-                    {lang === 'uk' ? 'Прикріпити скріншот' : 'Attach screenshot'}
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className={styles.hiddenInput} 
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                  {feedbackFile && (
-                    <span className={styles.fileName}>{feedbackFile.name}</span>
-                  )}
-                </div>
-
                 <button 
                   type="submit" 
                   className={styles.submitBtn} 
