@@ -15,6 +15,7 @@ export default function FaqPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<{ email?: string; message?: string }>({});
 
@@ -45,10 +46,15 @@ export default function FaqPage() {
 
     setStatus('loading');
     try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('message', message);
+      if (name) formData.append('name', name);
+      if (file) formData.append('file', file);
+
       const res = await fetch(`${API}/feedback/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, message, name: name || undefined }),
+        body: formData,
       });
 
       if (!res.ok) throw new Error();
@@ -57,6 +63,7 @@ export default function FaqPage() {
       setName('');
       setEmail('');
       setMessage('');
+      setFile(null);
       setErrors({});
     } catch {
       setStatus('error');
@@ -134,6 +141,20 @@ export default function FaqPage() {
                 }}
               />
               {errors.message && <span className={styles.errorText}>{errors.message}</span>}
+            </div>
+
+            <div className={styles.fieldWrap}>
+              <label className={styles.fileLabel}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className={styles.fileInput}
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                />
+                <span className={styles.fileBtn}>
+                  {file ? file.name : t.faq.contactAttach}
+                </span>
+              </label>
             </div>
 
             {status === 'error' && <p className={styles.errorMsg}>{t.faq.contactError}</p>}

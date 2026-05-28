@@ -1,33 +1,29 @@
+import base64
 import logging
 import os
 from datetime import datetime
 
 import resend
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr, field_validator
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 router = APIRouter(prefix="/feedback", tags=["Feedback"])
 
 logger = logging.getLogger(__name__)
 
 SUPPORT_EMAIL = "energyappsf@gmail.com"
-
-
-class FeedbackRequest(BaseModel):
-    email: EmailStr
-    message: str
-    name: str | None = None
-
-    @field_validator("message")
-    @classmethod
-    def message_not_empty(cls, v: str) -> str:
-        if not v.strip():
-            raise ValueError("Message cannot be empty")
-        return v.strip()
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 @router.post("/")
-async def send_feedback(data: FeedbackRequest):
+async def send_feedback(
+    email: str = Form(...),
+    message: str = Form(...),
+    name: str | None = Form(None),
+    file: UploadFile | None = File(None),
+):
+    if not message.strip():
+        raise HTTPException(status_code=422, detail="Message cannot be empty")
+
     api_key = os.getenv("RESEND_API_KEY")
     if not api_key:
         logger.error("RESEND_API_KEY is not set")
@@ -35,7 +31,7 @@ async def send_feedback(data: FeedbackRequest):
 
     resend.api_key = api_key
 
-    sender_name = data.name.strip() if data.name and data.name.strip() else "Анонімний користувач"
+    sender_name = name.strip() if name and name.strip() else "Анонімний користувач"
     now = datetime.now().strftime("%d.%m.%Y %H:%M")
 
     html = f"""
@@ -50,7 +46,7 @@ async def send_feedback(data: FeedbackRequest):
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666;">Email:</td>
-            <td style="padding: 8px 0;"><a href="mailto:{data.email}" style="color: #FF6E00;">{data.email}</a></td>
+            <td style="padding: 8px 0;"><a href="mailto:{email}" style="color: #FF6E00;">{email}</a></td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666;">Дата:</td>
@@ -59,20 +55,33 @@ async def send_feedback(data: FeedbackRequest):
         </table>
         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
         <h3 style="color: #333; margin-top: 0;">Повідомлення:</h3>
-        <p style="color: #444; line-height: 1.7; white-space: pre-wrap;">{data.message}</p>
+        <p style="color: #444; line-height: 1.7; white-space: pre-wrap;">{message.strip()}</p>
       </div>
     </body>
     </html>
     """
 
+    params: dict = {
+        "from": "Energy Safe <onboarding@resend.dev>",
+        "to": SUPPORT_EMAIL,
+        "reply_to": email,
+        "subject": f"Energy Safe — нове звернення від {email}",
+        "html": html,
+    }
+
+    if file and file.filename:
+        content = await file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail="File too large (max 5 MB)")
+        params["attachments"] = [
+            {
+                "filename": file.filename,
+                "content": base64.b64encode(content).decode(),
+            }
+        ]
+
     try:
-        resend.Emails.send({
-            "from": "Energy Safe <onboarding@resend.dev>",
-            "to": SUPPORT_EMAIL,
-            "reply_to": data.email,
-            "subject": f"Energy Safe — нове звернення від {data.email}",
-            "html": html,
-        })
+        resend.Emails.send(params)
     except Exception as e:
         logger.error("Resend error: %s", e, exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")

@@ -168,6 +168,7 @@ export const en = {
     contactName: 'Your name (optional)',
     contactEmail: 'Your email',
     contactMessage: 'Describe your issue or suggestion',
+    contactAttach: 'Attach screenshot (optional)',
     contactSend: 'Send',
     contactSending: 'Sending...',
     contactSuccess: 'Message sent! We will get back to you shortly.',

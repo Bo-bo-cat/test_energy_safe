@@ -169,6 +169,7 @@ export const uk = {
     contactName: "Ваше ім'я (необов'язково)",
     contactEmail: 'Ваш email',
     contactMessage: 'Опишіть вашу проблему або побажання',
+    contactAttach: 'Прикріпити скріншот (необов\'язково)',
     contactSend: 'Надіслати',
     contactSending: 'Надсилання...',
     contactSuccess: 'Повідомлення надіслано! Ми зв\'яжемося з вами найближчим часом.',
