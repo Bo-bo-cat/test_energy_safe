@@ -125,7 +125,7 @@ export const uk = {
     soon: 'Скоро буде!'
   },
   deviceManual: {
-    title: 'Ввести вручну',
+    title: 'Знайти прилад',
     deviceName: 'Назва приладу',
     namePlaceholder: 'Наприклад: Gorenje RK4182PW4',
     category: 'Категорія',

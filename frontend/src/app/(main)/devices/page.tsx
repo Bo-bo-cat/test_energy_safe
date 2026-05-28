@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
-import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 // Іконки
 import { FridgeIcon } from '../../../components/icons/Fridge';
@@ -20,10 +20,12 @@ import { OtherIcon } from '../../../components/icons/Other';
 import { KettleIcon } from '../../../components/icons/Kettle';
 import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 
-// Компонент модалки
+// Компоненти
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
+import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon'; 
+import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal'; // Наша модалка
 
-// ПІДКЛЮЧАЄМО СЛОВНИК
+// Словник
 import { useTranslation } from '../../../context/LanguageContext';
 
 const categoryToIcon: Record<string, string> = {
@@ -64,7 +66,7 @@ const renderDeviceIcon = (iconName?: string) => {
 };
 
 export default function DevicesPage() {
-  const { t } = useTranslation(); 
+  const { t, lang } = useTranslation(); 
 
   const [devices, setDevices] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +74,6 @@ export default function DevicesPage() {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
   
-  // Стан для кастомного дропдауну локацій
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const [customLocations, setCustomLocations] = useState<string[]>([]);
@@ -80,14 +81,16 @@ export default function DevicesPage() {
   const [newLocationName, setNewLocationName] = useState('');
   const newLocationInputRef = useRef<HTMLInputElement>(null);
 
-  // ПРАВИЛЬНЕ ЗАКРИТТЯ: перевіряємо, чи клік був не по нашому списку
+  // СТАН ДЛЯ МОДАЛКИ
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest(`.${styles['custom-select-container']}`)) {
-        return; // Якщо клікнули всередині селекта - нічого не робимо
+        return; 
       }
-      setOpenDropdownId(null); // Якщо десь інде - закриваємо
+      setOpenDropdownId(null); 
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
@@ -117,9 +120,12 @@ export default function DevicesPage() {
           })));
         }
       })
-      .catch((err) => console.error(t.common.error, err))
+      .catch((err) => {
+        console.error(t.common.error, err);
+        toast.error(lang === 'uk' ? 'Помилка завантаження приладів' : 'Error loading devices');
+      })
       .finally(() => setIsLoading(false));
-  }, [t.common.error]);
+  }, [t.common.error, lang]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -139,8 +145,10 @@ export default function DevicesPage() {
     setShowAddLocation(false);
     setNewLocationName('');
     if (!name || allLocations.includes(name)) return;
+    
     const token = localStorage.getItem('access_token');
     if (!token) return;
+    
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/locations`, {
         method: 'POST',
@@ -148,8 +156,13 @@ export default function DevicesPage() {
         body: JSON.stringify({ name }),
       });
       const data = await res.json();
-      if (Array.isArray(data.locations)) setCustomLocations(data.locations);
-    } catch { /* ignore */ }
+      if (Array.isArray(data.locations)) {
+        setCustomLocations(data.locations);
+        toast.success(lang === 'uk' ? `Локацію "${name}" додано` : `Location "${name}" added`);
+      }
+    } catch { 
+      toast.error(lang === 'uk' ? 'Не вдалося додати локацію' : 'Failed to add location');
+    }
   };
 
   const handleDeleteLocation = async (name: string) => {
@@ -162,7 +175,10 @@ export default function DevicesPage() {
       });
       setCustomLocations(prev => prev.filter(l => l !== name));
       if (activeFilter === name) setActiveFilter('Усі');
-    } catch { /* ignore */ }
+      toast.success(lang === 'uk' ? 'Локацію видалено' : 'Location deleted');
+    } catch { 
+      toast.error(lang === 'uk' ? 'Помилка видалення локації' : 'Error deleting location');
+    }
   };
 
   const filteredDevices = devices.filter((device) => {
@@ -194,7 +210,11 @@ export default function DevicesPage() {
         },
         body: JSON.stringify({ tag: newTag }) 
       });
-    } catch (err) { console.error(err); }
+      toast.success(lang === 'uk' ? 'Локацію приладу змінено' : 'Device location changed');
+    } catch (err) { 
+      console.error(err); 
+      toast.error(lang === 'uk' ? 'Помилка зміни локації' : 'Error changing location');
+    }
   };
 
   const confirmDelete = async () => {
@@ -212,13 +232,20 @@ export default function DevicesPage() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
+      toast.success(lang === 'uk' ? 'Прилад видалено' : 'Device deleted');
     } catch (err) { 
       console.error(err);
+      toast.error(lang === 'uk' ? 'Помилка видалення приладу' : 'Error deleting device');
     }
   };
 
+  const hasDevices = devices.length > 0;
+
   return (
-    <div className="global-page-wrap">
+    <div 
+      className="global-page-wrap" 
+      style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}
+    >
       <h1 className="page-title">{t.devices.title}</h1>
       
       <div className={styles['header-container']}>
@@ -275,30 +302,34 @@ export default function DevicesPage() {
             )}
           </div>
 
-          <Link href="/devices/add" className={styles['add-btn']}>
-            <span className={styles['plus-icon']}>+</span>
-            {t.common.add}
-          </Link>
+          {hasDevices && (
+            <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+              <span className={styles['plus-icon']}>+</span>
+              {t.common.add}
+            </button>
+          )}
         </div>
 
-        <div className={styles['summary-card']}>
-          <div className={styles['summary-label']}>{t.devices.totalPower}</div>
-          <div className={styles['summary-value']}>
-            <span className={styles['accent']}>
-              {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
-            </span> {t.common.w} 
-            {filteredDevices.some(d => d.startup_power_watt) && (
-              <>
-                , {t.devices.startup} <span className={styles['accent']}>
-                  {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
-                </span> {t.common.w}
-              </>
-            )}
+        {hasDevices && (
+          <div className={styles['summary-card']}>
+            <div className={styles['summary-label']}>{t.devices.totalPower}</div>
+            <div className={styles['summary-value']}>
+              <span className={styles['accent']}>
+                {filteredDevices.reduce((acc, d) => acc + (d.power_watt || 0), 0)}
+              </span> {t.common.w} 
+              {filteredDevices.some(d => d.startup_power_watt) && (
+                <>
+                  , {t.devices.startup} <span className={styles['accent']}>
+                    {Math.max(...filteredDevices.map(d => d.startup_power_watt || d.power_watt || 0), 0)}
+                  </span> {t.common.w}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <div className={styles['device-list']}>
+      <div className={styles['device-list']} style={{ flex: 1, overflowY: 'auto', paddingBottom: '32px' }}>
         {isLoading ? (
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
@@ -306,7 +337,6 @@ export default function DevicesPage() {
             <div 
               key={categoryName} 
               className={styles['category-group']}
-              // МАГІЯ Z-INDEX: підіймаємо ту категорію, де відкритий дропдаун, вище за інші
               style={{ position: 'relative', zIndex: items.some((d: any) => openDropdownId === d.id) ? 50 : 1 }}
             >
               <div 
@@ -338,7 +368,6 @@ export default function DevicesPage() {
                           
                           <div className={styles['action-group']}>
                             
-                            {/* КАСТОМНИЙ DROPDOWN ЗАМІСТЬ СЕЛЕКТА */}
                             <div className={styles['custom-select-container']}>
                               <div 
                                 className={`${styles['location-select']} ${openDropdownId === device.id ? styles['active-select'] : ''}`}
@@ -385,11 +414,24 @@ export default function DevicesPage() {
             </div>
           ))
         ) : (
-          <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>
-            {activeFilter === 'Усі' 
-              ? t.devices.noDevicesAdded 
-              : `${t.devices.noDevicesInCategory} "${activeFilter}".`}
-          </p>
+          <div className={styles['empty-state']}>
+            <AnimatedEmptyIcon />
+            <h3 className={styles['empty-title']}>
+              {activeFilter === 'Усі' 
+                ? (lang === 'uk' ? 'Немає приладів' : 'No devices found') 
+                : (lang === 'uk' ? `Немає приладів у локації "${activeFilter}"` : `No devices in "${activeFilter}"`)}
+            </h3>
+            <p className={styles['empty-desc']}>
+              {activeFilter === 'Усі' 
+                ? (lang === 'uk' ? 'Ваш список приладів порожній. Додайте перший прилад, щоб мати можливість розраховувати навантаження.' : 'Your device list is empty. Add your first device to start calculating loads.')
+                : (lang === 'uk' ? 'У цій локації ще немає жодного приладу. Додайте новий або змініть локацію для існуючих.' : 'There are no devices in this location yet. Add a new one or change the location of existing devices.')}
+            </p>
+            {activeFilter === 'Усі' && (
+              <button onClick={() => setIsAddModalOpen(true)} className={styles['empty-btn']}>
+                {lang === 'uk' ? 'Додати прилад' : 'Add device'}
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -400,6 +442,12 @@ export default function DevicesPage() {
         title={t.common.areYouSure}
         confirmText={t.common.yes}
         cancelText={t.common.no}
+      />
+
+      {/* РЕНДЕР МОДАЛКИ ДЛЯ ДОДАВАННЯ ПРИЛАДУ */}
+      <AddDeviceModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
       />
     </div>
   );

@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
+import toast from 'react-hot-toast';
 
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
-import { AlertModal } from '../../../components/AlertModal/AlertModal';
+import { SystemIcon } from '../../../components/icons/System'; // Додано для порожнього стану
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AddSystemModal } from '../../../components/AddSystemModal/AddSystemModal';
 import { useTranslation } from '../../../context/LanguageContext';
@@ -26,11 +27,7 @@ export default function SystemsPage() {
   const [recommended, setRecommended] = useState<any[]>([]);
   const [query, setQuery] = useState('');
   
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertKey, setAlertKey] = useState(0); 
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
-
-  // Тільки стан відкрито/закрито (дані форми тепер живуть всередині модалки)
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
 
   useEffect(() => {
@@ -76,17 +73,19 @@ export default function SystemsPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ 
           model: query,
-          selected_for_calculation: true // Одразу увімкнено при додаванні
+          selected_for_calculation: true 
         })
       });
       if (res.ok) {
         setQuery('');
         fetchMySystems();
-        setIsAlertOpen(true);
-        setAlertKey(prev => prev + 1);
+        toast.success(lang === 'uk' ? 'Систему додано' : 'System added');
+      } else {
+        toast.error(lang === 'uk' ? 'Систему не знайдено' : 'System not found');
       }
     } catch (err) { 
       console.error(err); 
+      toast.error(t.common.error);
     }
   };
 
@@ -101,17 +100,17 @@ export default function SystemsPage() {
           ...formData,
           power: Number(formData.power),
           type: 'ДБЖ / Власна збірка',
-          selected_for_calculation: true // Одразу увімкнено при додаванні
+          selected_for_calculation: true 
         }),
       });
       if (res.ok) {
         setIsCustomModalOpen(false);
         fetchMySystems();
-        setIsAlertOpen(true);
-        setAlertKey(prev => prev + 1);
+        toast.success(lang === 'uk' ? 'Власну систему додано' : 'Custom system added');
       }
     } catch (err) { 
       console.error(err); 
+      toast.error(t.common.error);
     }
   };
 
@@ -128,16 +127,16 @@ export default function SystemsPage() {
           power: rec.power, 
           battery: rec.battery, 
           autonomy: rec.autonomy, 
-          selected_for_calculation: true // Одразу увімкнено при додаванні
+          selected_for_calculation: true 
         }),
       });
       if (res.ok) {
         fetchMySystems();
-        setIsAlertOpen(true);
-        setAlertKey(prev => prev + 1); 
+        toast.success(lang === 'uk' ? 'Систему додано' : 'System added');
       }
     } catch (err) { 
       console.error(err); 
+      toast.error(t.common.error);
     }
   };
 
@@ -155,14 +154,18 @@ export default function SystemsPage() {
         method: 'DELETE', 
         headers: { Authorization: `Bearer ${token}` } 
       });
+      toast.success(lang === 'uk' ? 'Систему видалено' : 'System deleted');
     } catch (err) { 
       console.error(err); 
       fetchMySystems(); 
+      toast.error(t.common.error);
     }
   };
 
   const handleToggleSelect = async (id: string, currentState: boolean) => {
-    setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: !currentState } : s));
+    const newState = !currentState;
+    setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: newState } : s));
+    
     const token = localStorage.getItem('access_token');
     if (!token) return;
     
@@ -170,8 +173,11 @@ export default function SystemsPage() {
       await fetch(`${API}/systems/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ selected_for_calculation: !currentState })
+        body: JSON.stringify({ selected_for_calculation: newState })
       });
+      if (newState) {
+        toast.success(lang === 'uk' ? 'Додано до розрахунку' : 'Added to calculation');
+      }
     } catch (err) { 
       console.error(err); 
     }
@@ -220,72 +226,83 @@ export default function SystemsPage() {
         </>
       )}
 
-      {displayedList.length === 0 && (
-        <p style={{ color: 'var(--text-muted)', fontWeight: 500, marginBottom: '48px' }}>
-          {tab === 'my' ? t.picker.noSaved : t.picker.loadingRec}
-        </p>
+      {displayedList.length === 0 ? (
+        <div className={styles['empty-state']}>
+          <div className={styles['empty-icon-wrap']}>
+            <SystemIcon className={styles['empty-svg']} />
+          </div>
+          <h3 className={styles['empty-title']}>
+            {tab === 'my' 
+              ? (lang === 'uk' ? 'Немає систем' : 'No systems found') 
+              : (lang === 'uk' ? 'Немає рекомендацій' : 'No recommendations')}
+          </h3>
+          <p className={styles['empty-desc']}>
+            {tab === 'my' 
+              ? (lang === 'uk' ? 'Ви ще не додали жодної системи резервного живлення. Знайдіть її в базі або додайте вручну.' : 'You haven\'t added any power systems yet. Find one in the database or add manually.') 
+              : (lang === 'uk' ? 'Завантаження списку рекомендованих систем...' : 'Loading recommendations list...')}
+          </p>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {displayedList.map((item) => (
+            <div key={item.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
+                
+                <div className={styles.cardActions}>
+                  {tab === 'my' ? (
+                    <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
+                      <DeleteIcon className={styles.actionIconOrange} />
+                    </button>
+                  ) : (
+                    <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
+                      <span className={styles.plusIconTop}>+</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.specs}>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.type}</span>
+                  <span className={styles.specValue}>{item.type}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.power}</span>
+                  <span className={styles.specValue}>{item.power} {t.common.w}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.battery}</span>
+                  <span className={styles.specValue}>{item.battery}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.autonomy}</span>
+                  <span className={styles.specValue}>{item.autonomy}</span>
+                </div>
+              </div>
+
+              {tab === 'my' && (
+                <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
+                  <span className={styles.calcLabel}>
+                    {item.selected_for_calculation 
+                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                      : t.picker.addToCalc}
+                  </span>
+                  <button className={styles.iconBtn}>
+                    {item.selected_for_calculation ? (
+                      <CheckboxCheckedIcon className={styles.actionIconOrange} />
+                    ) : (
+                      <CheckboxIcon className={styles.actionIconOrange} />
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
-      <div className={styles.grid}>
-        {displayedList.map((item) => (
-          <div key={item.id} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
-              
-              <div className={styles.cardActions}>
-                {tab === 'my' ? (
-                  <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
-                    <DeleteIcon className={styles.actionIconOrange} />
-                  </button>
-                ) : (
-                  <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
-                    <span className={styles.plusIconTop}>+</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.specs}>
-              <div className={styles.specRow}>
-                <span className={styles.specLabel}>{t.common.type}</span>
-                <span className={styles.specValue}>{item.type}</span>
-              </div>
-              <div className={styles.specRow}>
-                <span className={styles.specLabel}>{t.common.power}</span>
-                <span className={styles.specValue}>{item.power} {t.common.w}</span>
-              </div>
-              <div className={styles.specRow}>
-                <span className={styles.specLabel}>{t.common.battery}</span>
-                <span className={styles.specValue}>{item.battery}</span>
-              </div>
-              <div className={styles.specRow}>
-                <span className={styles.specLabel}>{t.common.autonomy}</span>
-                <span className={styles.specValue}>{item.autonomy}</span>
-              </div>
-            </div>
-
-            {tab === 'my' && (
-              <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                {/* ДИНАМІЧНИЙ ТЕКСТ ЗАЛЕЖНО ВІД СТАНУ ГАЛОЧКИ */}
-                <span className={styles.calcLabel}>
-                  {item.selected_for_calculation 
-                    ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
-                    : t.picker.addToCalc}
-                </span>
-                <button className={styles.iconBtn}>
-                  {item.selected_for_calculation ? (
-                    <CheckboxCheckedIcon className={styles.actionIconOrange} />
-                  ) : (
-                    <CheckboxIcon className={styles.actionIconOrange} />
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {tab === 'recommended' && (
+      {tab === 'recommended' && displayedList.length > 0 && (
         <div className={styles.hintBox}>
           <div className={styles.hintTitle}>{t.picker.hintTitle}</div>
           <div className={styles.hintText}>{t.picker.hintText}</div>
@@ -296,14 +313,6 @@ export default function SystemsPage() {
         isOpen={isCustomModalOpen} 
         onClose={() => setIsCustomModalOpen(false)} 
         onSave={handleCreateCustomSystem} 
-      />
-
-      <AlertModal 
-        key={alertKey}
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        title={t.picker.addedAlert}
-        isAccent={true} 
       />
 
       <DecisionModal 
