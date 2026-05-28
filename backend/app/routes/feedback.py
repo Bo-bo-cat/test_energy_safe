@@ -71,12 +71,15 @@ async def send_feedback(data: FeedbackRequest):
     msg.attach(MIMEText(html, "html"))
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
             server.login(smtp_email, smtp_password)
             server.sendmail(smtp_email, SUPPORT_EMAIL, msg.as_string())
     except smtplib.SMTPAuthenticationError:
         raise HTTPException(status_code=500, detail="Email authentication failed")
-    except Exception:
-        raise HTTPException(status_code=500, detail="Failed to send message")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
 
     return {"status": "success"}
