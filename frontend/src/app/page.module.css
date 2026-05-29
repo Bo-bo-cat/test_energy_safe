@@ -6,81 +6,84 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FFFFFF; /* Світла тема */
+  background-color: #FFFFFF;
   color: #111827; 
   font-family: 'Inter', sans-serif;
-  padding: 40px 24px; 
   box-sizing: border-box;
   overflow-x: hidden;
+  position: relative; 
 }
 
 .wrap * {
   box-sizing: border-box;
 }
 
-/* --- GRID СІТКА ДЛЯ ПК (Десктоп) --- */
-.container {
-  max-width: 1200px;
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Дві колонки */
-  /* 5 рядків, останній забирає вільне місце, щоб елементи ліворуч не розповзалися */
-  grid-template-rows: auto auto auto auto 1fr; 
-  column-gap: 60px;
-}
-
+/* --- ЛОГОТИП --- */
 .logoWrap {
-  grid-column: 1;
-  grid-row: 1;
+  position: absolute;
+  top: 40px;
+  left: 40px;
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 40px;
 }
 
 .logoIcon {
-  width: 24px;
-  height: 28px;
+  width: 20px;
+  height: 24px;
   color: #FF6B00; 
   flex-shrink: 0;
-  overflow: visible; /* Блискавка більше не обрізається! */
 }
 
 .logoText {
   color: #FF6B00; 
-  font-size: 24px;
+  font-size: 24px; 
   font-weight: 800;
 }
 
+/* --- ГОЛОВНИЙ КОНТЕЙНЕР --- */
+.container {
+  max-width: 1440px; /* Збільшили з 1320px для ширшого екрана */
+  width: 100%;
+  padding: 40px 60px; /* Збільшили бокові відступи */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  gap: 100px; /* Збільшили відступ між колонками для простору */
+  margin: 0 auto;
+}
+
+/* --- ЛІВА КОЛОНКА --- */
+.leftContent {
+  flex: 1 1 auto; 
+  max-width: 780px; /* Збільшили ширину текстового блоку */
+}
+
 .mainTitle {
-  grid-column: 1;
-  grid-row: 2;
-  font-size: 48px;
+  font-size: 56px; 
   font-weight: 900;
-  line-height: 1.2; 
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   margin-bottom: 24px;
   color: #111827;
 }
 
 .highlight {
   color: #FF6B00;
+  display: block; /* Помаранчева фраза тепер завжди починається з нового рядка */
+  margin-top: 8px; /* Невеликий відступ від першого рядка заголовка */
 }
 
 .desc {
-  grid-column: 1;
-  grid-row: 3;
   font-size: 18px;
   line-height: 1.6;
   color: #6B7280; 
-  margin-bottom: 32px;
-  max-width: 520px;
+  margin-bottom: 40px;
+  max-width: 540px;
 }
 
 /* ГРУПА КНОПОК */
 .btnGroup {
-  grid-column: 1;
-  grid-row: 4;
-  justify-self: start;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -91,59 +94,58 @@
   background-color: #FF6B00;
   color: #FFFFFF;
   text-decoration: none;
-  padding: 16px 40px;
+  padding: 16px 32px;
+  border: 1px solid #FF6B00;
   border-radius: 12px;
-  font-size: 18px;
-  font-weight: 800;
-  transition: all 0.3s ease;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .startBtn:hover {
+  background-color: #E66000;
+  border-color: #E66000;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.2);
 }
 
 .faqBtn {
-  background-color: transparent;
+  background-color: #FFFFFF;
   color: #111827;
   text-decoration: none;
-  padding: 14px 32px;
-  border: 2px solid #E5E7EB;
+  padding: 16px 32px;
+  border: 1px solid #E5E7EB;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 700;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .faqBtn:hover {
-  border-color: #FF6B00;
-  color: #FF6B00;
-  background-color: rgba(255, 107, 0, 0.05);
+  background-color: #F8FAFC;
+  border-color: #CBD5E1;
 }
 
-/* Картки йдуть у другу колонку і займають усі 5 рядків */
+/* --- ПРАВА КОЛОНКА (Картки) --- */
 .rightContent {
-  grid-column: 2;
-  grid-row: 1 / span 5;
-  align-self: center; 
-  background-color: #F9FAFB; 
-  border: 1px solid #E5E7EB; 
-  border-radius: 28px;
-  padding: 48px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); 
+  flex: 0 0 460px; 
+  background-color: #F8FAFC; 
+  border: 1px solid #F1F5F9; 
+  border-radius: 24px;
+  padding: 40px 32px; 
 }
 
 .featuresTitle {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
   color: #111827;
+  letter-spacing: -0.01em;
 }
 
 .featureCards {
@@ -154,27 +156,26 @@
 
 .card {
   background-color: #FFFFFF; 
-  border: 1px solid #E5E7EB;
-  padding: 24px;
+  border: 1px solid #E2E8F0;
+  padding: 16px 20px;
   border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   transition: all 0.2s ease;
 }
 
 .card:hover {
-  border-color: #FF6B00;
-  background-color: rgba(255, 107, 0, 0.01);
-  transform: translateX(4px);
+  border-color: #CBD5E1;
+  transform: translateX(-4px); 
 }
 
 .cardIconWrap {
-  width: 56px;
-  height: 56px;
-  background-color: rgba(255, 107, 0, 0.08); 
+  width: 44px;
+  height: 44px;
+  background-color: #FFF2E5; 
   color: #FF6B00;
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,167 +183,80 @@
 }
 
 .cardIcon {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   color: currentColor; 
 }
 
 .cardTitle {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 4px;
   color: #111827;
 }
 
 .cardDesc {
-  font-size: 14px;
-  color: #6B7280;
-  line-height: 1.5;
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.4;
 }
 
 /* =========================================================
-   АДАПТАЦІЯ ДЛЯ Мобільних (ПОРТРЕТ - 1 колонка)
+   ДИНАМІЧНА АДАПТАЦІЯ ДЛЯ ПЛАНШЕТІВ І НОУТБУКІВ
    ========================================================= */
-@media (max-width: 950px) and (orientation: portrait) {
-  .wrap {
-    padding: 24px 16px; 
-  }
-
+@media (max-width: 1200px) {
   .container {
-    display: flex;
-    flex-direction: column; 
-    gap: 0; 
+    gap: 40px;
+    padding: 40px 32px;
   }
-
-  .logoWrap {
-    margin-bottom: 24px;
-  }
-  
-  .logoText { font-size: 20px; }
-
   .mainTitle {
-    font-size: 32px; 
-    margin-bottom: 24px; 
+    font-size: 46px;
   }
-
   .rightContent {
-    padding: 24px; 
-    border-radius: 20px;
-    margin-bottom: 24px; 
+    flex: 0 0 420px; 
+  }
+}
+
+/* =========================================================
+   АДАПТАЦІЯ ДЛЯ МОБІЛЬНИХ (ПОРТРЕТ)
+   ========================================================= */
+@media (max-width: 992px) {
+  .logoWrap {
+    top: 24px;
+    left: 24px;
+  }
+  .container {
+    flex-direction: column; 
+    padding: 100px 24px 40px; 
+    gap: 40px; 
+  }
+  .leftContent {
+    max-width: 100%;
+  }
+  .rightContent {
+    flex: 1;
     width: 100%;
+    max-width: 100%;
+    padding: 32px 24px; 
   }
+}
 
-  .featuresTitle {
-    font-size: 22px;
-    margin-bottom: 24px;
+@media (max-width: 576px) {
+  .logoWrap {
+    top: 20px;
+    left: 20px;
   }
-
-  .featureCards { gap: 12px; }
-
-  .card {
-    padding: 16px;
-    gap: 16px;
-    border-radius: 12px;
+  .mainTitle {
+    font-size: 36px;
   }
-  .cardIconWrap { width: 44px; height: 44px; }
-  .cardIcon { width: 22px; height: 22px; }
-  .cardTitle { font-size: 16px; }
-  .cardDesc { font-size: 13px; }
-
   .desc {
     font-size: 16px;
-    margin-bottom: 24px; 
   }
-
   .btnGroup {
-    width: 100%;
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
   }
-
   .startBtn, .faqBtn {
-    width: 100%; 
-    padding: 16px;
-    font-size: 18px;
-  }
-}
-
-/* Фікс для дуже малих портретних екранів */
-@media (max-width: 480px) and (orientation: portrait) {
-  .mainTitle {
-    font-size: 28px;
-  }
-}
-
-/* =========================================================
-   АДАПТАЦІЯ ДЛЯ Мобільних (ЛАНДСКЕЙП - 1 в 1 як десктоп)
-   ========================================================= */
-@media (max-width: 950px) and (orientation: landscape) {
-  .wrap {
-    padding: 12px 24px; 
-    min-height: 100vh;
-  }
-  
-  .container {
-    column-gap: 24px; 
-  }
-
-  .logoWrap {
-    margin-bottom: 16px;
-  }
-  
-  .logoIcon { width: 20px; height: 24px; }
-  .logoText { font-size: 18px; }
-
-  .mainTitle {
-    font-size: 26px; 
-    margin-bottom: 12px;
-  }
-
-  .desc {
-    font-size: 14px;
-    margin-bottom: 16px;
-    line-height: 1.4;
-  }
-
-  .btnGroup {
-    gap: 10px;
-  }
-
-  .startBtn, .faqBtn {
-    padding: 10px 24px;
-    font-size: 14px;
-    border-radius: 8px;
-  }
-
-  .rightContent {
-    padding: 20px; 
-    border-radius: 16px;
-  }
-
-  .featuresTitle {
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-
-  .featureCards { gap: 8px; }
-
-  .card {
-    padding: 12px;
-    gap: 12px;
-    border-radius: 12px;
-  }
-
-  .cardIconWrap { width: 36px; height: 36px; border-radius: 10px; }
-  .cardIcon { width: 18px; height: 18px; }
-  
-  .cardTitle { 
-    font-size: 14px; 
-    margin-bottom: 2px;
-  }
-  
-  .cardDesc { 
-    font-size: 11px; 
-    line-height: 1.3;
+    width: 100%;
   }
 }
