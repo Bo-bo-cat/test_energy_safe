@@ -125,7 +125,7 @@ export const en = {
     soon: 'Coming Soon!'
   },
   deviceManual: {
-    title: 'Enter Manually',
+    title: 'Found device',
     deviceName: 'Device Name',
     namePlaceholder: 'e.g.: Gorenje RK4182PW4',
     category: 'Category',

@@ -1,0 +1,40 @@
+/* src/components/AnimatedEmptyIcon/AnimatedEmptyIcon.module.css */
+
+.icon-container {
+  width: 64px;
+  height: 64px;
+  background-color: var(--bg-card-inner);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-wrapper {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Стан показу (Fade In) */
+.icon-wrapper.in {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Стан ховання (Fade Out) */
+.icon-wrapper.out {
+  opacity: 0;
+  transform: scale(0.8); /* Трохи зменшуємо при зникненні */
+}
+
+.svg-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted); /* Використовуємо колір із вашої теми */
+}

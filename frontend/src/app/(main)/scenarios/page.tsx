@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 import { DeleteIcon } from '../../../components/icons/Delete'; 
 import { PenIcon } from '../../../components/icons/Pen'; 
+import { ScenarioIcon } from '../../../components/icons/Scenario'; // Додано для порожнього стану
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { SaveScenarioModal } from '../../../components/SaveScenarioModal/SaveScenarioModal';
 import { ScenarioDetailsModal } from '../../../components/ScenarioDetailsModal/ScenarioDetailsModal'; 
@@ -19,7 +21,7 @@ const cleanModelName = (name: string, fallback: string) => {
 };
 
 export default function ScenariosPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const [scenarios, setScenarios] = useState<any[]>([]);
   const [allDevices, setAllDevices] = useState<any[]>([]);
@@ -62,6 +64,7 @@ export default function ScenariosPage() {
 
     } catch (err) {
       console.error(err);
+      toast.error(t.common.error);
     } finally {
       setIsLoading(false);
     }
@@ -71,16 +74,13 @@ export default function ScenariosPage() {
     setSelectedScenarioId(prev => prev === id ? null : id);
   };
 
-  // ОНОВЛЕНА ЛОГІКА: Спочатку шукаємо Зліпок (Snapshot), якщо немає - беремо стару логіку
   const handleOpenInfo = (e: React.MouseEvent, scenario: any) => {
     e.stopPropagation();
 
     let matchedDevices: any[] = [];
     let systemName = t.dashboard?.unknown || 'Невідомо';
 
-    // 1. ПРИЛАДИ
     if (scenario.devicesSnapshot && scenario.devicesSnapshot.length > 0) {
-      // Бекенд віддає зліпки для КОЖНОГО id, тому групуємо однакові прилади, щоб показати "2x Ноутбук"
       const counts: Record<string, number> = {};
       const uniqueDevices: any[] = [];
 
@@ -101,14 +101,12 @@ export default function ScenariosPage() {
         };
       });
     } else {
-      // Fallback: Стара логіка для сценаріїв без зліпка
       const selectedIds = scenario.selectedDeviceIds || scenario.selected_device_ids || [];
       const activeDevicesRaw = selectedIds.length > 0 
         ? allDevices.filter(d => selectedIds.includes(d.id || d._id))
         : [];
 
       matchedDevices = activeDevicesRaw.map(dev => {
-        // Рахуємо кількість повторень ID в масиві
         const qty = selectedIds.filter((id: string) => id === (dev.id || dev._id)).length || 1;
         const power = dev.powerWatts || dev.power_watts || dev.power || 0;
         const deviceName = dev.model_name || dev.name || dev.model || t.common?.model || 'Прилад';
@@ -120,11 +118,9 @@ export default function ScenariosPage() {
       });
     }
 
-    // 2. ДБЖ (СИСТЕМА)
     if (scenario.systemSnapshot) {
       systemName = cleanModelName(scenario.systemSnapshot.model || scenario.systemSnapshot.name, t.dashboard?.unknown || 'Невідомо');
     } else {
-      // Fallback
       const linkedSystemId = scenario.selectedSystemId || scenario.systemId;
       let displaySystem = null;
       
@@ -152,6 +148,23 @@ export default function ScenariosPage() {
 
       {isLoading ? (
         <p style={{ color: 'var(--text-muted)' }}>{t.scenarios.loading}</p>
+      ) : scenarios.length === 0 ? (
+        <div className={styles['empty-state']}>
+          <div className={styles['empty-icon-wrap']}>
+            <ScenarioIcon className={styles['empty-svg']} />
+          </div>
+          <h3 className={styles['empty-title']}>
+            {lang === 'uk' ? 'Немає сценаріїв' : 'No scenarios found'}
+          </h3>
+          <p className={styles['empty-desc']}>
+            {lang === 'uk' 
+              ? 'Ви ще не зберегли жодного сценарію. Зробіть розрахунок та збережіть його, щоб швидко перемикатися між варіантами.' 
+              : 'You haven\'t saved any scenarios yet. Make a calculation and save it to quickly switch between options.'}
+          </p>
+          <Link href="/calculator" className={styles['empty-btn']}>
+            {lang === 'uk' ? 'Новий розрахунок' : 'New calculation'}
+          </Link>
+        </div>
       ) : (
         <div className={styles.grid}>
           {scenarios.map(scenario => {
@@ -249,11 +262,16 @@ export default function ScenariosPage() {
             const token = localStorage.getItem('access_token');
             const id = scenarioToDelete;
             setScenarioToDelete(null);
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${id}`, {
-              method: 'DELETE',
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            fetchData();
+            try {
+              await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scenarios/${id}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              fetchData();
+              toast.success(lang === 'uk' ? 'Сценарій видалено' : 'Scenario deleted');
+            } catch (err) {
+              toast.error(t.common.error);
+            }
         }}
         title={t.scenarios.deleteConfirm}
         confirmText={t.common.yes}
@@ -273,6 +291,9 @@ export default function ScenariosPage() {
               body: JSON.stringify({ name: newName })
             });
             fetchData(); 
+            toast.success(lang === 'uk' ? 'Назву змінено' : 'Name updated');
+          } catch (err) {
+            toast.error(t.common.error);
           } finally {
             setIsRenaming(false);
             setEditingScenario(null);

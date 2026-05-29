@@ -20,7 +20,6 @@ const cleanModelName = (name: string, fallback: string) => {
   return name.replace('ДБЖ - ', '').trim();
 };
 
-// Іконка для кнопки Поділитися
 const ShareIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="18" cy="5" r="3"></circle>
@@ -32,7 +31,7 @@ const ShareIcon = () => (
 );
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const [systems, setSystems] = useState<any[]>([]);
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -83,17 +82,12 @@ export default function DashboardPage() {
   const loadWatts = activeScenario ? Number(activeScenario.totalPowerWatts || activeScenario.total_power_watts || 0) : 0;
   const autonomy = activeScenario ? Number(activeScenario.autonomyHours || activeScenario.autonomy_hours || activeScenario.duration_hours || 0) : 0;
   
-  // ==========================================
-  // МАГІЯ СНАПШОТІВ: ДБЖ (СИСТЕМА)
-  // ==========================================
   let displaySystem = null;
   
   if (activeScenario) {
     if (activeScenario.systemSnapshot) {
-      // 1. Беремо систему зі збереженого зліпка
       displaySystem = activeScenario.systemSnapshot;
     } else {
-      // 2. Fallback: шукаємо серед доступних систем
       const linkedSystemId = activeScenario.selectedSystemId || activeScenario.systemId;
       if (linkedSystemId) {
         displaySystem = systems.find(s => String(s.id || s._id) === String(linkedSystemId));
@@ -124,14 +118,10 @@ export default function DashboardPage() {
     progressColor = '#FF2D55'; 
   }
 
-  // ==========================================
-  // МАГІЯ СНАПШОТІВ: ПРИЛАДИ
-  // ==========================================
   let groupedActiveDevices: any[] = [];
 
   if (activeScenario) {
     if (activeScenario.devicesSnapshot && activeScenario.devicesSnapshot.length > 0) {
-      // 1. Використовуємо Снапшот (зберігається навіть якщо прилад видалено з профілю)
       const counts: Record<string, number> = {};
       const uniqueDevices: any[] = [];
 
@@ -150,7 +140,6 @@ export default function DashboardPage() {
         displayName: d.model_name || d.name || t.common.model
       }));
     } else if (activeScenario.selectedDeviceIds) {
-      // 2. Fallback для старих сценаріїв (без зліпка)
       const selectedIds = activeScenario.selectedDeviceIds;
       const rawDevices = devices.filter(d => selectedIds.includes(d.id || d._id));
       
@@ -166,13 +155,11 @@ export default function DashboardPage() {
     }
   }
 
-  // Сортуємо прилади для картинки (по потужності, беремо топ-4)
   const topExportDevices = [...groupedActiveDevices]
     .map(dev => ({ ...dev, totalPower: dev.calculatedPower * dev.qty }))
     .sort((a, b) => b.totalPower - a.totalPower)
     .slice(0, 4);
 
-  // Блокування свайпів для графіків
   const swipeHandlers = {
     onTouchStart: (e: React.TouchEvent) => e.stopPropagation(),
     onTouchMove: (e: React.TouchEvent) => e.stopPropagation(),
@@ -210,8 +197,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="global-page-wrap" style={{ overflowX: 'clip' }}>
+    <div className="global-page-wrap" style={{ overflowX: 'clip', paddingBottom: '40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
+      {/* ВЕРХНІЙ БЛОК: Статус та ДБЖ */}
       <div className={styles.topGrid} {...swipeHandlers}>
         <div className={styles.card}>
           <div className={styles.cardHeaderWithShare}>
@@ -293,6 +281,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* СЕРЕДНІЙ БЛОК: Кнопки дій та статистика */}
       <div className={styles.middleFlex}>
         <div className={styles.actionsGroup} {...swipeHandlers}>
           <Link href="/devices" className={styles.actionBtn}>
@@ -333,56 +322,68 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
-      
-      <div className={`${styles.scenariosFlex} no-swipe`} {...swipeHandlers}>
+      {/* НОВИЙ ГОРИЗОНТАЛЬНИЙ БЛОК: Сценарії (Карусель) */}
+      <div className={styles.horizontalSection}>
+        <h2 className={styles.sectionTitle}>{t.dashboard.yourScenarios}</h2>
         {scenarios.length > 0 ? (
-          scenarios.map(scen => (
-            <div 
-              key={scen.id} 
-              className={`${styles.scenarioChip} ${activeScenarioId === scen.id ? styles.active : ''}`}
-              onClick={() => setActiveScenarioId(scen.id)}
-            >
-              {scen.name}
-              {activeScenarioId === scen.id && (
-                <svg className={styles.checkIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              )}
-            </div>
-          ))
+          <div className={`${styles.carousel} no-swipe`} {...swipeHandlers}>
+            {scenarios.map(scen => (
+              <div
+                key={scen.id}
+                className={`${styles.scenarioCard} ${activeScenarioId === scen.id ? styles.active : ''}`}
+                onClick={() => setActiveScenarioId(scen.id)}
+              >
+                <div className={styles.scenarioItemName} title={scen.name}>{scen.name}</div>
+                {activeScenarioId === scen.id && (
+                  <div className={styles.activeIndicator}>{lang === 'uk' ? 'Активний' : 'Active'}</div>
+                )}
+              </div>
+            ))}
+          </div>
         ) : (
-          <p style={{ color: 'var(--text-muted)' }}>{t.dashboard.noScenarios}</p>
+          <div className={styles.emptyStateMini}>
+            <p className={styles.emptyDescMini}>
+              {lang === 'uk' ? 'У вас ще немає збережених сценаріїв.' : 'You have no saved scenarios yet.'}
+            </p>
+            <Link href="/calculator" className={styles.emptyBtnMini}>
+              {lang === 'uk' ? 'Створити сценарій' : 'Create scenario'}
+            </Link>
+          </div>
         )}
       </div>
 
-      {activeScenario && (
-        <div className={styles.activeDevicesWrapper}>
-          <h3 className={styles.activeDevicesTitle}>{t.dashboard.devicesInScenario}</h3>
-          {groupedActiveDevices.length > 0 ? (
-            
-            <div className={`${styles.activeDevicesGrid} no-swipe`} {...swipeHandlers}>
+      {/* НОВИЙ ГОРИЗОНТАЛЬНИЙ БЛОК: Прилади у сценарії (Карусель) */}
+      <div className={styles.horizontalSection}>
+        <h2 className={styles.sectionTitle}>{t.dashboard.devicesInScenario}</h2>
+        {activeScenario ? (
+          groupedActiveDevices.length > 0 ? (
+            <div className={`${styles.carousel} no-swipe`} {...swipeHandlers}>
               {groupedActiveDevices.map(dev => (
-                <div key={dev.id || dev._id} className={styles.activeDeviceCard}>
-                  <div className={styles.activeDeviceName} title={dev.displayName}>
-                    {dev.qty > 1 ? <span className={styles.qtyBadge}>{dev.qty}x</span> : null}
-                    <span className={styles.truncateText}>{dev.displayName}</span>
+                <div key={dev.id || dev._id} className={styles.deviceCard}>
+                  <div className={styles.deviceItemLeft}>
+                    {dev.qty > 1 && <span className={styles.qtyBadge}>{dev.qty}x</span>}
+                    <span className={styles.deviceItemName} title={dev.displayName}>{dev.displayName}</span>
                   </div>
-                  <div className={styles.activeDevicePower}>{dev.calculatedPower * dev.qty} {t.common.w}</div>
+                  <div className={styles.deviceItemPower}>{dev.calculatedPower * dev.qty} {t.common.w}</div>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>{t.dashboard.noDevicesInScenario}</p>
-          )}
-        </div>
-      )}
+            <p style={{ color: 'var(--text-muted)' }}>
+              {lang === 'uk' ? 'Немає приладів у цьому сценарії.' : 'No devices in this scenario.'}
+            </p>
+          )
+        ) : (
+          <p style={{ color: 'var(--text-muted)' }}>
+            {lang === 'uk' ? 'Оберіть сценарій, щоб побачити список приладів.' : 'Select a scenario to view devices.'}
+          </p>
+        )}
+      </div>
 
-      {/* ПРИХОВАНИЙ ШАБЛОН ДЛЯ ЕКСПОРТУ (html2canvas) */}
+      {/* ПРИХОВАНИЙ ШАБЛОН ДЛЯ ЕКСПОРТУ */}
       {activeScenario && (
         <div ref={exportRef} className={styles.exportWrapper}>
           <h1 className={styles.exportTitle}>{activeScenario.name}</h1>
-          
           <div className={styles.exportSystemBox}>
             <h2 className={styles.exportSystemName}>{systemName}</h2>
             <div className={styles.exportRow}>
@@ -402,7 +403,6 @@ export default function DashboardPage() {
               <span className={styles.exportValue}>{typeof autonomy === 'number' ? autonomy.toFixed(1) : autonomy} Год</span>
             </div>
           </div>
-
           <div className={styles.exportDevicesList}>
             {topExportDevices.map(d => (
               <div key={d.id || d._id} className={styles.exportDeviceBox}>
@@ -413,16 +413,12 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-
           <div className={styles.exportProgressContainer}>
             <div className={styles.exportProgressText} style={{ color: progressColor }}>
               {safePercent}%
             </div>
             <div className={styles.exportProgressBar}>
-              <div 
-                className={styles.exportProgressFill} 
-                style={{ width: `${safePercent}%`, backgroundColor: progressColor }} 
-              />
+              <div className={styles.exportProgressFill} style={{ width: `${safePercent}%`, backgroundColor: progressColor }} />
             </div>
           </div>
         </div>

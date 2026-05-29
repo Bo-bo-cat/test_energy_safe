@@ -22,8 +22,11 @@
   flex-direction: column;
 }
 
-/* Ховаємо ТІЛЬКИ дублюючі мобільні кнопки на десктопі */
-.logoutBtn {
+/* Ховаємо специфічні для мобільного елементи на десктопі */
+.logoutBtn,
+.supportBtnMobile,
+.closeSupportBtn,
+.mobileBackdrop {
   display: none; 
 }
 
@@ -147,7 +150,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
-  min-width: 0; /* Щоб довгий текст не ламав сітку */
+  min-width: 0;
 }
 
 .nameRow {
@@ -204,7 +207,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.2s ease;
-  text-align: left; /* Вирівнювання по лівому краю */
+  text-align: left;
 }
 
 .changePasswordBtn:hover, .faqBtn:hover {
@@ -218,20 +221,23 @@
   gap: 12px;
 }
 
+/* ІДЕАЛЬНО ЗІСТАВЛЕНА КНОПКА ВИДАЛЕННЯ */
 .deleteBtn {
-  background-color: transparent;
-  color: #FF2D55;
-  border: 1px solid #FF2D55;
+  background-color: #ff6600;
+  color: var(--bg-main);
+  border: none;
   border-radius: 12px;
-  padding: 16px;
+  padding: 16px 20px;
+  width: 100%;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: opacity 0.2s ease;
+  text-align: left;
 }
 
 .deleteBtn:hover {
-  background-color: rgba(255, 45, 85, 0.1);
+  opacity: 0.8;
 }
 
 /* =========================================
@@ -246,6 +252,12 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
+}
+
+.contactHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .contactTitle {
@@ -378,7 +390,7 @@
    ========================================= */
 @media (max-width: 950px) {
   .profileLayout {
-    grid-template-columns: 1fr; /* Перехід в одну колонку */
+    grid-template-columns: 1fr; 
     gap: 24px;
   }
 
@@ -412,14 +424,92 @@
   }
 
   .themeToggleMobile {
-    display: flex; /* Показуємо тільки на мобільних */
+    display: flex; 
   }
 
-  .changePasswordBtn, .faqBtn {
+  .changePasswordBtn, .faqBtn, .deleteBtn {
     text-align: center;
+  }
+
+  /* НОВА КНОПКА ВИКЛИКУ ПІДТРИМКИ */
+  .supportBtnMobile {
+    display: block;
+    background-color: var(--text-main); 
+    color: var(--bg-main);              
+    border: none;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: opacity 0.2s ease;
+  }
+
+  .supportBtnMobile:hover {
+    opacity: 0.8;
   }
 
   .dangerZone {
     margin-top: 24px;
+  }
+
+  /* =========================================
+     ПРАВА КОЛОНКА ПЕРЕТВОРЮЄТЬСЯ НА МОДАЛКУ
+     ========================================= */
+  .rightColumn {
+    display: none; /* Ховаємо по замовчуванню */
+  }
+
+  .rightColumn.mobileOpen {
+    display: flex;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .mobileBackdrop {
+    display: block;
+    position: absolute;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 0;
+  }
+
+  .contactBlock {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .closeSupportBtn {
+    display: flex;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .closeSupportBtn:hover {
+    opacity: 0.6;
   }
 }
