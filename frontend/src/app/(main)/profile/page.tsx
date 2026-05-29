@@ -112,11 +112,11 @@ export default function ProfilePage() {
       formData.append('message', feedbackText);
       formData.append('email', user.email); // Передаємо email юзера для зворотного зв'язку
       if (feedbackFile) {
-        formData.append('screenshot', feedbackFile);
+        formData.append('file', feedbackFile);
       }
 
       // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/feedback`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
         method: 'POST',
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: formData
