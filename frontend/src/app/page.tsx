@@ -29,38 +29,39 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <main className={styles.wrap}>
+      
+      {/* ЛОГОТИП */}
+      <header className={styles.logoWrap}>
+        <LightningIcon className={styles.logoIcon} aria-hidden="true" />
+        <span className={styles.logoText}>Energy Safe</span>
+      </header>
+
       <div className={styles.container}>
         
-        {/* 1. Логотип (Семантичний header) */}
-        <header className={styles.logoWrap}>
-          <LightningIcon className={styles.logoIcon} aria-hidden="true" />
-          <span className={styles.logoText}>Energy Safe</span>
-        </header>
+        {/* ЛІВА ЧАСТИНА (Текст + Кнопки) */}
+        <div className={styles.leftContent}>
+          <h1 className={styles.mainTitle}>
+            Плануйте енергозабезпечення
+            <span className={styles.highlight}>без складних розрахунків</span>
+          </h1>
 
-        {/* 2. Головний заголовок (H1 - головний ключ для SEO) */}
-        <h1 className={styles.mainTitle}>
-          Плануйте енергозабезпечення<br />
-          <span className={styles.highlight}>без складних розрахунків</span>
-        </h1>
+          <p className={styles.desc}>
+            Energy Safe допомагає швидко оцінити енергоспоживання приладів, 
+            підібрати надійну систему резервного живлення (ДБЖ, зарядні станції) 
+            та зберігати власні сценарії для дому чи офісу.
+          </p>
 
-        {/* 3. Короткий опис (Збагачено SEO-ключами: ДБЖ, резервне живлення, станції) */}
-        <p className={styles.desc}>
-          Energy Safe допомагає швидко оцінити енергоспоживання приладів, 
-          підібрати надійну систему резервного живлення (ДБЖ, зарядні станції) 
-          та зберігати власні сценарії для дому чи офісу.
-        </p>
-
-        {/* 4. Група кнопок: Головна дія (CTA) + Перехід до FAQ */}
-        <div className={styles.btnGroup}>
-          <Link href="/auth?mode=register" className={styles.startBtn}>
-            Почати розрахунок
-          </Link>
-          <Link href="/faq" className={styles.faqBtn}>
-            Часті запитання (FAQ)
-          </Link>
+          <div className={styles.btnGroup}>
+            <Link href="/auth?mode=register" className={styles.startBtn}>
+              Почати розрахунок
+            </Link>
+            <Link href="/faq" className={styles.faqBtn}>
+              Часті запитання (FAQ)
+            </Link>
+          </div>
         </div>
 
-        {/* 5. Що можна робити (Секція з картками-статтями для SEO) */}
+        {/* ПРАВА ЧАСТИНА (Картки) */}
         <section className={styles.rightContent} aria-labelledby="features-title">
           <h2 id="features-title" className={styles.featuresTitle}>Що можна зробити?</h2>
           
@@ -81,7 +82,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className={styles.cardTitle}>Підібрати систему живлення</h3>
-                <p className={styles.cardDesc}>Отримайте точну рекомендацію резервного ДБЖ або станції під ваші потреби.</p>
+                <p className={styles.cardDesc}>Отримайте точну рекомендацію резервного ДБЖ або станції под ваші потреби.</p>
               </div>
             </article>
 

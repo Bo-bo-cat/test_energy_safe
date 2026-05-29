@@ -122,6 +122,7 @@
   height: 24px;
   border: 2px solid var(--border-color);
   border-radius: 6px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,8 +156,8 @@
 }
 
 .device-power {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-main);
 }
 
@@ -231,6 +232,8 @@
   scrollbar-width: none;
   width: 100%;
   overscroll-behavior-x: contain; 
+  padding: 4px 4px 16px 4px; /* Даємо 4px вільного місця з усіх боків для рамки */
+  margin: -4px -4px 0 -4px;
 }
 .systems-grid::-webkit-scrollbar { display: none; }
 
@@ -309,12 +312,8 @@
   width: 340px; 
   flex-shrink: 0;
   position: sticky; 
-  
-  /* ЗМІНА: Додаємо відступ, щоб вирівняти з контентом зліва */
-  /* Title height + filters height + margin */
-  margin-top: 105px; 
+  margin-top: 58px; 
   top: 24px; 
-  
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 20px;

@@ -166,6 +166,7 @@
   padding-right: 8px;
   padding-bottom: 16px;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
 .category-group { 
@@ -308,6 +309,8 @@
   border: 1px dashed var(--border-color);
   border-radius: 16px;
   margin-top: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .empty-title {

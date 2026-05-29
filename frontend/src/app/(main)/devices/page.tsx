@@ -385,6 +385,43 @@ export default function DevicesPage() {
                             
                             <div className={styles['custom-select-container']}>
 
+                              <div
+                                className={`${styles['location-select']} ${openDropdownId === device.id ? styles['active-select'] : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  
+                                  if (openDropdownId === device.id) {
+                                    setOpenDropdownId(null); 
+                                  } else {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    
+                                    // 1. Знаходимо наш список приладів (скрол-контейнер)
+                                    const listElement = e.currentTarget.closest(`.${styles['device-list']}`);
+                                    
+                                    // 2. Беремо нижню межу цього контейнера
+                                    const visibleBottom = listElement 
+                                      ? listElement.getBoundingClientRect().bottom 
+                                      : window.innerHeight;
+                                    
+                                         // 3. Рахуємо реальне вільне місце всередині видимої зони
+                                        const spaceBelow = visibleBottom - rect.bottom;
+
+                                        // ДИНАМІЧНА ВИСОТА: ~32px на кожен пункт + 12px на відступи (padding), але не більше 180px
+                                        const estimatedHeight = Math.min(180, allLocations.length * 32 + 12);
+
+                                        // 4. Якщо місця знизу не вистачає для РЕАЛЬНОЇ висоти списку — стріляємо вгору!
+                                        if (spaceBelow < estimatedHeight) {
+                                          setDropdownPosition('up');
+                                        } else {
+                                          setDropdownPosition('down');
+                                        }
+                                    
+                                    setOpenDropdownId(device.id);
+                                  }
+                                }}
+                              >
+                                {device.tag || 'Усі'}
+                              </div>
 
                               {openDropdownId === device.id && (
                                 <div className={`${styles['custom-select-dropdown']} ${dropdownPosition === 'up' ? styles['open-up'] : ''}`}>
@@ -392,7 +429,8 @@ export default function DevicesPage() {
                                     <div
                                       key={loc}
                                       className={`${styles['custom-select-item']} ${device.tag === loc ? styles['selected'] : ''}`}
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         handleToggleLocation(device.id, loc);
                                         setOpenDropdownId(null);
                                       }}
@@ -402,7 +440,7 @@ export default function DevicesPage() {
                                   ))}
                                 </div>
                               )}
-                              </div>
+                            </div>
 
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
