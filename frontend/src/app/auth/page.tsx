@@ -172,6 +172,9 @@ function AuthPageContent() {
                 {showPassword ? <EyeOffIcon className={styles['eye-icon']} /> : <EyeIcon className={styles['eye-icon']} />}
               </button>
             </div>
+            {mode === 'register' && (
+              <p className={styles['password-hint']}>{t.auth.passwordHint}</p>
+            )}
           </div>
 
           {error && <p className={styles['error-text']}>{error}</p>}

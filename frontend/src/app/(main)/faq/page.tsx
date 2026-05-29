@@ -1,14 +1,24 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styles from './page.module.css';
 
-// ПІДКЛЮЧАЄМО СЛОВНИК
 import { useTranslation } from '../../../context/LanguageContext';
 
+const API = process.env.NEXT_PUBLIC_API_URL;
+
 export default function FaqPage() {
-  const { t } = useTranslation(); 
-  
+  const { t } = useTranslation();
+
+
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errors, setErrors] = useState<{ email?: string; message?: string }>({});
 
   const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
@@ -22,6 +32,45 @@ export default function FaqPage() {
     { question: t.faq.q7, answer: t.faq.a7 },
     { question: t.faq.q8, answer: t.faq.a8 },
   ];
+
+  const validate = () => {
+    const e: { email?: string; message?: string } = {};
+    if (!email.trim()) e.email = t.faq.contactEmailRequired;
+    if (!message.trim()) e.message = t.faq.contactMessageRequired;
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setStatus('loading');
+    try {
+      const formData = new FormData();
+      formData.append('email', email);
+      formData.append('message', message);
+      if (name) formData.append('name', name);
+      if (file) formData.append('file', file);
+
+      const res = await fetch(`${API}/feedback/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error();
+
+      setStatus('success');
+      setName('');
+      setEmail('');
+      setMessage('');
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setErrors({});
+    } catch {
+      setStatus('error');
+    }
+  };
 
   return (
     <div className="global-page-wrap">
@@ -50,6 +99,80 @@ export default function FaqPage() {
             )}
           </div>
         ))}
+      </div>
+
+      <div className={styles.contactBlock}>
+        <h2 className={styles.contactTitle}>{t.faq.contactTitle}</h2>
+        <p className={styles.contactSubtitle}>{t.faq.contactSubtitle}</p>
+
+        {status === 'success' ? (
+          <p className={styles.successMsg}>{t.faq.contactSuccess}</p>
+        ) : (
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <input
+              className={styles.input}
+              type="text"
+              placeholder={t.faq.contactName}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <div className={styles.fieldWrap}>
+              <input
+                className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                type="email"
+                placeholder={t.faq.contactEmail}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors((p) => ({ ...p, email: undefined }));
+                }}
+              />
+              {errors.email && <span className={styles.errorText}>{errors.email}</span>}
+            </div>
+
+            <div className={styles.fieldWrap}>
+              <textarea
+                className={`${styles.textarea} ${errors.message ? styles.inputError : ''}`}
+                placeholder={t.faq.contactMessage}
+                rows={4}
+                value={message}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  if (errors.message) setErrors((p) => ({ ...p, message: undefined }));
+                }}
+              />
+              {errors.message && <span className={styles.errorText}>{errors.message}</span>}
+            </div>
+
+            <div className={styles.fileRow}>
+              <label className={styles.fileLabel}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+                {t.faq.contactAttach}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className={styles.hiddenInput}
+                  ref={fileInputRef}
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                />
+              </label>
+              {file && <span className={styles.fileName}>{file.name}</span>}
+            </div>
+
+            {status === 'error' && <p className={styles.errorMsg}>{t.faq.contactError}</p>}
+
+            <button
+              className={styles.submitBtn}
+              type="submit"
+              disabled={status === 'loading'}
+            >
+              {status === 'loading' ? t.faq.contactSending : t.faq.contactSend}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

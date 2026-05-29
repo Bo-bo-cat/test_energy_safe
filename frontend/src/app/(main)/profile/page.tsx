@@ -34,6 +34,7 @@ export default function ProfilePage() {
   const [feedbackText, setFeedbackText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -108,30 +109,35 @@ export default function ProfilePage() {
     try {
       const formData = new FormData();
       formData.append('message', feedbackText);
-      formData.append('email', user.email);
+      formData.append('email', user.email); // Передаємо email юзера для зворотного зв'язку
+      if (feedbackFile) {
+        formData.append('file', feedbackFile);
+      }
 
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/feedback`, {
+      // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
         method: 'POST',
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: formData
       });
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `HTTP ${res.status}`);
+      }
+
       setSubmitSuccess(true);
       setFeedbackText('');
-      
+
       setTimeout(() => {
         setSubmitSuccess(false);
         setIsMobileSupportOpen(false);
       }, 3000);
-      
-    } catch (err) {
+
+    } catch (err: any) {
       console.error('Помилка відправки форми:', err);
-      setSubmitSuccess(true);
-      setFeedbackText('');
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        setIsMobileSupportOpen(false);
-      }, 3000);
+      setSubmitError(err.message || 'Unknown error');
+      setTimeout(() => setSubmitError(null), 5000);
     } finally {
       setIsSubmitting(false);
     }

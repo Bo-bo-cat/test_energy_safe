@@ -6,9 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env.local", override=True)
 
 from app.database import connect_to_mongo, close_mongo_connection, get_database
-from app.routes import users, devices, scenarios, systems, calculator, auth
+from app.routes import users, devices, scenarios, systems, calculator, auth, feedback
 
 
 @asynccontextmanager
@@ -46,6 +47,7 @@ app.include_router(scenarios.router)
 app.include_router(systems.router)
 app.include_router(calculator.router)
 app.include_router(auth.router)
+app.include_router(feedback.router)
 
 
 @app.get("/", tags=["Root"])
