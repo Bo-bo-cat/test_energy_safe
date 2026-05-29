@@ -168,51 +168,12 @@
 }
 
 /* =========================================
-   СЕРЕДНІЙ БЛОК (Кнопки + Маленька статистика)
+   СЕРЕДНІЙ БЛОК (Маленька статистика)
    ========================================= */
 .middleFlex {
   display: flex;
   gap: 24px;
   width: 100%;
-}
-
-.actionsGroup {
-  display: flex;
-  gap: 16px;
-  flex: 1;
-}
-
-.actionBtn {
-  flex: 1;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 12px;
-  text-decoration: none;
-  gap: 12px;
-  transition: all 0.2s ease;
-}
-
-.actionBtn:hover {
-  border-color: var(--accent-orange);
-  transform: translateY(-2px);
-}
-
-.actionIcon {
-  width: 32px;
-  height: 32px;
-  color: var(--text-main);
-}
-
-.actionText {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-  text-align: center;
 }
 
 .statsGroup {
@@ -413,6 +374,7 @@
   background-color: var(--accent-orange);
   color: #fff;
 }
+
 /* =========================================
    ПРИХОВАНИЙ БЛОК ДЛЯ ЕКСПОРТУ
    ========================================= */
@@ -540,21 +502,12 @@
   .middleFlex {
     flex-direction: column;
   }
-  .bottomGrid {
-    grid-template-columns: 1fr;
-  }
   .statusContent {
     flex-direction: row;
   }
   .donutWrapper {
     width: 160px;
     height: 90px;
-  }
-  .actionsGroup {
-    flex-wrap: wrap;
-  }
-  .actionBtn {
-    flex: 1 1 calc(50% - 8px);
   }
 }
 

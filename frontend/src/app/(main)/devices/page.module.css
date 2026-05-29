@@ -17,14 +17,17 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center; /* Рівняємо всі плашки по центру */
 }
 
+/* ===================================================
+   ОСЬ ЦЕЙ КЛАС ВИПАДКОВО ЗНИК, ВІДНОВЛЮЄМО ЙОГО! 
+   =================================================== */
 .filter-chip {
   background-color: var(--bg-card); 
   border: 1px solid var(--border-color); 
   border-radius: 20px;
-  width: 80px; 
-  padding: 8px 0;
+  padding: 8px 16px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,18 +36,48 @@
   color: var(--text-main); 
   cursor: pointer;
   transition: all 0.2s ease;
+  /* Скидаємо базові стилі кнопок, щоб не було 3D-ефекту */
+  outline: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  font-family: inherit;
 }
 
-.icon-chip { width: 54px; }
-.filter-icon { width: 22px; height: 22px; }
+.filter-chip.active {
+  background-color: var(--text-main); 
+  color: var(--bg-main); 
+  border-color: var(--text-main);
+}
 
 .flex-chip {
   width: auto;
-  padding: 8px 16px;
+}
+
+/* Ідеально круглий плюсик */
+.icon-chip { 
+  width: 38px !important; 
+  height: 38px !important; 
+  padding: 0 !important;
+  border-radius: 50% !important;
+  flex-shrink: 0; 
+  color: var(--accent-orange) !important;
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.icon-chip:hover {
+  border-color: var(--accent-orange);
+  background-color: rgba(255, 149, 0, 0.05);
 }
 
 .location-input {
-  height: 36px;
+  height: 38px; /* Підігнано під висоту плюсика */
   border: 1px solid var(--border-color);
   border-radius: 20px;
   background-color: var(--bg-card);
@@ -58,14 +91,9 @@
 
 .location-input:focus {
   border-color: var(--accent-orange);
-}
-
-.filter-chip.active {
-  background-color: var(--text-main); 
-  color: var(--bg-main); 
-  border-color: var(--text-main);
-}
-
+}/* =========================================
+   КНОПКА "ДОДАТИ" (Виправлено тіні та сплющування)
+   ========================================= */
 .add-btn {
   background-color: var(--text-main); 
   color: var(--bg-main); 
@@ -79,10 +107,27 @@
   text-decoration: none;
   transition: opacity 0.2s ease;
   white-space: nowrap;
+  
+  /* ПРИБИРАЄМО СТАНДАРТНІ СТИЛІ БРАУЗЕРА */
+  border: none;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0; /* ЗАБОРОНЯЄМО СПЛЮЩУВАННЯ */
 }
 
 .add-btn:hover {
   opacity: 0.8; 
+}
+
+.desktop-add-btn {
+  display: flex;
+}
+
+.mobile-add-container {
+  display: none; /* Ховаємо на десктопі */
 }
 
 /* --- ПІДСУМОК --- */
@@ -110,14 +155,16 @@
 }
 .accent { color: var(--accent-orange); } 
 
-/* --- АКОРДЕОНИ --- */
+/* --- АКОРДЕОНИ (СПИСОК ПРИЛАДІВ) --- */
 .device-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: 65vh;
+  flex: 1; /* Гнучко забирає весь вільний простір */
+  min-height: 0; /* Дозволяє скролу працювати всередині flex-контейнера */
   overflow-y: auto;
   padding-right: 8px;
+  padding-bottom: 16px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -170,27 +217,42 @@
 .arrow-up { transform: rotate(180deg); }
 
 /* --- ВИПАДАЮЧИЙ СПИСОК КАРТОК --- */
-.dropdown-container {
-  background-color: var(--bg-card-inner); 
+/* Стандартне відкриття вниз */
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px); 
+  left: 0; 
+  width: 100%; 
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-top: none; 
-  border-radius: 0 0 12px 12px; 
-  padding: 10px;
-  position: relative;
-  z-index: 1;
+  border-radius: 10px; 
+  z-index: 100;
+  max-height: 180px; 
+  overflow-y: auto;
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06); 
+  padding: 6px 0; 
+  overflow-x: hidden; 
+  
   transform-origin: top center;
   animation: slideDown 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes slideDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px) scaleY(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scaleY(1);
-  }
+  0% { opacity: 0; transform: translateY(-10px) scaleY(0.95); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+/* НОВЕ: Відкриття вгору (коли мало місця знизу) */
+.open-up {
+  top: auto !important; 
+  bottom: calc(100% + 4px) !important; 
+  transform-origin: bottom center !important; 
+  animation: slideUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(10px) scaleY(0.95); }
+  100% { opacity: 1; transform: translateY(0) scaleY(1); }
 }
 
 .dropdown-scroll {
@@ -248,7 +310,6 @@
   margin-top: 16px;
 }
 
-
 .empty-title {
   font-size: 20px;
   font-weight: 800;
@@ -272,8 +333,13 @@
   border-radius: 10px;
   text-decoration: none;
   transition: opacity 0.2s;
+  /* ПРИБИРАЄМО СТАНДАРТНІ СТИЛІ БРАУЗЕРА */
   border: none;
+  outline: none;
+  box-shadow: none;
+  -webkit-appearance: none;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .empty-btn:hover {
@@ -283,85 +349,74 @@
 /* =========================================
    КАСТОМНИЙ DROPDOWN (КОМПАКТНА ВЕРСІЯ)
    ========================================= */
-.custom-select-container {
-  position: relative;
-  width: auto;
-}
+.custom-select-container { position: relative; width: auto; }
 
 .location-select {
-  height: 30px; /* Зменшено висоту для компактності */
+  height: 30px; 
   box-sizing: border-box;
-  padding: 0 28px 0 10px; /* Менші внутрішні відступи */
+  padding: 0 28px 0 10px; 
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: 12px; /* Менший шрифт для компактності */
+  font-size: 12px; 
   font-weight: 700;
   color: var(--text-main);
   cursor: pointer;
-  
   display: inline-flex;
   align-items: center;
-  
-  /* Фірмова помаранчева стрілка */
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF9500' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 8px center; /* Стрілка ближче до краю */
-  background-size: 12px; /* Зменшено розмір стрілки */
+  background-position: right 8px center; 
+  background-size: 12px; 
   transition: all 0.2s ease;
-  
-  min-width: 80px; /* Зменшено мінімальну ширину */
-  max-width: 110px; /* Зменшено максимальну ширину */
+  min-width: 80px; 
+  max-width: 110px; 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   user-select: none;
 }
 
-.location-select:hover,
-.active-select {
+.location-select:hover, .active-select {
   border-color: var(--accent-orange);
   box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.15);
 }
 
 .custom-select-dropdown {
   position: absolute;
-  top: calc(100% + 4px); /* Список трохи ближче до вікна */
-  left: 0; /* Вирівнюємо по лівому краю для акуратності */
-  width: 100%; /* Список такої самої ширини, як вікно вибору */
+  top: calc(100% + 4px); 
+  left: 0; 
+  width: 100%; 
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 10px; /* Трохи менше заокруглення */
+  border-radius: 10px; 
   z-index: 100;
-  max-height: 180px; /* Коротший список */
+  max-height: 180px; 
   overflow-y: auto;
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06); /* Легша тінь */
-  padding: 6px 0; /* Менші відступи */
-  overflow-x: hidden; /* Запобігаємо горизонтальному скролу */
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.06); 
+  padding: 6px 0; 
+  overflow-x: hidden; 
 }
 
-.custom-select-dropdown::-webkit-scrollbar { width: 4px; } /* Тонкий скролбар */
+.custom-select-dropdown::-webkit-scrollbar { width: 4px; } 
 .custom-select-dropdown::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
   border-radius: 2px;
 }
 
 .custom-select-item {
-  padding: 8px 12px; /* Менші відступи для компактності */
+  padding: 8px 12px; 
   cursor: pointer;
   color: var(--text-main);
   font-weight: 600;
-  font-size: 13px; /* Менший шрифт */
+  font-size: 13px; 
   transition: background-color 0.1s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.custom-select-item:hover {
-  background-color: var(--bg-main);
-}
-
+.custom-select-item:hover { background-color: var(--bg-main); }
 .custom-select-item.selected {
   color: var(--accent-orange);
   background-color: var(--bg-main);
@@ -380,9 +435,7 @@
   transition: all 0.2s ease;
 }
 
-.delete-btn { 
-  color: var(--accent-orange); 
-}
+.delete-btn { color: var(--accent-orange); }
 .delete-btn:hover {
   background-color: rgba(255, 110, 0, 0.1); 
   border-color: var(--accent-orange);
@@ -392,16 +445,12 @@
 .plus-icon { font-size: 20px; line-height: 1; font-weight: 400; }
 
 /* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (Портрет)
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ (Мобільний)
    ========================================= */
 @media (max-width: 1024px) {
   .top-section {
     flex-direction: column;
     align-items: flex-start;
-  }
-  .add-btn { 
-    width: 100%; 
-    justify-content: center; 
   }
 }
 
@@ -447,21 +496,31 @@
     justify-content: space-between; 
   }
   
-  .custom-select-container {
-    flex: 1;
+  .custom-select-container { flex: 1; }
+  .location-select { width: 100%; max-width: none; }
+  .custom-select-dropdown { width: 100%; }
+  .delete-btn { flex: 0 0 auto; }
+
+  /* ХОВАЄМО ВЕРХНЮ КНОПКУ І ПОКАЗУЄМО НИЖНЮ НА ТЕЛЕФОНАХ */
+  .desktop-add-btn {
+    display: none !important; 
   }
 
-  .location-select {
+  .mobile-add-container {
+    display: block;
     width: 100%;
-    max-width: none;
+    padding-top: 12px;
+    flex-shrink: 0; /* Не дає контейнеру сплющитись */
   }
 
-  .custom-select-dropdown {
+  .mobile-add-container .add-btn {
     width: 100%;
+    padding: 16px; /* Більша висота для зручного натискання пальцем */
+    font-size: 16px;
   }
 
-  .delete-btn { 
-    flex: 0 0 auto; 
+  .device-list {
+    padding-bottom: 8px; /* Робимо відступ меншим, бо під ним тепер кнопка */
   }
 }
 
@@ -487,9 +546,7 @@
     width: fit-content;
   }
 
-  .filters {
-    flex-wrap: nowrap;
-  }
+  .filters { flex-wrap: nowrap; }
 
   .summary-card {
     margin-bottom: 0;
@@ -498,7 +555,7 @@
     flex-shrink: 0;
   }
   
-  .add-btn { 
+  .desktop-add-btn { 
     width: 100%; 
     padding: 6px 12px; 
     font-size: 12px; 
@@ -506,16 +563,14 @@
     margin-top: 0;
   }
 
+  .mobile-add-container { display: none !important; }
+
   .filter-chip { width: 70px; font-size: 12px; padding: 6px 0; }
   .icon-chip { width: 44px; }
   .summary-label { font-size: 11px; margin-bottom: 4px; }
   .summary-value { font-size: 18px; }
 
-  .device-list {
-    max-height: calc(100vh - 110px); 
-    gap: 8px;
-  }
-
+  .device-list { gap: 8px; }
   .category-header { padding: 8px 12px; }
   .category-title { font-size: 15px; }
   .device-icon { width: 32px; height: 32px; }
@@ -552,7 +607,7 @@
   .action-group { width: auto; }
   
   .location-select {
-    height: 28px; /* Ще компактніше для ландшафту */
+    height: 28px; 
     font-size: 11px;
     min-width: 70px;
   }

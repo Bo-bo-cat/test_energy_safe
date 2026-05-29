@@ -23,7 +23,7 @@ import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 // Компоненти
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon'; 
-import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal'; // Наша модалка
+import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal';
 
 // Словник
 import { useTranslation } from '../../../context/LanguageContext';
@@ -75,13 +75,13 @@ export default function DevicesPage() {
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
   
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<'down' | 'up'>('down'); 
 
   const [customLocations, setCustomLocations] = useState<string[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState('');
   const newLocationInputRef = useRef<HTMLInputElement>(null);
 
-  // СТАН ДЛЯ МОДАЛКИ
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
@@ -103,10 +103,21 @@ export default function DevicesPage() {
       return;
     }
 
+    const slowNetworkTimeout = setTimeout(() => {
+      toast(lang === 'uk' ? "Слабке з'єднання. Перевірте інтернет..." : "Slow connection. Check your internet...", {
+        icon: '📶',
+        duration: 4000,
+        style: { border: '1px solid var(--accent-orange)' }
+      });
+    }, 5000); 
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error('Помилка сервера');
+        return r.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setDevices(data.map((d: any) => ({
@@ -124,7 +135,10 @@ export default function DevicesPage() {
         console.error(t.common.error, err);
         toast.error(lang === 'uk' ? 'Помилка завантаження приладів' : 'Error loading devices');
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        clearTimeout(slowNetworkTimeout);
+        setIsLoading(false);
+      });
   }, [t.common.error, lang]);
 
   useEffect(() => {
@@ -302,8 +316,9 @@ export default function DevicesPage() {
             )}
           </div>
 
+          {/* ДЕСКТОПНА КНОПКА (ховається на мобілці) */}
           {hasDevices && (
-            <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+            <button onClick={() => setIsAddModalOpen(true)} className={`${styles['add-btn']} ${styles['desktop-add-btn']}`}>
               <span className={styles['plus-icon']}>+</span>
               {t.common.add}
             </button>
@@ -329,7 +344,7 @@ export default function DevicesPage() {
         )}
       </div>
 
-      <div className={styles['device-list']} style={{ flex: 1, overflowY: 'auto', paddingBottom: '32px' }}>
+      <div className={styles['device-list']}>
         {isLoading ? (
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
@@ -369,15 +384,10 @@ export default function DevicesPage() {
                           <div className={styles['action-group']}>
                             
                             <div className={styles['custom-select-container']}>
-                              <div 
-                                className={`${styles['location-select']} ${openDropdownId === device.id ? styles['active-select'] : ''}`}
-                                onClick={() => setOpenDropdownId(openDropdownId === device.id ? null : device.id)}
-                              >
-                                {device.tag || allLocations[0]}
-                              </div>
-                              
+
+
                               {openDropdownId === device.id && (
-                                <div className={styles['custom-select-dropdown']}>
+                                <div className={`${styles['custom-select-dropdown']} ${dropdownPosition === 'up' ? styles['open-up'] : ''}`}>
                                   {allLocations.map(loc => (
                                     <div
                                       key={loc}
@@ -392,7 +402,7 @@ export default function DevicesPage() {
                                   ))}
                                 </div>
                               )}
-                            </div>
+                              </div>
 
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
@@ -435,6 +445,16 @@ export default function DevicesPage() {
         )}
       </div>
 
+      {/* МОБІЛЬНА КНОПКА (ховається на десктопі, завжди знизу екрана) */}
+      {hasDevices && (
+        <div className={styles['mobile-add-container']}>
+          <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+            <span className={styles['plus-icon']}>+</span>
+            {t.common.add}
+          </button>
+        </div>
+      )}
+
       <DecisionModal 
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}
@@ -444,7 +464,6 @@ export default function DevicesPage() {
         cancelText={t.common.no}
       />
 
-      {/* РЕНДЕР МОДАЛКИ ДЛЯ ДОДАВАННЯ ПРИЛАДУ */}
       <AddDeviceModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
