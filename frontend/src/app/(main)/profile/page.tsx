@@ -33,7 +33,7 @@ export default function ProfilePage() {
   const [feedbackText, setFeedbackText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -117,7 +117,10 @@ export default function ProfilePage() {
         body: formData
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || `HTTP ${res.status}`);
+      }
 
       setSubmitSuccess(true);
       setFeedbackText('');
@@ -127,10 +130,10 @@ export default function ProfilePage() {
         setIsMobileSupportOpen(false);
       }, 3000);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error('Помилка відправки форми:', err);
-      setSubmitError(true);
-      setTimeout(() => setSubmitError(false), 4000);
+      setSubmitError(err.message || 'Unknown error');
+      setTimeout(() => setSubmitError(null), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -223,7 +226,7 @@ export default function ProfilePage() {
 
             {submitError && (
               <div className={styles.errorMsg}>
-                {lang === 'uk' ? 'Помилка відправки. Спробуйте ще раз.' : 'Failed to send. Please try again.'}
+                {lang === 'uk' ? `Помилка: ${submitError}` : `Error: ${submitError}`}
               </div>
             )}
             {submitSuccess ? (

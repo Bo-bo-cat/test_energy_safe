@@ -63,8 +63,8 @@ async def send_feedback(
 
     params: dict = {
         "from": "Energy Safe <onboarding@resend.dev>",
-        "to": SUPPORT_EMAIL,
-        "reply_to": email,
+        "to": [SUPPORT_EMAIL],
+        "reply_to": [email],
         "subject": f"Energy Safe — нове звернення від {email}",
         "html": html,
     }
