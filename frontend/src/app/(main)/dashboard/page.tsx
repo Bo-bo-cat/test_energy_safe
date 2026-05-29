@@ -4,11 +4,6 @@ import styles from './page.module.css';
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
 
-import { CameraIcon } from '../../../components/icons/Camera';
-import { CalcIcon } from '../../../components/icons/Calc';
-import { ScenarioIcon } from '../../../components/icons/Scenario';
-import { SystemIcon } from '../../../components/icons/System';
-
 // Підключаємо словник
 import { useTranslation } from '../../../context/LanguageContext';
 
@@ -281,27 +276,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* СЕРЕДНІЙ БЛОК: Кнопки дій та статистика */}
+      {/* СЕРЕДНІЙ БЛОК: Статистика */}
       <div className={styles.middleFlex}>
-        <div className={styles.actionsGroup} {...swipeHandlers}>
-          <Link href="/devices" className={styles.actionBtn}>
-            <CameraIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>{t.dashboard.addDevice}</span>
-          </Link>
-          <Link href="/calculator" className={styles.actionBtn}>
-            <CalcIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>{t.dashboard.calculate}</span>
-          </Link>
-          <Link href="/scenarios" className={styles.actionBtn}>
-            <ScenarioIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>{t.dashboard.scenarios}</span>
-          </Link>
-          <Link href="/picker" className={styles.actionBtn}>
-            <SystemIcon className={styles.actionIcon} />
-            <span className={styles.actionText}>{t.dashboard.pickSystem}</span>
-          </Link>
-        </div>
-
         <div className={styles.statsGroup}>
           <div className={styles.smallStatBox}>
             <div className={styles.smallStatValue}>{devices.length}</div>
