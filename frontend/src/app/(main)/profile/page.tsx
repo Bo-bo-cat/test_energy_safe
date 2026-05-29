@@ -33,6 +33,7 @@ export default function ProfilePage() {
   const [feedbackText, setFeedbackText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -110,28 +111,26 @@ export default function ProfilePage() {
       }
 
       // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
         method: 'POST',
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: formData
       });
 
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       setSubmitSuccess(true);
       setFeedbackText('');
-      
+
       setTimeout(() => {
         setSubmitSuccess(false);
         setIsMobileSupportOpen(false);
       }, 3000);
-      
+
     } catch (err) {
       console.error('Помилка відправки форми:', err);
-      setSubmitSuccess(true);
-      setFeedbackText('');
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        setIsMobileSupportOpen(false);
-      }, 3000);
+      setSubmitError(true);
+      setTimeout(() => setSubmitError(false), 4000);
     } finally {
       setIsSubmitting(false);
     }
@@ -222,6 +221,11 @@ export default function ProfilePage() {
                 : 'Found a bug or have a suggestion? Write to us and we will reply to your email.'}
             </p>
 
+            {submitError && (
+              <div className={styles.errorMsg}>
+                {lang === 'uk' ? 'Помилка відправки. Спробуйте ще раз.' : 'Failed to send. Please try again.'}
+              </div>
+            )}
             {submitSuccess ? (
               <div className={styles.successMsg}>
                 {lang === 'uk' ? 'Повідомлення надіслано розробникам! Дякуємо.' : 'Message sent to developers! Thank you.'}
