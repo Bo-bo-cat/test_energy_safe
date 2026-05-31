@@ -102,6 +102,8 @@
   color: var(--text-main);
   line-height: 1.2;
   word-break: break-word;
+   flex: 1;
+  min-width: 0;
 }
 
 .actions {
