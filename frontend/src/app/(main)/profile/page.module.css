@@ -224,7 +224,7 @@
 /* ІДЕАЛЬНО ЗІСТАВЛЕНА КНОПКА ВИДАЛЕННЯ */
 .deleteBtn {
   background-color: #ff6600;
-  color: var(--bg-main);
+  color: white;
   border: none;
   border-radius: 12px;
   padding: 16px 20px;

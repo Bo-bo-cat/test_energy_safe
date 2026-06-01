@@ -278,16 +278,17 @@ export default function CalculatorPage() {
   ];
 
   return (
-    <div className="global-page-wrap">
-      
-      <div className={styles.layout}>
-        <div className={styles['main-content']}>
-          
-          {/* ЗМІНА: Заголовок перенесено всередину лівої колонки */}
-          <h1 className="page-title" style={{ margin: '0 0 24px 0' }}>{t.calculator.title}</h1>
-
-          <div className={styles.devicesSection}>
-            <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
+  <div className="global-page-wrap">
+    
+    {/* 1. ВИНЕСЛИ ЗАГОЛОВОК СЮДИ */}
+    <h1 className="page-title" style={{ margin: '0 0 24px 0' }}>{t.calculator.title}</h1>
+    
+    <div className={styles.layout}>
+      <div className={styles['main-content']}>
+        {/* Звідси h1 ми забрали */}
+        
+        <div className={styles.devicesSection}>
+          <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
               {locations.map(loc => (
                 <div 
                   key={loc.id}
