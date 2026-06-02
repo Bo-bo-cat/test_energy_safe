@@ -110,9 +110,6 @@ export default function ProfilePage() {
       const formData = new FormData();
       formData.append('message', feedbackText);
       formData.append('email', user.email); // Передаємо email юзера для зворотного зв'язку
-      if (feedbackFile) {
-        formData.append('file', feedbackFile);
-      }
 
       // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
