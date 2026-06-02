@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -6,27 +7,26 @@ import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
 import { ScenarioIcon } from '../components/icons/Scenario';
+import { LanguageProvider, useTranslation } from '../context/LanguageContext';
 
-export const metadata: Metadata = {
-  title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-  description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу. Безкоштовно та без реєстрації.',
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
-    url: '/',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
-  },
-};
+function LandingPageContent() {
+  const { t } = useTranslation();
+  
+  // Стейт для модалки та відкритого питання
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-export default function LandingPage() {
+  const toggleFaq = (i: number) => setOpenIndex(openIndex === i ? null : i);
+
+  // Беремо питання зі словника, як на повноцінній сторінці FAQ
+  const faqs = [
+    { question: t.faq?.q1, answer: t.faq?.a1 },
+    { question: t.faq?.q2, answer: t.faq?.a2 },
+    { question: t.faq?.q3, answer: t.faq?.a3 },
+    { question: t.faq?.q4, answer: t.faq?.a4 },
+    { question: t.faq?.q5, answer: t.faq?.a5 },
+  ];
+
   return (
     <main className={styles.wrap}>
       
@@ -55,9 +55,10 @@ export default function LandingPage() {
             <Link href="/auth?mode=register" className={styles.startBtn}>
               Почати розрахунок
             </Link>
-            <Link href="/faq" className={styles.faqBtn}>
+            {/* ЗМІНЕНО З <Link> НА <button> */}
+            <button onClick={() => setIsFaqOpen(true)} className={styles.faqBtn}>
               Часті запитання (FAQ)
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -97,8 +98,46 @@ export default function LandingPage() {
             </article>
           </div>
         </section>
-
       </div>
+
+      {/* МОДАЛЬНЕ ВІКНО FAQ */}
+      {isFaqOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsFaqOpen(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setIsFaqOpen(false)}>&times;</button>
+            <h2 className={styles.modalTitle}>{t.faq?.title || 'Часті запитання'}</h2>
+
+            <div className={styles.faqList}>
+              {faqs.map((faq, i) => faq.question && (
+                <div key={i} className={`${styles.faqItem} ${openIndex === i ? styles.open : ''}`}>
+                  <button className={styles.faqQuestion} onClick={() => toggleFaq(i)}>
+                    <span>{faq.question}</span>
+                    <svg className={styles.chevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  {openIndex === i && <p className={styles.faqAnswer}>{faq.answer}</p>}
+                </div>
+              ))}
+            </div>
+            
+            <div className={styles.modalFooter}>
+               <p>{t.faq?.subtitle || 'Не знайшли відповідь?'}</p>
+               <Link href="/auth?mode=register" className={styles.footerLink}>
+                 Зареєструйтесь, щоб звернутися до підтримки
+               </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <LanguageProvider>
+      <LandingPageContent />
+    </LanguageProvider>
   );
 }
