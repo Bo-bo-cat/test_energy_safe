@@ -65,7 +65,7 @@ export const EditDeviceModal = ({ isOpen, onClose, device, onSuccess }: EditDevi
       model_name: name.trim(),
       category: category,
       power_watts: parseInt(power) || 0,
-      startup_current_watts: startupPower ? parseInt(startupPower) : null
+      startup_current_watts: startupPower ? parseInt(startupPower) : 0
     };
 
     try {
