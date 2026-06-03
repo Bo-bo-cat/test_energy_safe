@@ -123,6 +123,25 @@ async def get_selected_systems(user_id: str = Depends(get_current_user_id)):
 
 
 @router.post(
+    "/parse",
+    summary="Отримати характеристики системи за назвою без збереження",
+)
+async def parse_system_by_name(
+    payload: SystemByName,
+    user_id: str = Depends(get_current_user_id),
+):
+    """Шукає характеристики ДБЖ/генератора через Groq і повертає JSON без збереження в БД."""
+    specs = await lookup_ups_specs(payload.model)
+    return {
+        "model": payload.model.strip(),
+        "type": specs["type"],
+        "power": specs["power"],
+        "battery": specs["battery"],
+        "autonomy": specs["autonomy"],
+    }
+
+
+@router.post(
     "/by-name",
     response_model=SystemResponse,
     status_code=201,
