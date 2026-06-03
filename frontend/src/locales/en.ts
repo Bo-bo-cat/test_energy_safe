@@ -193,7 +193,7 @@ export const en = {
     deleteSystem: 'Delete system?',
     findSystem: 'Find system',
     addCustomSystem: 'Add custom system',
-    modalTitle: 'Add system manually',
+    modalTitle: 'Add system',
     modelName: 'Model name',
     modelPlaceholder: 'e.g. My custom 12V build',
     powerLabel: 'Power (W)',

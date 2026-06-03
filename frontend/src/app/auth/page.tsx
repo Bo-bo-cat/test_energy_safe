@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import styles from './page.module.css';
 
 import { LightningIcon } from '../../components/icons/Lightning';
@@ -90,10 +91,10 @@ function AuthPageContent() {
 
   return (
     <div className={styles['page-container']}>
-      <div className={styles['logo-container']}>
+      <Link href="/" className={styles['logo-container']}>
         <LightningIcon className={styles['logo-icon']} />
         <div className={styles['logo-text']}>Energy Safe</div>
-      </div>
+      </Link>
 
       <div className={styles['auth-card']}>
         <div className={styles['mode-tabs']}>

@@ -180,12 +180,24 @@ export default function ScenariosPage() {
                 className={`${styles.card} ${isSelected ? styles.selected : ''}`}
                 onClick={() => handleCardClick(scenario.id)}
               >
+                {/* ОНОВЛЕНА ШАПКА З ІКОНКОЮ РЕДАГУВАННЯ */}
                 <div className={styles.cardHeader}>
-                  <div className={styles.cardTitle}>
-                    {scenario.name}
+                  <div className={styles.titleGroup}>
+                    <span className={styles.cardTitle}>{scenario.name}</span>
+                    <button 
+                      className={styles.editNameBtn} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingScenario({ id: scenario.id, name: scenario.name });
+                      }}
+                      title={lang === 'uk' ? 'Редагувати назву' : 'Edit name'}
+                    >
+                      <PenIcon />
+                    </button>
                     <span 
                       className={styles.infoMarker}
                       onClick={(e) => handleOpenInfo(e, scenario)}
+                      title={lang === 'uk' ? 'Деталі сценарію' : 'Scenario details'}
                     >
                       i
                     </span>
@@ -193,20 +205,12 @@ export default function ScenariosPage() {
                   
                   <div className={styles.actions}>
                     <button 
-                      className={styles.iconBtn} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingScenario({ id: scenario.id, name: scenario.name });
-                      }}
-                    >
-                      <PenIcon/>
-                    </button>
-                    <button 
                       className={`${styles.iconBtn} ${styles.deleteBtn}`} 
                       onClick={(e) => {
                         e.stopPropagation();
                         setScenarioToDelete(scenario.id);
                       }}
+                      title={t.common.delete || 'Видалити'}
                     >
                       <DeleteIcon />
                     </button>

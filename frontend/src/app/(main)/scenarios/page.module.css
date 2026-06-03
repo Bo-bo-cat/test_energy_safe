@@ -61,6 +61,7 @@
 .empty-btn:hover {
   opacity: 0.8;
 }
+
 /* Сітка карток */
 .grid {
   display: grid;
@@ -96,23 +97,52 @@
   margin-bottom: 32px;
 }
 
+/* Група: Назва + Олівець + Значок "i" */
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  flex-wrap: wrap; 
+  flex: 1;
+  min-width: 0;
+}
+
 .cardTitle {
   font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
   line-height: 1.2;
   word-break: break-word;
-   flex: 1;
-  min-width: 0;
+}
+
+/* Нова іконка редагування (як у профілі) */
+.editNameBtn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-muted); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.editNameBtn svg {
+  width: 16px; 
+  height: 16px;
+}
+
+.editNameBtn:hover {
+  color: var(--accent-orange);
 }
 
 .actions {
   display: flex;
-  gap: 4px;
   flex-shrink: 0;
 }
 
-/* Оновлені іконки: базовий колір 2c2c2c */
+/* Базовий стиль для іконки видалення */
 .iconBtn {
   width: 36px;
   height: 36px;
@@ -123,7 +153,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #2c2c2c; /* ЗМІНЕНО: тепер графітовий замість світло-сірого */
   transition: all 0.2s ease;
 }
 
@@ -134,6 +163,34 @@
 /* Корзина завжди помаранчева */
 .deleteBtn {
   color: var(--accent-orange);
+}
+
+/* Помітка ( i ) біля назви сценарію */
+.infoMarker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--text-muted);
+  vertical-align: middle;
+  font-family: serif;
+  font-style: italic;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.infoMarker:hover {
+  border-color: var(--accent-orange);
+  color: var(--accent-orange);
+  background-color: var(--bg-main);
+  transform: scale(1.1);
 }
 
 /* --- ОНОВЛЕНА СТАТИСТИКА (3 Колонки) --- */
@@ -171,13 +228,13 @@
   width: 100%;
   height: 8px;
   background-color: var(--border-color); 
-  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
+  border-radius: 0; 
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  border-radius: 0; /* ЗМІНЕНО: плаский замість заокругленого */
+  border-radius: 0; 
   transition: width 0.3s ease, background-color 0.3s ease;
 }
 
@@ -219,52 +276,6 @@
   color: var(--text-main);
 }
 
-.infoMarker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background-color: var(--bg-card-inner);
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-left: 8px;
-  vertical-align: middle;
-  font-family: serif;
-  font-style: italic;
-  font-weight: bold;
-}
-
-/* Помітка ( i ) біля назви сценарію */
-.infoMarker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  background-color: var(--bg-card-inner);
-  border: 1px solid var(--border-color);
-  border-radius: 50%;
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-left: 10px;
-  vertical-align: middle;
-  font-family: serif;
-  font-style: italic;
-  font-weight: bold;
-  cursor: pointer; /* Робимо курсор як у кнопки */
-  transition: all 0.2s ease;
-}
-
-.infoMarker:hover {
-  border-color: var(--accent-orange);
-  color: var(--accent-orange);
-  background-color: var(--bg-main);
-  transform: scale(1.1); /* Легке збільшення при наведенні */
-}
-
 /* =========================================
    ВЕРТИКАЛЬНА МОБІЛЬНА ВЕРСІЯ (Portrait)
    ========================================= */
@@ -292,13 +303,30 @@
 
   .cardHeader {
     margin-bottom: 12px; 
-    gap: 8px;
-    align-items: center; 
+  }
+
+  .titleGroup {
+    gap: 6px;
   }
 
   .cardTitle {
     font-size: 16px; 
     line-height: 1.1;
+  }
+
+  .editNameBtn {
+    padding: 2px;
+  }
+  
+  .editNameBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .infoMarker {
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
   }
 
   .iconBtn {
@@ -322,7 +350,7 @@
 
   .progressContainer {
     height: 6px; 
-    border-radius: 0; /* Плаский на мобільних теж */
+    border-radius: 0; 
   }
   
   .progressFill {

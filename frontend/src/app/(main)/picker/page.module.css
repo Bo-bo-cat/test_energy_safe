@@ -1,5 +1,18 @@
 /* src/app/(main)/systems/page.module.css */
 
+
+/* Іконка редагування (сіра) */
+.actionIconGray {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.iconBtn:hover .actionIconGray {
+  color: var(--text-main);
+}
+
 /* =========================================
    ПОРОЖНІЙ СТАН (EMPTY STATE)
    ========================================= */
