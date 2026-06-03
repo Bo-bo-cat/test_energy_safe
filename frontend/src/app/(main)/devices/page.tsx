@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './page.module.css';
 import toast from 'react-hot-toast';
 
@@ -11,6 +11,7 @@ import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
 import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
+import { PenIcon } from '../../../components/icons/Pen'; // <--- Іконка редагування
 import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
@@ -24,6 +25,7 @@ import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon'; 
 import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal';
+import { EditDeviceModal } from '../../../components/EditDeviceModal/EditDeviceModal'; // <--- Наша нова модалка
 
 // Словник
 import { useTranslation } from '../../../context/LanguageContext';
@@ -72,7 +74,12 @@ export default function DevicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
+  
+  // --- СТЕЙТИ ДЛЯ РЕДАГУВАННЯ ---
+  const [deviceToEdit, setDeviceToEdit] = useState<any | null>(null); 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<'down' | 'up'>('down'); 
@@ -84,19 +91,8 @@ export default function DevicesPage() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(`.${styles['custom-select-container']}`)) {
-        return; 
-      }
-      setOpenDropdownId(null); 
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
+  // Винесена функція завантаження приладів для повторного використання
+  const fetchDevices = useCallback(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
       setIsLoading(false);
@@ -140,6 +136,22 @@ export default function DevicesPage() {
         setIsLoading(false);
       });
   }, [t.common.error, lang]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(`.${styles['custom-select-container']}`)) {
+        return; 
+      }
+      setOpenDropdownId(null); 
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    fetchDevices();
+  }, [fetchDevices]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -394,27 +406,16 @@ export default function DevicesPage() {
                                     setOpenDropdownId(null); 
                                   } else {
                                     const rect = e.currentTarget.getBoundingClientRect();
-                                    
-                                    // 1. Знаходимо наш список приладів (скрол-контейнер)
                                     const listElement = e.currentTarget.closest(`.${styles['device-list']}`);
+                                    const visibleBottom = listElement ? listElement.getBoundingClientRect().bottom : window.innerHeight;
+                                    const spaceBelow = visibleBottom - rect.bottom;
+                                    const estimatedHeight = Math.min(180, allLocations.length * 32 + 12);
                                     
-                                    // 2. Беремо нижню межу цього контейнера
-                                    const visibleBottom = listElement 
-                                      ? listElement.getBoundingClientRect().bottom 
-                                      : window.innerHeight;
-                                    
-                                         // 3. Рахуємо реальне вільне місце всередині видимої зони
-                                        const spaceBelow = visibleBottom - rect.bottom;
-
-                                        // ДИНАМІЧНА ВИСОТА: ~32px на кожен пункт + 12px на відступи (padding), але не більше 180px
-                                        const estimatedHeight = Math.min(180, allLocations.length * 32 + 12);
-
-                                        // 4. Якщо місця знизу не вистачає для РЕАЛЬНОЇ висоти списку — стріляємо вгору!
-                                        if (spaceBelow < estimatedHeight) {
-                                          setDropdownPosition('up');
-                                        } else {
-                                          setDropdownPosition('down');
-                                        }
+                                    if (spaceBelow < estimatedHeight) {
+                                      setDropdownPosition('up');
+                                    } else {
+                                      setDropdownPosition('down');
+                                    }
                                     
                                     setOpenDropdownId(device.id);
                                   }
@@ -442,6 +443,20 @@ export default function DevicesPage() {
                               )}
                             </div>
 
+                            {/* --- КНОПКА РЕДАГУВАННЯ --- */}
+                            <button
+                              className={`${styles['action-btn']} ${styles['edit-btn']}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeviceToEdit(device);
+                                setIsEditModalOpen(true);
+                              }}
+                              title={(t.common as any)?.edit || "Редагувати"}
+                            >
+                              <PenIcon className={styles['action-icon']} />
+                            </button>
+
+                            {/* --- КНОПКА ВИДАЛЕННЯ --- */}
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => {
@@ -452,6 +467,7 @@ export default function DevicesPage() {
                             >
                               <DeleteIcon className={styles['action-icon']} />
                             </button>
+
                           </div>
                         </div>
                       </div>
@@ -493,6 +509,7 @@ export default function DevicesPage() {
         </div>
       )}
 
+      {/* Модалка видалення */}
       <DecisionModal 
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}
@@ -502,10 +519,25 @@ export default function DevicesPage() {
         cancelText={t.common.no}
       />
 
+      {/* Модалка додавання (Тільки для додавання нових) */}
       <AddDeviceModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+        // Якщо ви додали onSuccess у AddDeviceModal, можете розкоментувати рядок нижче
+        // onSuccess={fetchDevices} 
       />
+
+      {/* Модалка редагування */}
+      <EditDeviceModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setTimeout(() => setDeviceToEdit(null), 300); // Очищаємо стейт після завершення анімації закриття
+        }}
+        device={deviceToEdit}
+        onSuccess={fetchDevices} 
+      />
+
     </div>
   );
 }
