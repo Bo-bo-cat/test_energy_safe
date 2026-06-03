@@ -8,7 +8,7 @@ class SystemCreate(BaseModel):
     type: str = Field(default="ДБЖ")
     power: float = Field(..., gt=0, description="Потужність у Вт")
     battery: str = Field(..., description="Ємність батареї, напр. '256 Wh'")
-    autonomy: str = Field(..., description="Час автономії, напр. '2 год'")
+    autonomy: str = Field(default="–", description="Час автономії, напр. '2 год'")
     selected_for_calculation: bool = False
 
     model_config = {"json_schema_extra": {
@@ -32,6 +32,11 @@ class SystemByName(BaseModel):
 
 
 class SystemUpdate(BaseModel):
+    model: Optional[str] = Field(None, min_length=1, max_length=200)
+    type: Optional[str] = None
+    power: Optional[float] = Field(None, gt=0)
+    battery: Optional[str] = None
+    autonomy: Optional[str] = None
     selected_for_calculation: Optional[bool] = None
 
 
