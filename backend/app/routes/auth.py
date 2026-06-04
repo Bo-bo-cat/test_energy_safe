@@ -161,7 +161,7 @@ async def request_password_reset(payload: PasswordResetRequest):
         """
         try:
             resend.Emails.send({
-                "from": "Energy Safe <onboarding@resend.dev>",
+                "from": "Energy Safe <noreply@energyapp.fun>",
                 "to": [payload.email],
                 "subject": "Energy Safe — код відновлення паролю",
                 "html": html,
