@@ -5,9 +5,10 @@ import { useTranslation } from '../../context/LanguageContext';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onRegister?: () => void;
 }
 
-export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegister }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
@@ -15,23 +16,40 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [newPassword, setNewPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notRegistered, setNotRegistered] = useState(false);
 
   if (!isOpen) return null;
 
   const API = process.env.NEXT_PUBLIC_API_URL;
 
+  const handleClose = () => {
+    setStep(1);
+    setEmail('');
+    setCode('');
+    setNewPassword('');
+    setError('');
+    setNotRegistered(false);
+    onClose();
+  };
+
   const handleRequestCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setNotRegistered(false);
     try {
       const res = await fetch(`${API}/auth/password-reset/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) setStep(2);
-      else setError(t.auth.reqError);
+      if (res.ok) {
+        setStep(2);
+      } else if (res.status === 404) {
+        setNotRegistered(true);
+      } else {
+        setError(t.auth.reqError);
+      }
     } catch (err) {
       setError('Server error');
     } finally {
@@ -51,9 +69,7 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose }) => {
       });
       if (res.ok) {
         alert(t.auth.successAlert);
-        onClose();
-        setStep(1);
-        setEmail(''); setCode(''); setNewPassword('');
+        handleClose();
       } else {
         setError(t.auth.confirmError);
       }
@@ -65,7 +81,7 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className={styles.modalOverlay} onClick={onClose}>
+    <div className={styles.modalOverlay} onClick={handleClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <h3 className={styles.modalHeader}>
           {step === 1 ? t.auth.resetTitle : t.auth.confirmTitle}
@@ -96,12 +112,29 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
           {error && <p className={styles.errorText}>{error}</p>}
 
-          <div className={styles.modalActions}>
-            <button type="button" className={styles.modalBtnCancel} onClick={onClose}>{t.common.no || 'No'}</button>
-            <button type="submit" className={styles.modalBtnSave} disabled={isLoading}>
-              {isLoading ? '...' : (step === 1 ? t.auth.sendCode : t.auth.changePass)}
-            </button>
-          </div>
+          {notRegistered && (
+            <div className={styles.notRegisteredBox}>
+              <p className={styles.errorText}>{t.auth.notRegistered}</p>
+              {onRegister && (
+                <button
+                  type="button"
+                  className={styles.modalBtnSave}
+                  onClick={() => { handleClose(); onRegister(); }}
+                >
+                  {t.auth.goToRegister}
+                </button>
+              )}
+            </div>
+          )}
+
+          {!notRegistered && (
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.modalBtnCancel} onClick={handleClose}>{t.common.no || 'No'}</button>
+              <button type="submit" className={styles.modalBtnSave} disabled={isLoading}>
+                {isLoading ? '...' : (step === 1 ? t.auth.sendCode : t.auth.changePass)}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

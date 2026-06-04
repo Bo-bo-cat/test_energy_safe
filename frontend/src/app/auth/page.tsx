@@ -195,9 +195,10 @@ function AuthPageContent() {
         </form>
       </div>
 
-      <PasswordResetModal 
-        isOpen={isResetModalOpen} 
-        onClose={() => setIsResetModalOpen(false)} 
+      <PasswordResetModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onRegister={() => switchMode('register')}
       />
     </div>
   );

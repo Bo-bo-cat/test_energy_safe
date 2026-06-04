@@ -70,6 +70,8 @@ export const en = {
   reqError: "Request error. Please check your email.",
   confirmError: "Invalid code or expired session.",
   successAlert: "Password successfully changed!",
+  notRegistered: "No account found with this email. Please create an account to use the service.",
+  goToRegister: "Sign Up",
   },
   dashboard: {
     systemStatus: 'System Status',
