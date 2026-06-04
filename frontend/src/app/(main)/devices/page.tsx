@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './page.module.css';
 import toast from 'react-hot-toast';
 
@@ -11,6 +11,7 @@ import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
 import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
+import { PenIcon } from '../../../components/icons/Pen'; // <--- Іконка редагування
 import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
@@ -23,7 +24,8 @@ import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 // Компоненти
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon'; 
-import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal'; // Наша модалка
+import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal';
+import { EditDeviceModal } from '../../../components/EditDeviceModal/EditDeviceModal'; // <--- Наша нова модалка
 
 // Словник
 import { useTranslation } from '../../../context/LanguageContext';
@@ -72,41 +74,46 @@ export default function DevicesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('Усі');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
   
+  // --- СТЕЙТИ ДЛЯ РЕДАГУВАННЯ ---
+  const [deviceToEdit, setDeviceToEdit] = useState<any | null>(null); 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<'down' | 'up'>('down'); 
 
   const [customLocations, setCustomLocations] = useState<string[]>([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
   const [newLocationName, setNewLocationName] = useState('');
   const newLocationInputRef = useRef<HTMLInputElement>(null);
 
-  // СТАН ДЛЯ МОДАЛКИ
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(`.${styles['custom-select-container']}`)) {
-        return; 
-      }
-      setOpenDropdownId(null); 
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
+  // Винесена функція завантаження приладів для повторного використання
+  const fetchDevices = useCallback(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
       setIsLoading(false);
       return;
     }
 
+    const slowNetworkTimeout = setTimeout(() => {
+      toast(lang === 'uk' ? "Слабке з'єднання. Перевірте інтернет..." : "Slow connection. Check your internet...", {
+        icon: '📶',
+        duration: 4000,
+        style: { border: '1px solid var(--accent-orange)' }
+      });
+    }, 5000); 
+
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/devices`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error('Помилка сервера');
+        return r.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setDevices(data.map((d: any) => ({
@@ -124,8 +131,27 @@ export default function DevicesPage() {
         console.error(t.common.error, err);
         toast.error(lang === 'uk' ? 'Помилка завантаження приладів' : 'Error loading devices');
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        clearTimeout(slowNetworkTimeout);
+        setIsLoading(false);
+      });
   }, [t.common.error, lang]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(`.${styles['custom-select-container']}`)) {
+        return; 
+      }
+      setOpenDropdownId(null); 
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    fetchDevices();
+  }, [fetchDevices]);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -302,8 +328,9 @@ export default function DevicesPage() {
             )}
           </div>
 
+          {/* ДЕСКТОПНА КНОПКА (ховається на мобілці) */}
           {hasDevices && (
-            <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+            <button onClick={() => setIsAddModalOpen(true)} className={`${styles['add-btn']} ${styles['desktop-add-btn']}`}>
               <span className={styles['plus-icon']}>+</span>
               {t.common.add}
             </button>
@@ -329,7 +356,7 @@ export default function DevicesPage() {
         )}
       </div>
 
-      <div className={styles['device-list']} style={{ flex: 1, overflowY: 'auto', paddingBottom: '32px' }}>
+      <div className={styles['device-list']}>
         {isLoading ? (
           <p style={{ color: 'var(--text-main)', fontWeight: 500 }}>{t.devices.loadingDevices}</p>
         ) : Object.keys(groupedDevices).length > 0 ? (
@@ -369,20 +396,42 @@ export default function DevicesPage() {
                           <div className={styles['action-group']}>
                             
                             <div className={styles['custom-select-container']}>
-                              <div 
+
+                              <div
                                 className={`${styles['location-select']} ${openDropdownId === device.id ? styles['active-select'] : ''}`}
-                                onClick={() => setOpenDropdownId(openDropdownId === device.id ? null : device.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  
+                                  if (openDropdownId === device.id) {
+                                    setOpenDropdownId(null); 
+                                  } else {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const listElement = e.currentTarget.closest(`.${styles['device-list']}`);
+                                    const visibleBottom = listElement ? listElement.getBoundingClientRect().bottom : window.innerHeight;
+                                    const spaceBelow = visibleBottom - rect.bottom;
+                                    const estimatedHeight = Math.min(180, allLocations.length * 32 + 12);
+                                    
+                                    if (spaceBelow < estimatedHeight) {
+                                      setDropdownPosition('up');
+                                    } else {
+                                      setDropdownPosition('down');
+                                    }
+                                    
+                                    setOpenDropdownId(device.id);
+                                  }
+                                }}
                               >
-                                {device.tag || allLocations[0]}
+                                {device.tag || 'Усі'}
                               </div>
-                              
+
                               {openDropdownId === device.id && (
-                                <div className={styles['custom-select-dropdown']}>
+                                <div className={`${styles['custom-select-dropdown']} ${dropdownPosition === 'up' ? styles['open-up'] : ''}`}>
                                   {allLocations.map(loc => (
                                     <div
                                       key={loc}
                                       className={`${styles['custom-select-item']} ${device.tag === loc ? styles['selected'] : ''}`}
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         handleToggleLocation(device.id, loc);
                                         setOpenDropdownId(null);
                                       }}
@@ -394,6 +443,20 @@ export default function DevicesPage() {
                               )}
                             </div>
 
+                            {/* --- КНОПКА РЕДАГУВАННЯ --- */}
+                            <button
+                              className={`${styles['action-btn']} ${styles['edit-btn']}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeviceToEdit(device);
+                                setIsEditModalOpen(true);
+                              }}
+                              title={(t.common as any)?.edit || "Редагувати"}
+                            >
+                              <PenIcon className={styles['action-icon']} />
+                            </button>
+
+                            {/* --- КНОПКА ВИДАЛЕННЯ --- */}
                             <button
                               className={`${styles['action-btn']} ${styles['delete-btn']}`}
                               onClick={(e) => {
@@ -404,6 +467,7 @@ export default function DevicesPage() {
                             >
                               <DeleteIcon className={styles['action-icon']} />
                             </button>
+
                           </div>
                         </div>
                       </div>
@@ -435,6 +499,17 @@ export default function DevicesPage() {
         )}
       </div>
 
+      {/* МОБІЛЬНА КНОПКА (ховається на десктопі, завжди знизу екрана) */}
+      {hasDevices && (
+        <div className={styles['mobile-add-container']}>
+          <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+            <span className={styles['plus-icon']}>+</span>
+            {t.common.add}
+          </button>
+        </div>
+      )}
+
+      {/* Модалка видалення */}
       <DecisionModal 
         isOpen={deviceToDelete !== null}
         onClose={() => setDeviceToDelete(null)}
@@ -444,11 +519,25 @@ export default function DevicesPage() {
         cancelText={t.common.no}
       />
 
-      {/* РЕНДЕР МОДАЛКИ ДЛЯ ДОДАВАННЯ ПРИЛАДУ */}
+      {/* Модалка додавання (Тільки для додавання нових) */}
       <AddDeviceModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
+        // Якщо ви додали onSuccess у AddDeviceModal, можете розкоментувати рядок нижче
+        // onSuccess={fetchDevices} 
       />
+
+      {/* Модалка редагування */}
+      <EditDeviceModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setTimeout(() => setDeviceToEdit(null), 300); // Очищаємо стейт після завершення анімації закриття
+        }}
+        device={deviceToEdit}
+        onSuccess={fetchDevices} 
+      />
+
     </div>
   );
 }

@@ -38,6 +38,10 @@ class SystemUpdate(BaseModel):
     battery: Optional[str] = None
     autonomy: Optional[str] = None
     selected_for_calculation: Optional[bool] = None
+    model: Optional[str] = None
+    power: Optional[int] = None
+    battery: Optional[str] = None
+    autonomy: Optional[str] = None
 
 
 class SystemResponse(BaseModel):

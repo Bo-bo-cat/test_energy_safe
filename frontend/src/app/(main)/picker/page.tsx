@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
-import { SystemIcon } from '../../../components/icons/System'; // Додано для порожнього стану
+import { PenIcon } from '../../../components/icons/Pen'; // ІМПОРТ ІКОНКИ РЕДАГУВАННЯ
+import { SystemIcon } from '../../../components/icons/System'; 
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AddSystemModal } from '../../../components/AddSystemModal/AddSystemModal';
 import { useTranslation } from '../../../context/LanguageContext';
@@ -28,7 +29,16 @@ export default function SystemsPage() {
   const [query, setQuery] = useState('');
   
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
+  
+  // Стейт для створення
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [modalInitialData, setModalInitialData] = useState<{ model: string; power: string; battery: string } | null>(null);
+  
+  // ДОДАНО: Стейт для редагування існуючої системи
+  const [editingSystem, setEditingSystem] = useState<any | null>(null);
+
+  const [hiddenAutonomy, setHiddenAutonomy] = useState('');
+  const [hiddenType, setHiddenType] = useState('ДБЖ / Власна збірка');
 
   useEffect(() => {
     fetchMySystems();
@@ -67,31 +77,53 @@ export default function SystemsPage() {
     if (!query.trim()) return;
     const token = localStorage.getItem('access_token');
     if (!token) return;
+    
+    const toastId = toast.loading(lang === 'uk' ? 'Пошук характеристик...' : 'Searching specs...');
+    
     try {
-      const res = await fetch(`${API}/systems/by-name`, {
+      const res = await fetch(`${API}/systems/parse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ 
-          model: query,
-          selected_for_calculation: true 
-        })
+        body: JSON.stringify({ model: query })
       });
+      
       if (res.ok) {
+        const data = await res.json();
         setQuery('');
-        fetchMySystems();
-        toast.success(lang === 'uk' ? 'Систему додано' : 'System added');
+        toast.dismiss(toastId);
+        
+        setModalInitialData({
+          model: data.model || query,
+          power: data.power ? String(data.power) : '',
+          battery: data.battery ? String(data.battery) : ''
+        });
+        
+        setHiddenAutonomy(data.autonomy || '');
+        setHiddenType(data.type || 'ДБЖ / Власна збірка');
+        
+        setIsCustomModalOpen(true);
       } else {
+        toast.dismiss(toastId);
         toast.error(lang === 'uk' ? 'Систему не знайдено' : 'System not found');
       }
     } catch (err) { 
       console.error(err); 
+      toast.dismiss(toastId);
       toast.error(t.common.error);
     }
   };
 
-  const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string; autonomy: string }) => {
+  const handleOpenEmptyModal = () => {
+    setModalInitialData(null);
+    setHiddenAutonomy(''); 
+    setHiddenType('ДБЖ / Власна збірка');
+    setIsCustomModalOpen(true);
+  };
+
+  const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string }) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
+    
     try {
       const res = await fetch(`${API}/systems`, {
         method: 'POST',
@@ -99,17 +131,51 @@ export default function SystemsPage() {
         body: JSON.stringify({
           ...formData,
           power: Number(formData.power),
-          type: 'ДБЖ / Власна збірка',
+          type: hiddenType,
+          autonomy: hiddenAutonomy || '-',
           selected_for_calculation: true 
         }),
       });
+      
       if (res.ok) {
         setIsCustomModalOpen(false);
         fetchMySystems();
-        toast.success(lang === 'uk' ? 'Власну систему додано' : 'Custom system added');
+        toast.success(lang === 'uk' ? 'Систему збережено' : 'System saved');
+      } else {
+        toast.error(lang === 'uk' ? 'Помилка збереження системи' : 'Error saving system');
       }
     } catch (err) { 
       console.error(err); 
+      toast.error(t.common.error);
+    }
+  };
+
+  // ДОДАНО: Логіка оновлення існуючої системи
+  const handleUpdateSystem = async (formData: { model: string; power: string; battery: string }) => {
+    if (!editingSystem) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API}/systems/${editingSystem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          model: formData.model,
+          power: Number(formData.power),
+          battery: formData.battery
+        }),
+      });
+
+      if (res.ok) {
+        setEditingSystem(null);
+        fetchMySystems();
+        toast.success(lang === 'uk' ? 'Систему оновлено' : 'System updated');
+      } else {
+        toast.error(lang === 'uk' ? 'Помилка оновлення' : 'Update error');
+      }
+    } catch (err) {
+      console.error(err);
       toast.error(t.common.error);
     }
   };
@@ -219,7 +285,7 @@ export default function SystemsPage() {
             <button className={styles.addBtn} onClick={handleAddByName}>
               {t.picker?.findSystem || 'Знайти систему'}
             </button>
-            <button className={styles.customSysBtn} onClick={() => setIsCustomModalOpen(true)}>
+            <button className={styles.customSysBtn} onClick={handleOpenEmptyModal}>
               {t.picker?.addCustomSystem || 'Додати свою систему'}
             </button>
           </div>
@@ -251,9 +317,15 @@ export default function SystemsPage() {
                 
                 <div className={styles.cardActions}>
                   {tab === 'my' ? (
-                    <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
-                      <DeleteIcon className={styles.actionIconOrange} />
-                    </button>
+                    <>
+                      {/* ДОДАНО: Кнопка редагування */}
+                      <button className={styles.iconBtn} onClick={() => setEditingSystem(item)}>
+                        <PenIcon className={styles.actionIconGray} />
+                      </button>
+                      <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
+                        <DeleteIcon className={styles.actionIconOrange} />
+                      </button>
+                    </>
                   ) : (
                     <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
                       <span className={styles.plusIconTop}>+</span>
@@ -309,10 +381,20 @@ export default function SystemsPage() {
         </div>
       )}
 
+      {/* УНІВЕРСАЛЬНА МОДАЛКА (працює і для створення, і для редагування) */}
       <AddSystemModal 
-        isOpen={isCustomModalOpen} 
-        onClose={() => setIsCustomModalOpen(false)} 
-        onSave={handleCreateCustomSystem} 
+        isOpen={isCustomModalOpen || editingSystem !== null} 
+        onClose={() => {
+          setIsCustomModalOpen(false);
+          setEditingSystem(null);
+        }} 
+        onSave={editingSystem ? handleUpdateSystem : handleCreateCustomSystem} 
+        initialData={
+          editingSystem 
+            ? { model: editingSystem.model, power: String(editingSystem.power), battery: editingSystem.battery } 
+            : modalInitialData
+        }
+        title={editingSystem ? (lang === 'uk' ? 'Редагувати систему' : 'Edit system') : undefined}
       />
 
       <DecisionModal 

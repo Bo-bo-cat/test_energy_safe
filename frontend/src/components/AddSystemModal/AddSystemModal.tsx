@@ -1,29 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './AddSystemModal.module.css';
 import { useTranslation } from '../../context/LanguageContext';
 
 interface AddSystemModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: { model: string; power: string; battery: string; autonomy: string }) => Promise<void>;
+  onSave: (data: { model: string; power: string; battery: string }) => Promise<void>;
+  initialData?: { model: string; power: string; battery: string } | null;
+  // ДОДАНО: можливість змінювати заголовок
+  title?: string; 
 }
 
-export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose, onSave }) => {
+export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose, onSave, initialData, title }) => {
   const { t } = useTranslation();
   
   const [customForm, setCustomForm] = useState({
     model: '',
     power: '',
-    battery: '',
-    autonomy: ''
+    battery: ''
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setCustomForm({
+        model: initialData?.model || '',
+        power: initialData?.power || '',
+        battery: initialData?.battery || ''
+      });
+    }
+  }, [isOpen, initialData]);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSave(customForm);
-    setCustomForm({ model: '', power: '', battery: '', autonomy: '' });
+    // Не очищаємо форму тут одразу, бо модалка закриється і стейт скинеться сам
   };
 
   return (
@@ -31,7 +43,8 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         
         <div className={styles.header}>
-          <h3 className={styles.modalHeader}>{t.picker.modalTitle}</h3>
+          {/* Використовуємо кастомний заголовок, якщо є, інакше стандартний */}
+          <h3 className={styles.modalHeader}>{title || t.picker.modalTitle}</h3>
           <button type="button" className={styles.closeBtn} onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -71,16 +84,6 @@ export const AddSystemModal: React.FC<AddSystemModalProps> = ({ isOpen, onClose,
               placeholder={t.picker.batteryPlaceholder} 
               value={customForm.battery} 
               onChange={e => setCustomForm({...customForm, battery: e.target.value})} 
-            />
-          </div>
-
-          <div className={styles.inputWrap}>
-            <label>{t.picker.autonomyLabel}</label>
-            <input 
-              required 
-              placeholder={t.picker.autonomyPlaceholder} 
-              value={customForm.autonomy} 
-              onChange={e => setCustomForm({...customForm, autonomy: e.target.value})} 
             />
           </div>
 

@@ -1,4 +1,5 @@
-import type { Metadata } from 'next';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -6,61 +7,62 @@ import { LightningIcon } from '../components/icons/Lightning';
 import { CalcIcon } from '../components/icons/Calc';
 import { SystemIcon } from '../components/icons/System';
 import { ScenarioIcon } from '../components/icons/Scenario';
+import { LanguageProvider, useTranslation } from '../context/LanguageContext';
 
-export const metadata: Metadata = {
-  title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-  description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу. Безкоштовно та без реєстрації.',
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
-    url: '/',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Energy Safe — Плануйте енергозабезпечення без складних розрахунків',
-    description: 'Розрахуйте навантаження побутових приладів, підберіть ДБЖ або інвертор та збережіть сценарії для дому або офісу.',
-  },
-};
+function LandingPageContent() {
+  const { t } = useTranslation();
+  
+  // Стейт для модалки та відкритого питання
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-export default function LandingPage() {
+  const toggleFaq = (i: number) => setOpenIndex(openIndex === i ? null : i);
+
+  // Беремо питання зі словника, як на повноцінній сторінці FAQ
+  const faqs = [
+    { question: t.faq?.q1, answer: t.faq?.a1 },
+    { question: t.faq?.q2, answer: t.faq?.a2 },
+    { question: t.faq?.q3, answer: t.faq?.a3 },
+    { question: t.faq?.q4, answer: t.faq?.a4 },
+    { question: t.faq?.q5, answer: t.faq?.a5 },
+  ];
+
   return (
     <main className={styles.wrap}>
+      
+      {/* ЛОГОТИП */}
+      <header className={styles.logoWrap}>
+        <LightningIcon className={styles.logoIcon} aria-hidden="true" />
+        <span className={styles.logoText}>Energy Safe</span>
+      </header>
+
       <div className={styles.container}>
         
-        {/* 1. Логотип (Семантичний header) */}
-        <header className={styles.logoWrap}>
-          <LightningIcon className={styles.logoIcon} aria-hidden="true" />
-          <span className={styles.logoText}>Energy Safe</span>
-        </header>
+        {/* ЛІВА ЧАСТИНА (Текст + Кнопки) */}
+        <div className={styles.leftContent}>
+          <h1 className={styles.mainTitle}>
+            Плануйте енергозабезпечення
+            <span className={styles.highlight}>без складних розрахунків</span>
+          </h1>
 
-        {/* 2. Головний заголовок (H1 - головний ключ для SEO) */}
-        <h1 className={styles.mainTitle}>
-          Плануйте енергозабезпечення<br />
-          <span className={styles.highlight}>без складних розрахунків</span>
-        </h1>
+          <p className={styles.desc}>
+            Energy Safe допомагає швидко оцінити енергоспоживання приладів, 
+            підібрати надійну систему резервного живлення (ДБЖ, зарядні станції) 
+            та зберігати власні сценарії для дому чи офісу.
+          </p>
 
-        {/* 3. Короткий опис (Збагачено SEO-ключами: ДБЖ, резервне живлення, станції) */}
-        <p className={styles.desc}>
-          Energy Safe допомагає швидко оцінити енергоспоживання приладів, 
-          підібрати надійну систему резервного живлення (ДБЖ, зарядні станції) 
-          та зберігати власні сценарії для дому чи офісу.
-        </p>
-
-        {/* 4. Група кнопок: Головна дія (CTA) + Перехід до FAQ */}
-        <div className={styles.btnGroup}>
-          <Link href="/auth?mode=register" className={styles.startBtn}>
-            Почати розрахунок
-          </Link>
-          <Link href="/faq" className={styles.faqBtn}>
-            Часті запитання (FAQ)
-          </Link>
+          <div className={styles.btnGroup}>
+            <Link href="/auth?mode=register" className={styles.startBtn}>
+              Почати розрахунок
+            </Link>
+            {/* ЗМІНЕНО З <Link> НА <button> */}
+            <button onClick={() => setIsFaqOpen(true)} className={styles.faqBtn}>
+              Часті запитання (FAQ)
+            </button>
+          </div>
         </div>
 
-        {/* 5. Що можна робити (Секція з картками-статтями для SEO) */}
+        {/* ПРАВА ЧАСТИНА (Картки) */}
         <section className={styles.rightContent} aria-labelledby="features-title">
           <h2 id="features-title" className={styles.featuresTitle}>Що можна зробити?</h2>
           
@@ -81,7 +83,7 @@ export default function LandingPage() {
               </div>
               <div>
                 <h3 className={styles.cardTitle}>Підібрати систему живлення</h3>
-                <p className={styles.cardDesc}>Отримайте точну рекомендацію резервного ДБЖ або станції під ваші потреби.</p>
+                <p className={styles.cardDesc}>Отримайте точну рекомендацію резервного ДБЖ або станції под ваші потреби.</p>
               </div>
             </article>
 
@@ -96,8 +98,46 @@ export default function LandingPage() {
             </article>
           </div>
         </section>
-
       </div>
+
+      {/* МОДАЛЬНЕ ВІКНО FAQ */}
+      {isFaqOpen && (
+        <div className={styles.modalOverlay} onClick={() => setIsFaqOpen(false)}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button className={styles.closeBtn} onClick={() => setIsFaqOpen(false)}>&times;</button>
+            <h2 className={styles.modalTitle}>{t.faq?.title || 'Часті запитання'}</h2>
+
+            <div className={styles.faqList}>
+              {faqs.map((faq, i) => faq.question && (
+                <div key={i} className={`${styles.faqItem} ${openIndex === i ? styles.open : ''}`}>
+                  <button className={styles.faqQuestion} onClick={() => toggleFaq(i)}>
+                    <span>{faq.question}</span>
+                    <svg className={styles.chevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  {openIndex === i && <p className={styles.faqAnswer}>{faq.answer}</p>}
+                </div>
+              ))}
+            </div>
+            
+            <div className={styles.modalFooter}>
+               <p>{t.faq?.subtitle || 'Не знайшли відповідь?'}</p>
+               <Link href="/auth?mode=register" className={styles.footerLink}>
+                 Зареєструйтесь, щоб звернутися до підтримки
+               </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <LanguageProvider>
+      <LandingPageContent />
+    </LanguageProvider>
   );
 }

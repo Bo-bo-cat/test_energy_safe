@@ -13,6 +13,7 @@ class DeviceCreate(BaseModel):
     model_name: str = Field(..., min_length=1, max_length=200)
     daily_usage_hours: float = Field(default=1.0, ge=0, le=24)
     is_critical: bool = False
+    category: Optional[str] = Field(default=None, max_length=100)
     category: Optional[str] = None
     power_watts: Optional[float] = Field(default=None, ge=0)
     startup_current_watts: Optional[float] = Field(default=None, ge=0)

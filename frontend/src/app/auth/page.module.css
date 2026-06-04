@@ -21,7 +21,14 @@
   gap: 10px;
   position: absolute; 
   top: 40px; 
-  left: 40px; 
+  left: 40px;
+  text-decoration: none; 
+  cursor: pointer;
+  transition: opacity 0.2s ease; 
+}
+
+.logo-container:hover {
+  opacity: 0.8;
 }
 
 .logo-text {
