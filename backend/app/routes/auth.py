@@ -1,3 +1,4 @@
+import logging
 import os
 import secrets
 from urllib.parse import urlencode
@@ -5,6 +6,7 @@ from datetime import datetime, timezone, timedelta
 
 import bcrypt
 import httpx
+import resend
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
@@ -12,6 +14,8 @@ from pydantic import BaseModel, EmailStr, Field
 
 from app.database import get_database, col, TEST_MODE
 from app.auth import create_access_token
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -140,7 +144,32 @@ async def request_password_reset(payload: PasswordResetRequest):
         upsert=True,
     )
 
-    print(f"[PASSWORD RESET] Code for {payload.email}: {code}")
+    api_key = os.getenv("RESEND_API_KEY")
+    if api_key:
+        resend.api_key = api_key
+        html = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px;">
+          <div style="max-width: 480px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 32px; border: 1px solid #e0e0e0;">
+            <h2 style="color: #FF6E00; margin-top: 0;">⚡ Energy Safe — Відновлення паролю</h2>
+            <p style="color: #444; font-size: 15px;">Ваш код підтвердження:</p>
+            <div style="font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #FF6E00; text-align: center; margin: 24px 0;">{code}</div>
+            <p style="color: #888; font-size: 13px;">Код дійсний протягом 1 години. Якщо ви не запитували відновлення — проігноруйте цей лист.</p>
+          </div>
+        </body>
+        </html>
+        """
+        try:
+            resend.Emails.send({
+                "from": "Energy Safe <onboarding@resend.dev>",
+                "to": [payload.email],
+                "subject": "Energy Safe — код відновлення паролю",
+                "html": html,
+            })
+        except Exception as e:
+            logger.error("Resend error (password reset): %s", e, exc_info=True)
+    else:
+        logger.warning("[PASSWORD RESET] RESEND_API_KEY not set. Code for %s: %s", payload.email, code)
 
     response: dict = {"message": "ok"}
     if TEST_MODE:
