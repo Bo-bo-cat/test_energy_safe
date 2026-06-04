@@ -123,9 +123,8 @@ async def request_password_reset(payload: PasswordResetRequest):
     db = get_database()
     doc = await db[col("users")].find_one({"email": payload.email})
 
-    # Завжди повертаємо однакову відповідь — не розкриваємо чи існує акаунт
     if not doc:
-        return {"message": "ok"}
+        raise HTTPException(status_code=404, detail="user_not_found")
 
     code = str(secrets.randbelow(1_000_000)).zfill(6)
     expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
