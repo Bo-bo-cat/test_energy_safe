@@ -69,7 +69,7 @@ async def root():
     }
 
 
-@app.get("/health", tags=["Health"])
+@app.head("/health", tags=["Health"])
 async def health_check():
     db_status = "disconnected"
     try:
