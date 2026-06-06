@@ -1,5 +1,9 @@
+import logging
 import os
 import secrets
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from urllib.parse import urlencode
 from datetime import datetime, timezone, timedelta
 
@@ -12,6 +16,46 @@ from pydantic import BaseModel, EmailStr, Field
 
 from app.database import get_database, col, TEST_MODE
 from app.auth import create_access_token
+
+logger = logging.getLogger(__name__)
+
+
+def _send_reset_email(to_email: str, code: str) -> None:
+    gmail_user = os.getenv("GMAIL_USER")
+    gmail_password = os.getenv("GMAIL_APP_PASSWORD")
+    if not gmail_user or not gmail_password:
+        logger.warning("GMAIL_USER / GMAIL_APP_PASSWORD not set — email not sent")
+        return
+
+    html = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; background: #f5f5f5; padding: 24px;">
+      <div style="max-width: 480px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 32px; border: 1px solid #e0e0e0;">
+        <h2 style="color: #FF6E00; margin-top: 0;">&#9889; Energy Safe — скидання паролю</h2>
+        <p style="color: #444; font-size: 15px;">Ваш код підтвердження:</p>
+        <div style="text-align: center; margin: 24px 0;">
+          <span style="font-size: 36px; font-weight: bold; letter-spacing: 10px; color: #FF6E00;">{code}</span>
+        </div>
+        <p style="color: #888; font-size: 13px;">Код дійсний протягом 1 години. Якщо ви не запитували скидання паролю — проігноруйте цей лист.</p>
+      </div>
+    </body>
+    </html>
+    """
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = "Energy Safe — код скидання паролю"
+    msg["From"] = f"Energy Safe <{gmail_user}>"
+    msg["To"] = to_email
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(gmail_user, gmail_password)
+            smtp.sendmail(gmail_user, to_email, msg.as_string())
+    except Exception as e:
+        logger.error("Gmail SMTP error: %s", e, exc_info=True)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -140,12 +184,10 @@ async def request_password_reset(payload: PasswordResetRequest):
         upsert=True,
     )
 
-    print(f"[PASSWORD RESET] Code for {payload.email}: {code}")
+    logger.info("[PASSWORD RESET] Code for %s: %s", payload.email, code)
+    _send_reset_email(payload.email, code)
 
-    response: dict = {"message": "ok"}
-    if TEST_MODE:
-        response["debug_code"] = code
-    return response
+    return {"message": "ok"}
 
 
 @router.post("/password-reset/confirm")

@@ -162,7 +162,7 @@ export const en = {
     q6: 'How to change the password?',
     a6: 'Go to "Profile" → click "Change Password". Enter your current password, then the new one (minimum 4 characters) and confirm the save.',
     q7: 'What if I forgot my password?',
-    a7: 'Currently, password recovery via email is not implemented. Please contact support or register with a new account.',
+    a7: 'On the login page, click "Forgot password?". Enter your account email — we will send a confirmation code. Enter the code and set a new password.',
     q8: 'How to delete an account?',
     a8: 'Go to "Profile" → click "Delete Account" and confirm. Warning: this is irreversible - all your data, devices, and scenarios will be deleted.',
     contactTitle: "Didn't find an answer?",

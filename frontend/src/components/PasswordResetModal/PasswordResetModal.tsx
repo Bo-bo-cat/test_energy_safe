@@ -71,10 +71,11 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
         alert(t.auth.successAlert);
         handleClose();
       } else {
-        setError(t.auth.confirmError);
+        const data = await res.json().catch(() => ({}));
+        setError(data.detail || t.auth.confirmError);
       }
     } catch (err) {
-      setError('Error');
+      setError(t.auth.confirmError);
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +103,7 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
           ) : (
             <>
               <div className={styles.inputWrap}><label>Код</label>
-                <input required value={code} onChange={e => setCode(e.target.value)} placeholder={t.auth.codePlaceholder} />
+                <input required value={code} onChange={e => setCode(e.target.value.trim())} placeholder={t.auth.codePlaceholder} maxLength={6} />
               </div>
               <div className={styles.inputWrap}><label>Новий пароль</label>
                 <input required type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t.auth.passPlaceholder} />
@@ -112,22 +113,25 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
 
           {error && <p className={styles.errorText}>{error}</p>}
 
-          {notRegistered && (
+          {notRegistered ? (
             <div className={styles.notRegisteredBox}>
               <p className={styles.errorText}>{t.auth.notRegistered}</p>
-              {onRegister && (
-                <button
-                  type="button"
-                  className={styles.modalBtnSave}
-                  onClick={() => { handleClose(); onRegister(); }}
-                >
-                  {t.auth.goToRegister}
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.modalBtnCancel} onClick={handleClose}>
+                  {t.common.cancel}
                 </button>
-              )}
+                {onRegister && (
+                  <button
+                    type="button"
+                    className={styles.modalBtnSave}
+                    onClick={() => { handleClose(); onRegister(); }}
+                  >
+                    {t.auth.goToRegister}
+                  </button>
+                )}
+              </div>
             </div>
-          )}
-
-          {!notRegistered && (
+          ) : (
             <div className={styles.modalActions}>
               <button type="button" className={styles.modalBtnCancel} onClick={handleClose}>{t.common.no || 'No'}</button>
               <button type="submit" className={styles.modalBtnSave} disabled={isLoading}>
