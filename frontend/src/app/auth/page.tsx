@@ -83,7 +83,7 @@ function AuthPageContent() {
       localStorage.setItem('user_id', data.user_id);
       localStorage.setItem('user_name', data.user_name);
       document.cookie = `access_token=${data.access_token}; path=/; max-age=${7 * 24 * 60 * 60}`;
-      router.push('/dashboards');
+      router.push('/dashboard');
     } catch (err) {
       setError('Помилка з\'єднання з сервером');
     }
