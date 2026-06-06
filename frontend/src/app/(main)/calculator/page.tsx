@@ -79,6 +79,7 @@ export default function CalculatorPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
+  const [deviceHours, setDeviceHours] = useState<Record<string, number>>({});
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
 
   const [calcResult, setCalcResult] = useState<{
@@ -153,7 +154,10 @@ export default function CalculatorPage() {
         Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
-        selectedDeviceIds: selectedDeviceIds,
+        selectedDevices: selectedDeviceIds.map(id => ({
+          deviceId: id,
+          usageHours: deviceHours[id] ?? 24
+        })),
         selectedSystemId: selectedSystemId
       })
     })
@@ -168,7 +172,7 @@ export default function CalculatorPage() {
         console.error(err);
         setCalcResult(null);
       });
-  }, [selectedDeviceIds, selectedSystemId]);
+  }, [selectedDeviceIds, selectedSystemId, deviceHours]);
 
   const selectedSystem = systems.find(s => String(s.id || s._id) === String(selectedSystemId));
   
@@ -215,10 +219,13 @@ export default function CalculatorPage() {
     try {
       const payload = {
         name: scenarioName,
-        selectedDeviceIds: selectedDeviceIds,
-        selectedSystemId: selectedSystemId, 
+        selectedDevices: selectedDeviceIds.map(id => ({
+          deviceId: id,
+          usageHours: deviceHours[id] ?? 24
+        })),
+        selectedSystemId: selectedSystemId,
         totalPowerWatts: calcResult!.totalPowerWatts,
-        loadPercent: displayLoadPercentage, 
+        loadPercent: displayLoadPercentage,
         autonomyHours: calcResult?.autonomyHours || 0
       };
 
@@ -258,9 +265,21 @@ export default function CalculatorPage() {
   }) : locationFilteredDevices;
 
   const toggleDevice = (id: string) => {
-    setSelectedDeviceIds(prev => 
-      prev.includes(id) ? prev.filter(did => did !== id) : [...prev, id]
-    );
+    setSelectedDeviceIds(prev => {
+      if (prev.includes(id)) {
+        setDeviceHours(h => { const next = { ...h }; delete next[id]; return next; });
+        return prev.filter(did => did !== id);
+      }
+      setDeviceHours(h => ({ ...h, [id]: 24 }));
+      return [...prev, id];
+    });
+  };
+
+  const setHours = (id: string, val: string) => {
+    const num = parseFloat(val);
+    if (!isNaN(num) && num >= 0 && num <= 24) {
+      setDeviceHours(h => ({ ...h, [id]: num }));
+    }
   };
 
   const toggleCategory = (cat: string) => {
@@ -325,8 +344,8 @@ export default function CalculatorPage() {
                   const id = device.id || device._id; 
                   const isSelected = selectedDeviceIds.includes(id);
                   return (
-                    <div 
-                      key={id} 
+                    <div
+                      key={id}
                       className={`${styles['device-item']} ${isSelected ? styles.selected : ''}`}
                       onClick={() => toggleDevice(id)}
                     >
@@ -338,8 +357,24 @@ export default function CalculatorPage() {
                         </div>
                         <span className={styles['device-name']}>{device.model_name || device.name}</span>
                       </div>
-                      <div className={styles['device-power']}>
-                        {device.power_watts || device.power_watt} {t.common.w} {device.startup_current_watts ? `- ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                      <div className={styles['device-right']}>
+                        <div className={styles['device-power']}>
+                          {device.power_watts || device.power_watt} {t.common.w}{device.startup_current_watts ? ` · ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
+                        </div>
+                        {isSelected && (
+                          <div className={styles['hours-input-wrap']} onClick={e => e.stopPropagation()}>
+                            <input
+                              className={styles['hours-input']}
+                              type="number"
+                              min="0"
+                              max="24"
+                              step="0.5"
+                              value={deviceHours[id] ?? 24}
+                              onChange={e => setHours(id, e.target.value)}
+                            />
+                            <span className={styles['hours-label']}>{t.common.h}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )

@@ -3,6 +3,11 @@ from typing import List, Optional
 from datetime import datetime
 
 
+class DeviceUsageItem(BaseModel):
+    deviceId: str
+    usageHours: float = Field(default=24.0, ge=0, le=24)
+
+
 class DeviceSnapshot(BaseModel):
     id: str
     model_name: str
@@ -26,7 +31,7 @@ class SystemSnapshot(BaseModel):
 
 class ScenarioCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
-    selectedDeviceIds: List[str] = Field(..., min_length=1)
+    selectedDevices: List[DeviceUsageItem] = Field(..., min_length=1)
     selectedSystemId: Optional[str] = None
     totalPowerWatts: float = Field(..., ge=0)
     loadPercent: float = Field(..., ge=0)
@@ -35,11 +40,14 @@ class ScenarioCreate(BaseModel):
     model_config = {"json_schema_extra": {
         "example": {
             "name": "Вечір кіно",
-            "selectedDeviceIds": ["64f1a2b3c4d5e6f7a8b9c0d2", "64f1a2b3c4d5e6f7a8b9c0d3"],
+            "selectedDevices": [
+                {"deviceId": "64f1a2b3c4d5e6f7a8b9c0d2", "usageHours": 6},
+                {"deviceId": "64f1a2b3c4d5e6f7a8b9c0d3", "usageHours": 24}
+            ],
             "selectedSystemId": "64f1a2b3c4d5e6f7a8b9c0d4",
             "totalPowerWatts": 497,
             "loadPercent": 82,
-            "autonomyHours": 2.5
+            "autonomyHours": 4.2
         }
     }}
 
@@ -48,7 +56,8 @@ class ScenarioResponse(BaseModel):
     id: str
     userId: str
     name: str
-    selectedDeviceIds: List[str]
+    selectedDeviceIds: List[str]          # backward compat — derived from selectedDevices
+    selectedDevices: List[DeviceUsageItem] # with usage hours
     selectedSystemId: Optional[str]
     totalPowerWatts: float
     loadPercent: float

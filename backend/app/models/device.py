@@ -39,11 +39,22 @@ class DeviceCreate(BaseModel):
 
 class DeviceUpdate(BaseModel):
     model_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    category: Optional[str] = Field(default=None, max_length=100)
     daily_usage_hours: Optional[float] = Field(default=None, ge=0, le=24)
     is_critical: Optional[bool] = None
     tag: Optional[str] = None
     power_watts: Optional[float] = Field(default=None, ge=0)
     startup_current_watts: Optional[float] = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def startup_must_exceed_power(self):
+        if (
+            self.startup_current_watts is not None
+            and self.power_watts is not None
+            and self.startup_current_watts < self.power_watts
+        ):
+            raise ValueError("Пускова потужність не може бути меншою за робочу")
+        return self
 
 
 class DeviceResponse(BaseModel):

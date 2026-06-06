@@ -61,11 +61,11 @@ export const EditDeviceModal = ({ isOpen, onClose, device, onSuccess }: EditDevi
     setIsSubmitting(true);
     const token = localStorage.getItem('access_token');
 
-    const payload = {
+    const payload: Record<string, any> = {
       model_name: name.trim(),
       category: category,
-      power_watts: parseInt(power) || 0,
-      startup_current_watts: startupPower ? parseInt(startupPower) : 0
+      power_watts: parseFloat(power),
+      startup_current_watts: startupPower ? parseFloat(startupPower) : null,
     };
 
     try {

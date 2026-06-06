@@ -181,10 +181,49 @@
   color: var(--text-main);
 }
 
+.device-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .device-power {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+}
+
+.hours-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-main);
+  border: 1px solid var(--accent-orange);
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+
+.hours-input {
+  width: 44px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-orange);
+  text-align: right;
+  -moz-appearance: textfield;
+}
+
+.hours-input::-webkit-inner-spin-button,
+.hours-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+.hours-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
 /* ПОРОЖНІЙ СТАН (EMPTY STATE) */

@@ -5,7 +5,10 @@ from bson.errors import InvalidId
 from typing import List, Optional
 
 from app.database import get_database, col
-from app.models.scenario import ScenarioCreate, ScenarioResponse, DeviceSnapshot, SystemSnapshot
+from app.models.scenario import (
+    ScenarioCreate, ScenarioResponse,
+    DeviceSnapshot, DeviceUsageItem, SystemSnapshot,
+)
 from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/scenarios", tags=["Scenarios"])
@@ -37,6 +40,17 @@ def _build_system_snapshot(doc: dict) -> SystemSnapshot:
 
 
 def _serialize_scenario(doc: dict) -> ScenarioResponse:
+    # Backward compat: old docs have selectedDeviceIds, new have selectedDevices
+    if "selectedDevices" in doc and doc["selectedDevices"]:
+        selected_devices = [DeviceUsageItem(**item) for item in doc["selectedDevices"]]
+    else:
+        selected_devices = [
+            DeviceUsageItem(deviceId=did, usageHours=24.0)
+            for did in doc.get("selectedDeviceIds", [])
+        ]
+
+    selected_device_ids = [item.deviceId for item in selected_devices]
+
     devices_snapshot: Optional[List[DeviceSnapshot]] = None
     raw_devices = doc.get("devicesSnapshot")
     if raw_devices is not None:
@@ -51,7 +65,8 @@ def _serialize_scenario(doc: dict) -> ScenarioResponse:
         id=str(doc["_id"]),
         userId=doc["userId"],
         name=doc["name"],
-        selectedDeviceIds=doc["selectedDeviceIds"],
+        selectedDeviceIds=selected_device_ids,
+        selectedDevices=selected_devices,
         selectedSystemId=doc.get("selectedSystemId"),
         totalPowerWatts=doc["totalPowerWatts"],
         loadPercent=doc["loadPercent"],
@@ -69,8 +84,10 @@ async def create_scenario(
 ):
     db = get_database()
 
+    device_ids = [item.deviceId for item in payload.selectedDevices]
+
     device_oids = []
-    for did in payload.selectedDeviceIds:
+    for did in device_ids:
         try:
             device_oids.append(ObjectId(did))
         except InvalidId:
@@ -81,19 +98,15 @@ async def create_scenario(
     async for doc in cursor:
         devices.append(doc)
 
-    if len(devices) != len(device_oids):
-        found_ids = {str(d["_id"]) for d in devices}
-        missing = [did for did in payload.selectedDeviceIds if did not in found_ids]
-        raise HTTPException(
-            status_code=404,
-            detail=f"Пристрої не знайдено або не належать вам: {', '.join(missing)}"
-        )
-
-    # Build device snapshots preserving original order from request
+    # Missing devices are OK (may have been deleted) — only validate found ones belong to user
+    found_ids = {str(d["_id"]) for d in devices}
     device_map = {str(d["_id"]): d for d in devices}
+
+    # Build snapshots in original request order; skip deleted devices gracefully
     devices_snapshot = [
         _build_device_snapshot(device_map[did]).model_dump()
-        for did in payload.selectedDeviceIds
+        for did in device_ids
+        if did in found_ids
     ]
 
     selected_system_id: Optional[str] = None
@@ -115,7 +128,9 @@ async def create_scenario(
     doc = {
         "userId": user_id,
         "name": payload.name,
-        "selectedDeviceIds": payload.selectedDeviceIds,
+        # Store both formats for compatibility
+        "selectedDeviceIds": device_ids,
+        "selectedDevices": [item.model_dump() for item in payload.selectedDevices],
         "selectedSystemId": selected_system_id,
         "totalPowerWatts": payload.totalPowerWatts,
         "loadPercent": payload.loadPercent,

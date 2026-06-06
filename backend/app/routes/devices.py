@@ -204,7 +204,7 @@ async def patch_device(
     if doc["user_id"] != user_id:
         raise HTTPException(status_code=403, detail="Доступ заборонено")
 
-    update_data = payload.model_dump(exclude_none=True)
+    update_data = payload.model_dump(exclude_unset=True)
     if not update_data:
         raise HTTPException(status_code=400, detail="Немає даних для оновлення")
 

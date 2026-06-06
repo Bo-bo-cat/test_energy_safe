@@ -23,13 +23,14 @@ async def calculate(
     payload: CalculateRequest,
     user_id: str = Depends(get_current_user_id),
 ):
-    if not payload.selectedDeviceIds:
-        raise HTTPException(status_code=400, detail="Не вибрано жодного приладу")
-
     db = get_database()
 
+    # Будуємо словник deviceId → usageHours
+    usage_map: dict[str, float] = {item.deviceId: item.usageHours for item in payload.selectedDevices}
+    device_ids = list(usage_map.keys())
+
     try:
-        device_oids = [ObjectId(did) for did in payload.selectedDeviceIds]
+        device_oids = [ObjectId(did) for did in device_ids]
     except InvalidId:
         raise HTTPException(status_code=400, detail="Невалідний device_id")
 
@@ -52,30 +53,30 @@ async def calculate(
     if not system:
         raise HTTPException(status_code=404, detail="ДБЖ не знайдено або не належить вам")
 
-    # НОВА ЛОГІКА РОЗРАХУНКУ
-    total_power = 0
-    max_startup_overhead = 0
+    total_power = 0.0
+    max_startup_overhead = 0.0
+    weighted_energy = 0.0  # Sum(power_watts * usageHours)
 
     for dev in devices:
         p_watts = dev.get("power_watts", 0)
+        hours = usage_map.get(str(dev["_id"]), 24.0)
+
         total_power += p_watts
-        
-        # Вираховуємо найбільший стрибок пускового струму
-        s_watts = dev.get("startup_current_watts")
-        if s_watts is None:
-            s_watts = p_watts
-            
-        overhead = max(0, s_watts - p_watts)
+        weighted_energy += p_watts * hours
+
+        s_watts = dev.get("startup_current_watts") or p_watts
+        overhead = max(0.0, s_watts - p_watts)
         if overhead > max_startup_overhead:
             max_startup_overhead = overhead
 
     if total_power == 0:
         raise HTTPException(status_code=400, detail="Сумарна потужність приладів дорівнює нулю")
 
-    # Пікова потужність системи під час запуску найважчого приладу
-    peak_power = total_power + max_startup_overhead
+    if weighted_energy == 0:
+        raise HTTPException(status_code=400, detail="Сумарна енергія приладів дорівнює нулю (перевірте години використання)")
 
-    # Перевантаження інвертора рахується по ПІКОВІЙ потужності
+    # Пікова потужність — для оцінки навантаження на інвертор
+    peak_power = total_power + max_startup_overhead
     load_percent = round((peak_power / system["power"]) * 100, 1)
 
     try:
@@ -83,8 +84,10 @@ async def calculate(
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
-    # Час автономії рахується по РОБОЧІЙ потужності, бо пуск триває ~2 секунди
-    autonomy_hours = round(battery_wh / total_power, 2)
+    # Автономія враховує реальний час використання кожного приладу:
+    # autonomy = battery_wh * 24 / sum(power_watts * usageHours)
+    # При usageHours=24 для всіх → формула збігається зі старою: battery_wh / total_power
+    autonomy_hours = round((battery_wh * 24) / weighted_energy, 2)
 
     return CalculateResponse(
         totalPowerWatts=round(total_power, 1),
