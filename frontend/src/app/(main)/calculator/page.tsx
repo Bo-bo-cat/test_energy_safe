@@ -79,7 +79,8 @@ export default function CalculatorPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const [selectedDeviceIds, setSelectedDeviceIds] = useState<string[]>([]);
-  const [deviceHours, setDeviceHours] = useState<Record<string, number>>({});
+  // Стейт тепер приймає і числа, і рядки (для пустих значень або десяткових дробів)
+  const [deviceHours, setDeviceHours] = useState<Record<string, number | string>>({});
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(null);
 
   const [calcResult, setCalcResult] = useState<{
@@ -144,6 +145,10 @@ export default function CalculatorPage() {
       return;
     }
 
+    // ПЕРЕВІРКА: Якщо є прилади з пустим полем годин — зупиняємо запит
+    const hasInvalid = selectedDeviceIds.some(id => deviceHours[id] === '');
+    if (hasInvalid) return;
+
     const token = localStorage.getItem('access_token');
     if (!token) return;
 
@@ -156,7 +161,7 @@ export default function CalculatorPage() {
       body: JSON.stringify({
         selectedDevices: selectedDeviceIds.map(id => ({
           deviceId: id,
-          usageHours: deviceHours[id] ?? 24
+          usageHours: Number(deviceHours[id]) || 0
         })),
         selectedSystemId: selectedSystemId
       })
@@ -221,7 +226,7 @@ export default function CalculatorPage() {
         name: scenarioName,
         selectedDevices: selectedDeviceIds.map(id => ({
           deviceId: id,
-          usageHours: deviceHours[id] ?? 24
+          usageHours: Number(deviceHours[id]) || 0
         })),
         selectedSystemId: selectedSystemId,
         totalPowerWatts: calcResult!.totalPowerWatts,
@@ -270,15 +275,28 @@ export default function CalculatorPage() {
         setDeviceHours(h => { const next = { ...h }; delete next[id]; return next; });
         return prev.filter(did => did !== id);
       }
-      setDeviceHours(h => ({ ...h, [id]: 24 }));
+      setDeviceHours(h => ({ ...h, [id]: '24' })); // Ініціалізуємо як рядок
       return [...prev, id];
     });
   };
 
   const setHours = (id: string, val: string) => {
+    // 1. Дозволяємо повністю стерти поле
+    if (val === '') {
+      setDeviceHours(h => ({ ...h, [id]: '' }));
+      return;
+    }
+    
+    // 2. Дозволяємо вводити десяткові числа (наприклад, "2.")
+    if (val.endsWith('.')) {
+      setDeviceHours(h => ({ ...h, [id]: val }));
+      return;
+    }
+
+    // 3. Звичайна валідація чисел від 0 до 24
     const num = parseFloat(val);
     if (!isNaN(num) && num >= 0 && num <= 24) {
-      setDeviceHours(h => ({ ...h, [id]: num }));
+      setDeviceHours(h => ({ ...h, [id]: val })); 
     }
   };
 
@@ -299,12 +317,10 @@ export default function CalculatorPage() {
   return (
   <div className="global-page-wrap">
     
-    {/* 1. ВИНЕСЛИ ЗАГОЛОВОК СЮДИ */}
     <h1 className="page-title" style={{ margin: '0 0 24px 0' }}>{t.calculator.title}</h1>
     
     <div className={styles.layout}>
       <div className={styles['main-content']}>
-        {/* Звідси h1 ми забрали */}
         
         <div className={styles.devicesSection}>
           <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
@@ -362,7 +378,10 @@ export default function CalculatorPage() {
                           {device.power_watts || device.power_watt} {t.common.w}{device.startup_current_watts ? ` · ${(t.devices as any)?.startup || 'пуск'} ${device.startup_current_watts} ${t.common.w}` : ''}
                         </div>
                         {isSelected && (
-                          <div className={styles['hours-input-wrap']} onClick={e => e.stopPropagation()}>
+                          <div 
+                            className={`${styles['hours-input-wrap']} ${deviceHours[id] === '' ? styles.error : ''}`} 
+                            onClick={e => e.stopPropagation()}
+                          >
                             <input
                               className={styles['hours-input']}
                               type="number"
@@ -371,6 +390,7 @@ export default function CalculatorPage() {
                               step="0.5"
                               value={deviceHours[id] ?? 24}
                               onChange={e => setHours(id, e.target.value)}
+                              placeholder="0"
                             />
                             <span className={styles['hours-label']}>{t.common.h}</span>
                           </div>
@@ -463,7 +483,7 @@ export default function CalculatorPage() {
               </div>
               <div className={styles['stat-label']}>{t.calculator.totalW}</div>
               {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts > calcResult.totalPowerWatts && (
-                <div style={{ fontSize: '10px', color: 'var(--accent-orange)', marginTop: '2px', fontWeight: 700, lineHeight: 1.1 }}>
+                <div style={{ fontSize: '10px', color: 'var(--accent-orange)', margin: '2px 0 0 0', fontWeight: 700, lineHeight: 1.1 }}>
                   {(t.calculator as any)?.peakLabel || 'Пік'} {calcResult.peakPowerWatts} {t.common.w}
                 </div>
               )}
@@ -475,7 +495,7 @@ export default function CalculatorPage() {
               </div>
               <div className={styles['stat-label']}>{t.calculator.fromInverter}</div>
               {calcResult && calcResult.peakPowerWatts && calcResult.peakPowerWatts <= calcResult.totalPowerWatts && (
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px', lineHeight: 1.1 }}>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', margin: '2px 0 0 0', lineHeight: 1.1 }}>
                   {(t.calculator as any)?.noStartup || 'Без пускових'}
                 </div>
               )}
@@ -499,13 +519,28 @@ export default function CalculatorPage() {
             />
           </div>
 
-          <button 
-            className={styles['save-btn']}
-            disabled={!calcResult || isOverloaded || selectedDeviceIds.length === 0}
-            onClick={() => setIsModalOpen(true)}
-          >
-            {isOverloaded ? t.calculator.overload : t.calculator.saveScenario}
-          </button>
+          {(() => {
+            // ПЕРЕВІРКА НА ПУСТІ ГОДИНИ
+            const hasInvalidHours = selectedDeviceIds.some(id => deviceHours[id] === '');
+            let btnText = t.calculator.saveScenario;
+            
+            if (isOverloaded) {
+              btnText = t.calculator.overload;
+            } else if (hasInvalidHours) {
+              btnText = lang === 'uk' ? 'Введіть години' : 'Enter hours';
+            }
+
+            return (
+              <button 
+                className={styles['save-btn']}
+                disabled={!calcResult || isOverloaded || selectedDeviceIds.length === 0 || hasInvalidHours}
+                onClick={() => setIsModalOpen(true)}
+              >
+                {btnText}
+              </button>
+            );
+          })()}
+
         </div>
       </div>
 

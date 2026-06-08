@@ -195,37 +195,68 @@
   white-space: nowrap;
 }
 
+/* --- СТИЛІ ПОЛЯ ГОДИН --- */
 .hours-input-wrap {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: var(--bg-main);
-  border: 1px solid var(--accent-orange);
+  background: var(--bg-card-inner); /* Спокійний фон за замовчуванням */
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 2px 8px;
+  padding: 4px 8px; /* Трохи збільшили для зручності */
+  transition: all 0.2s ease;
+  cursor: text;
+}
+
+/* При кліку на поле */
+.hours-input-wrap:focus-within {
+  background: var(--bg-main);
+  border-color: var(--accent-orange);
+}
+
+/* Якщо години не введені (помилка) */
+.hours-input-wrap.error {
+  background-color: rgba(255, 45, 85, 0.05);
+  border-color: #FF2D55;
 }
 
 .hours-input {
-  width: 44px;
+  width: 46px;
   background: transparent;
   border: none;
   outline: none;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--accent-orange);
+  color: var(--text-main); 
   text-align: right;
   -moz-appearance: textfield;
+  transition: color 0.2s ease;
 }
 
+/* Сховати стрілки в Chrome/Safari */
 .hours-input::-webkit-inner-spin-button,
-.hours-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.hours-input::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+}
+
+/* Фарбуємо текст при активності */
+.hours-input-wrap:focus-within .hours-input,
+.hours-input-wrap:focus-within .hours-label {
+  color: var(--accent-orange);
+}
+
+/* Фарбуємо текст при помилці */
+.hours-input-wrap.error .hours-input,
+.hours-input-wrap.error .hours-label {
+  color: #FF2D55;
+}
 
 .hours-label {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
+  transition: color 0.2s ease;
 }
-
 /* ПОРОЖНІЙ СТАН (EMPTY STATE) */
 .empty-state {
   display: flex;
