@@ -76,6 +76,25 @@
   background-color: rgba(255, 149, 0, 0.05);
 }
 
+/* =========================================
+   НОВИЙ ЧИП ДЛЯ ДОДАВАННЯ ЛОКАЦІЇ (Пунктирний)
+   ========================================= */
+.add-loc-chip {
+  background-color: transparent !important;
+  border: 1px dashed var(--text-muted) !important;
+  color: var(--text-muted) !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+}
+
+.add-loc-chip:hover {
+  border-color: var(--text-main) !important;
+  color: var(--text-main) !important;
+  background-color: var(--bg-card-inner) !important;
+}
+
 .location-input {
   height: 38px; /* Підігнано під висоту плюсика */
   border: 1px solid var(--border-color);
@@ -91,7 +110,9 @@
 
 .location-input:focus {
   border-color: var(--accent-orange);
-}/* =========================================
+}
+
+/* =========================================
    КНОПКА "ДОДАТИ" (Виправлено тіні та сплющування)
    ========================================= */
 .add-btn {

@@ -11,7 +11,7 @@ import { LightIcon } from '../../../components/icons/Light';
 import { TvIcon } from '../../../components/icons/Tv';
 import { ArrowIcon } from '../../../components/icons/Arrow';
 import { DeleteIcon } from '../../../components/icons/Delete';
-import { PenIcon } from '../../../components/icons/Pen'; // <--- Іконка редагування
+import { PenIcon } from '../../../components/icons/Pen';
 import { CoffeeMachineIcon } from '../../../components/icons/Coffee_Machine';
 import { ChargerIcon } from '../../../components/icons/Charger';
 import { ConditionerIcon } from '../../../components/icons/Conditioner';
@@ -25,7 +25,7 @@ import { MicrowaweIcon } from '../../../components/icons/Microwawe';
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AnimatedEmptyIcon } from '../../../components/AnimatedEmptyIcon/AnimatedEmptyIcon'; 
 import { AddDeviceModal } from '../../../components/AddDeviceModal/AddDeviceModal';
-import { EditDeviceModal } from '../../../components/EditDeviceModal/EditDeviceModal'; // <--- Наша нова модалка
+import { EditDeviceModal } from '../../../components/EditDeviceModal/EditDeviceModal';
 
 // Словник
 import { useTranslation } from '../../../context/LanguageContext';
@@ -77,7 +77,6 @@ export default function DevicesPage() {
   
   const [deviceToDelete, setDeviceToDelete] = useState<number | null>(null);
   
-  // --- СТЕЙТИ ДЛЯ РЕДАГУВАННЯ ---
   const [deviceToEdit, setDeviceToEdit] = useState<any | null>(null); 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
@@ -91,7 +90,6 @@ export default function DevicesPage() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Винесена функція завантаження приладів для повторного використання
   const fetchDevices = useCallback(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -319,11 +317,12 @@ export default function DevicesPage() {
               />
             ) : (
               <button
-                className={`${styles['filter-chip']} ${styles['icon-chip']}`}
+                className={`${styles['filter-chip']} ${styles['add-loc-chip']}`}
                 onClick={() => setShowAddLocation(true)}
                 title={t.devices.addLocation || "Додати локацію"}
               >
-                +
+                <span>+</span>
+                <span>{lang === 'uk' ? 'Локація' : 'Location'}</span>
               </button>
             )}
           </div>
@@ -331,8 +330,7 @@ export default function DevicesPage() {
           {/* ДЕСКТОПНА КНОПКА (ховається на мобілці) */}
           {hasDevices && (
             <button onClick={() => setIsAddModalOpen(true)} className={`${styles['add-btn']} ${styles['desktop-add-btn']}`}>
-              <span className={styles['plus-icon']}>+</span>
-              {t.common.add}
+              {lang === 'uk' ? 'Додати прилад' : 'Add device'}
             </button>
           )}
         </div>
@@ -366,7 +364,7 @@ export default function DevicesPage() {
               className={styles['category-group']}
               style={{ position: 'relative', zIndex: items.some((d: any) => openDropdownId === d.id) ? 50 : 1 }}
             >
-              <div 
+              <div  
                 className={`${styles['category-header']} ${expandedCategories[categoryName] ? styles['expanded'] : ''}`} 
                 onClick={() => toggleCategory(categoryName)}
               >
@@ -501,13 +499,12 @@ export default function DevicesPage() {
 
       {/* МОБІЛЬНА КНОПКА (ховається на десктопі, завжди знизу екрана) */}
       {hasDevices && (
-        <div className={styles['mobile-add-container']}>
-          <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
-            <span className={styles['plus-icon']}>+</span>
-            {t.common.add}
-          </button>
-        </div>
-      )}
+  <div className={styles['mobile-add-container']}>
+    <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+      {lang === 'uk' ? 'Додати прилад' : 'Add device'}
+    </button>
+  </div>
+)}
 
       {/* Модалка видалення */}
       <DecisionModal 
@@ -523,8 +520,6 @@ export default function DevicesPage() {
       <AddDeviceModal 
         isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)} 
-        // Якщо ви додали onSuccess у AddDeviceModal, можете розкоментувати рядок нижче
-        // onSuccess={fetchDevices} 
       />
 
       {/* Модалка редагування */}
