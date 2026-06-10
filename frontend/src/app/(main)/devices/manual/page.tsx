@@ -83,10 +83,13 @@ export default function ManualAddDevicePage() {
     setFieldErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
+  const STARTUP_CATEGORIES = ['Холодильник', 'Пральна машина', 'Кондиціонер', 'Посудомийна машина'];
+
   const handleCategorySelect = (category: string) => {
     setFormData((prev) => ({ ...prev, category }));
     setFieldErrors((prev) => ({ ...prev, category: '' }));
     setIsDropdownOpen(false);
+    if (STARTUP_CATEGORIES.includes(category)) setShowStartupPower(true);
   };
 
   const handleSearch = async () => {
