@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './PasswordResetModal.module.css';
 import { useTranslation } from '../../context/LanguageContext';
+import { EyeIcon, EyeOffIcon } from '../icons/eye';
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [notRegistered, setNotRegistered] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
 
@@ -102,11 +104,19 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
             </div>
           ) : (
             <>
-              <div className={styles.inputWrap}><label>Код</label>
+              <div className={styles.inputWrap}>
+                <label>Код</label>
                 <input required value={code} onChange={e => setCode(e.target.value.trim())} placeholder={t.auth.codePlaceholder} maxLength={6} />
+                <p className={styles.spamHint}>{t.auth.spamHint}</p>
               </div>
-              <div className={styles.inputWrap}><label>Новий пароль</label>
-                <input required type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t.auth.passPlaceholder} />
+              <div className={styles.inputWrap}>
+                <label>Новий пароль</label>
+                <div className={styles.passwordWrap}>
+                  <input required type={showPassword ? 'text' : 'password'} value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder={t.auth.passPlaceholder} />
+                  <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(v => !v)}>
+                    {showPassword ? <EyeOffIcon className={styles.eyeIcon} /> : <EyeIcon className={styles.eyeIcon} />}
+                  </button>
+                </div>
               </div>
             </>
           )}

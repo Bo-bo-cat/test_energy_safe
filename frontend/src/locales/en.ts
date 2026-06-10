@@ -63,6 +63,7 @@ export const en = {
   confirmTitle: "Set New Password",
   resetDesc: "Enter your email and we will send you a confirmation code.",
   confirmDesc: "We sent a code to {email}. Enter it below with your new password.",
+    spamHint: "Can't find the email? Check your Spam folder.",
   sendCode: "Send Code",
   changePass: "Change Password",
   codePlaceholder: "6-digit code",
