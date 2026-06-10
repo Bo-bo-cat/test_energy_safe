@@ -1,12 +1,14 @@
 import logging
 import os
 import secrets
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from urllib.parse import urlencode
 from datetime import datetime, timezone, timedelta
 
 import bcrypt
 import httpx
-import resend
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
@@ -19,9 +21,10 @@ logger = logging.getLogger(__name__)
 
 
 def _send_reset_email(to_email: str, code: str) -> None:
-    api_key = os.getenv("RESEND_API_KEY")
-    if not api_key:
-        logger.warning("RESEND_API_KEY not set — email not sent")
+    gmail_user = os.getenv("GMAIL_USER")
+    gmail_password = os.getenv("GMAIL_PASSWORD")
+    if not gmail_user or not gmail_password:
+        logger.warning("GMAIL_USER / GMAIL_PASSWORD not set — email not sent")
         return
 
     html = f"""
@@ -39,16 +42,19 @@ def _send_reset_email(to_email: str, code: str) -> None:
     </html>
     """
 
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = "Energy Safe — код скидання паролю"
+    msg["From"] = f"Energy Safe <{gmail_user}>"
+    msg["To"] = to_email
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
     try:
-        resend.api_key = api_key
-        resend.Emails.send({
-            "from": "Energy Safe <noreply@energyapp.fun>",
-            "to": [to_email],
-            "subject": "Energy Safe — код скидання паролю",
-            "html": html,
-        })
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(gmail_user, gmail_password)
+            smtp.sendmail(gmail_user, to_email, msg.as_string())
+        logger.info("Reset email sent to %s", to_email)
     except Exception as e:
-        logger.error("Resend error: %s", e, exc_info=True)
+        logger.error("Gmail SMTP_SSL error: %s", e, exc_info=True)
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
