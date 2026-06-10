@@ -52,6 +52,7 @@ async def _send_reset_email(to_email: str, code: str) -> None:
                 },
                 timeout=10,
             )
+            logger.info("Brevo status: %s body: %s", resp.status_code, resp.text)
             resp.raise_for_status()
         logger.info("Reset email sent to %s via Brevo", to_email)
     except Exception as e:
