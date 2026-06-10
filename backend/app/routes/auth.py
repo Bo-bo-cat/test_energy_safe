@@ -6,7 +6,6 @@ from datetime import datetime, timezone, timedelta
 
 import bcrypt
 import httpx
-import resend
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import RedirectResponse
@@ -18,10 +17,11 @@ from app.auth import create_access_token
 logger = logging.getLogger(__name__)
 
 
-def _send_reset_email(to_email: str, code: str) -> None:
-    api_key = os.getenv("RESEND_API_KEY")
+async def _send_reset_email(to_email: str, code: str) -> None:
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = os.getenv("BREVO_SENDER_EMAIL", "ae3e45001@smtp-brevo.com")
     if not api_key:
-        logger.warning("RESEND_API_KEY not set — email not sent")
+        logger.warning("BREVO_API_KEY not set — email not sent")
         return
 
     html = f"""
@@ -40,16 +40,22 @@ def _send_reset_email(to_email: str, code: str) -> None:
     """
 
     try:
-        resend.api_key = api_key
-        resend.Emails.send({
-            "from": "Energy Safe <onboarding@resend.dev>",
-            "to": [to_email],
-            "subject": "Energy Safe — код скидання паролю",
-            "html": html,
-        })
-        logger.info("Reset email sent to %s via Resend", to_email)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={"api-key": api_key, "Content-Type": "application/json"},
+                json={
+                    "sender": {"name": "Energy Safe", "email": sender_email},
+                    "to": [{"email": to_email}],
+                    "subject": "Energy Safe — код скидання паролю",
+                    "htmlContent": html,
+                },
+                timeout=10,
+            )
+            resp.raise_for_status()
+        logger.info("Reset email sent to %s via Brevo", to_email)
     except Exception as e:
-        logger.error("Resend error: %s", e, exc_info=True)
+        logger.error("Brevo error: %s", e, exc_info=True)
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -180,7 +186,7 @@ async def request_password_reset(payload: PasswordResetRequest):
     )
 
     logger.info("[PASSWORD RESET] Code for %s: %s", payload.email, code)
-    _send_reset_email(payload.email, code)
+    await _send_reset_email(payload.email, code)
 
     return {"message": "ok"}
 
