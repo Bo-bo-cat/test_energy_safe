@@ -31,6 +31,7 @@ export const PasswordResetModal: React.FC<Props> = ({ isOpen, onClose, onRegiste
     setNewPassword('');
     setError('');
     setNotRegistered(false);
+    setShowPassword(false);
     onClose();
   };
 

@@ -20,9 +20,8 @@ logger = logging.getLogger(__name__)
 async def _send_reset_email(to_email: str, code: str) -> None:
     api_key = os.getenv("BREVO_API_KEY")
     sender_email = os.getenv("BREVO_SENDER_EMAIL", "ae3e45001@smtp-brevo.com")
-    print(f"[EMAIL] to={to_email} api_key={'SET' if api_key else 'NOT SET'}", flush=True)
     if not api_key:
-        print("[EMAIL] BREVO_API_KEY not set — skipping", flush=True)
+        logger.warning("BREVO_API_KEY not set — email not sent")
         return
 
     html = f"""
@@ -53,11 +52,10 @@ async def _send_reset_email(to_email: str, code: str) -> None:
                 },
                 timeout=10,
             )
-            print(f"[EMAIL] Brevo status={resp.status_code} body={resp.text}", flush=True)
             resp.raise_for_status()
-        print(f"[EMAIL] Sent to {to_email}", flush=True)
+        logger.info("Reset email sent to %s via Brevo", to_email)
     except Exception as e:
-        print(f"[EMAIL] Error: {e}", flush=True)
+        logger.error("Brevo error: %s", e, exc_info=True)
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])

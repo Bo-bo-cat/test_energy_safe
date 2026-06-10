@@ -175,6 +175,34 @@ async def get_scenario(
     return _serialize_scenario(doc)
 
 
+@router.patch("/{scenario_id}", response_model=ScenarioResponse)
+async def rename_scenario(
+    scenario_id: str,
+    payload: dict,
+    user_id: str = Depends(get_current_user_id),
+):
+    db = get_database()
+
+    try:
+        oid = ObjectId(scenario_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний scenario_id")
+
+    doc = await db[col("scenarios")].find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Сценарій не знайдено")
+    if doc["userId"] != user_id:
+        raise HTTPException(status_code=403, detail="Доступ заборонено")
+
+    new_name = payload.get("name", "").strip()
+    if not new_name:
+        raise HTTPException(status_code=400, detail="Назва не може бути порожньою")
+
+    await db[col("scenarios")].update_one({"_id": oid}, {"$set": {"name": new_name}})
+    doc["name"] = new_name
+    return _serialize_scenario(doc)
+
+
 @router.delete("/{scenario_id}", status_code=204)
 async def delete_scenario(
     scenario_id: str,
