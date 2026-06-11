@@ -4,6 +4,8 @@ import styles from './page.module.css';
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
 
+import { LightningIcon } from '../../../components/icons/Lightning';
+
 // Підключаємо словник
 import { useTranslation } from '../../../context/LanguageContext';
 
@@ -359,6 +361,9 @@ export default function DashboardPage() {
       {/* ПРИХОВАНИЙ ШАБЛОН ДЛЯ ЕКСПОРТУ */}
       {activeScenario && (
         <div ref={exportRef} className={styles.exportWrapper}>
+          <div className={styles.exportBrand}>
+            Energy Safe
+          </div>
           <h1 className={styles.exportTitle}>{activeScenario.name}</h1>
           <div className={styles.exportSystemBox}>
             <h2 className={styles.exportSystemName}>{systemName}</h2>

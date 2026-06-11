@@ -390,6 +390,16 @@
   gap: 32px;
   border-radius: 24px;
 }
+/* ДОДАЙТЕ ЦЕЙ КЛАС */
+.exportBrand {
+  font-size: 28px;
+  font-weight: 900;
+  color: #FF6B00; /* Наш фірмовий помаранчевий */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: -16px; /* Трохи підтягуємо заголовок сценарію вгору */
+}
 
 .exportTitle {
   font-size: 32px;
