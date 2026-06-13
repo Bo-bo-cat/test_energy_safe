@@ -119,6 +119,7 @@
   width: 100%;
   background: var(--bg-card-inner);
   border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-orange);
   border-radius: 14px;
   padding: 16px 20px;
 }

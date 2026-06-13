@@ -123,8 +123,8 @@ export const en = {
     title: 'Add Device',
     photoLabel: 'Scan Label',
     manualLabel: 'Enter Manually',
-    hintTitle: 'Hint',
-    hintText: 'Look for a black and yellow sticker with "W" or "Watt" - usually on the back or bottom of the device',
+    hintTitle: '📸 Photograph the label, not the device!',
+    hintText: 'Look for a specification sticker — black-yellow or white — with "W" or "Watt". Usually on the back or bottom of the appliance.',
     soon: 'Coming Soon!'
   },
   deviceManual: {
