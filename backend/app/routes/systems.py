@@ -8,6 +8,7 @@ from app.database import get_database, col
 from app.models.system import (
     SystemCreate, SystemByName, SystemUpdate,
     SystemResponse, RecommendedSystemResponse,
+    ReadyMadeDevice, ReadyMadeScenario,
 )
 from app.services.ai_service import lookup_ups_specs
 from app.auth import get_current_user_id
@@ -48,6 +49,179 @@ _RECOMMENDED_UPS = [
         "is_recommended": True,
     },
 ]
+
+
+_READY_SCENARIOS: dict[str, list[dict]] = {
+    "EcoFlow RIVER 2": [
+        {
+            "name": "Базовий блекаут",
+            "devices": [
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "LED-лампа", "power_watts": 10},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+            ],
+        },
+        {
+            "name": "Підтримка зв'язку",
+            "devices": [
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Power bank (зарядка)", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Вечірній відпочинок",
+            "devices": [
+                {"name": "LED-лампа", "power_watts": 10},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Планшет", "power_watts": 20},
+            ],
+        },
+    ],
+    "EcoFlow DELTA 2": [
+        {
+            "name": "Базовий блекаут",
+            "devices": [
+                {"name": "Холодильник", "power_watts": 150},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "LED-лампи (3 шт)", "power_watts": 30},
+            ],
+        },
+        {
+            "name": "Робота з дому",
+            "devices": [
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Монітор", "power_watts": 40},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Настільна лампа", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Вечірній відпочинок",
+            "devices": [
+                {"name": "Телевізор", "power_watts": 80},
+                {"name": "Холодильник", "power_watts": 150},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "LED-лампи", "power_watts": 30},
+                {"name": "Смартфон", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Мінімальний офіс",
+            "devices": [
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Монітор", "power_watts": 40},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Принтер", "power_watts": 100},
+                {"name": "Смартфон", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Підтримка зв'язку",
+            "devices": [
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Power bank (зарядка)", "power_watts": 10},
+            ],
+        },
+    ],
+    "Bluetti EB70S": [
+        {
+            "name": "Базовий блекаут",
+            "devices": [
+                {"name": "Холодильник", "power_watts": 150},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон x2", "power_watts": 20},
+                {"name": "LED-лампа", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Робота з дому",
+            "devices": [
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Монітор", "power_watts": 40},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Вечірній відпочинок",
+            "devices": [
+                {"name": "Телевізор", "power_watts": 80},
+                {"name": "LED-лампи", "power_watts": 20},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+            ],
+        },
+        {
+            "name": "Підтримка зв'язку",
+            "devices": [
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Ноутбук", "power_watts": 65},
+            ],
+        },
+    ],
+    "Jackery Explorer 1000": [
+        {
+            "name": "Базовий блекаут",
+            "devices": [
+                {"name": "Холодильник", "power_watts": 150},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "LED-лампи (3 шт)", "power_watts": 30},
+            ],
+        },
+        {
+            "name": "Робота з дому",
+            "devices": [
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Монітор", "power_watts": 40},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Вечірній відпочинок",
+            "devices": [
+                {"name": "Телевізор", "power_watts": 80},
+                {"name": "LED-лампи", "power_watts": 20},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+            ],
+        },
+        {
+            "name": "Мінімальний офіс",
+            "devices": [
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Монітор", "power_watts": 40},
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Принтер", "power_watts": 100},
+            ],
+        },
+        {
+            "name": "Підтримка зв'язку",
+            "devices": [
+                {"name": "Wi-Fi роутер", "power_watts": 15},
+                {"name": "Смартфон", "power_watts": 10},
+                {"name": "Ноутбук", "power_watts": 65},
+                {"name": "Power bank (зарядка)", "power_watts": 10},
+            ],
+        },
+    ],
+}
+
+
+def _parse_battery_wh(battery_str: str) -> float:
+    """Extract Wh number from strings like '256 Wh', '1024 Wh'."""
+    import re
+    m = re.search(r"(\d+(?:\.\d+)?)\s*Wh", battery_str, re.IGNORECASE)
+    return float(m.group(1)) if m else 0.0
 
 
 async def seed_recommended_systems(db) -> None:
@@ -92,6 +266,41 @@ async def get_recommended_systems():
     await seed_recommended_systems(db)
     cursor = db[col("systems")].find({"is_recommended": True})
     return [_serialize_recommended(doc) async for doc in cursor]
+
+
+@router.get(
+    "/recommended/{system_id}/scenarios",
+    response_model=List[ReadyMadeScenario],
+    summary="Готові сценарії для рекомендованої системи",
+)
+async def get_recommended_scenarios(system_id: str):
+    db = get_database()
+
+    try:
+        oid = ObjectId(system_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний system_id")
+
+    doc = await db[col("systems")].find_one({"_id": oid, "is_recommended": True})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Рекомендовану систему не знайдено")
+
+    templates = _READY_SCENARIOS.get(doc["model"], [])
+    if not templates:
+        return []
+
+    battery_wh = _parse_battery_wh(doc.get("battery", ""))
+    result = []
+    for tpl in templates:
+        total = sum(d["power_watts"] for d in tpl["devices"])
+        autonomy = round(battery_wh / total * 0.85, 1) if total > 0 and battery_wh > 0 else 0.0
+        result.append(ReadyMadeScenario(
+            name=tpl["name"],
+            devices=[ReadyMadeDevice(**d) for d in tpl["devices"]],
+            total_power_watts=total,
+            autonomy_hours=autonomy,
+        ))
+    return result
 
 
 @router.get(

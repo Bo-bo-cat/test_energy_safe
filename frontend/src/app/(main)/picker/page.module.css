@@ -420,6 +420,103 @@
 
 
 /* =========================================
+   READY-MADE SCENARIOS
+   ========================================= */
+.scenariosToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid var(--border-color);
+  margin-top: 4px;
+}
+
+.scenariosToggleLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-orange);
+}
+
+.scenariosToggleArrow {
+  font-size: 11px;
+  color: var(--accent-orange);
+  transition: transform 0.2s;
+}
+
+.scenariosToggleArrow.open {
+  transform: rotate(180deg);
+}
+
+.scenariosList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.scenarioCard {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.scenarioName {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.scenarioDevices {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.scenarioDevice {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.scenarioFooter {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+.scenarioStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scenarioStatLabel {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.scenarioStatValue {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-orange);
+}
+
+/* =========================================
    АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
    ========================================= */
 

@@ -40,6 +40,9 @@ export default function SystemsPage() {
   const [hiddenAutonomy, setHiddenAutonomy] = useState('');
   const [hiddenType, setHiddenType] = useState('ДБЖ / Власна збірка');
 
+  const [expandedSystemId, setExpandedSystemId] = useState<string | null>(null);
+  const [scenariosCache, setScenariosCache] = useState<Record<string, any[]>>({});
+
   useEffect(() => {
     fetchMySystems();
     fetchRecommended();
@@ -249,6 +252,22 @@ export default function SystemsPage() {
     }
   };
 
+  const handleToggleScenarios = async (systemId: string) => {
+    if (expandedSystemId === systemId) {
+      setExpandedSystemId(null);
+      return;
+    }
+    setExpandedSystemId(systemId);
+    if (scenariosCache[systemId]) return;
+    try {
+      const res = await fetch(`${API}/systems/recommended/${systemId}/scenarios`);
+      if (res.ok) {
+        const data = await res.json();
+        setScenariosCache(prev => ({ ...prev, [systemId]: data }));
+      }
+    } catch {}
+  };
+
   const displayedList = tab === 'my' ? systems : recommended;
 
   return (
@@ -356,8 +375,8 @@ export default function SystemsPage() {
               {tab === 'my' && (
                 <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
                   <span className={styles.calcLabel}>
-                    {item.selected_for_calculation 
-                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                    {item.selected_for_calculation
+                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation')
                       : t.picker.addToCalc}
                   </span>
                   <button className={styles.iconBtn}>
@@ -368,6 +387,54 @@ export default function SystemsPage() {
                     )}
                   </button>
                 </div>
+              )}
+
+              {tab === 'recommended' && (
+                <>
+                  <button
+                    className={styles.scenariosToggle}
+                    onClick={() => handleToggleScenarios(item.id)}
+                  >
+                    <span className={styles.scenariosToggleLabel}>
+                      {lang === 'uk' ? 'Сценарії використання' : 'Usage scenarios'}
+                    </span>
+                    <span className={`${styles.scenariosToggleArrow} ${expandedSystemId === item.id ? styles.open : ''}`}>
+                      ▼
+                    </span>
+                  </button>
+
+                  {expandedSystemId === item.id && (
+                    <div className={styles.scenariosList}>
+                      {(scenariosCache[item.id] ?? []).map((sc: any, i: number) => (
+                        <div key={i} className={styles.scenarioCard}>
+                          <div className={styles.scenarioName}>{sc.name}</div>
+                          <div className={styles.scenarioDevices}>
+                            {sc.devices.map((d: any, j: number) => (
+                              <div key={j} className={styles.scenarioDevice}>
+                                <span>{d.name}</span>
+                                <span>{d.power_watts} Вт</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className={styles.scenarioFooter}>
+                            <div className={styles.scenarioStat}>
+                              <span className={styles.scenarioStatLabel}>
+                                {lang === 'uk' ? 'Навантаження' : 'Load'}
+                              </span>
+                              <span className={styles.scenarioStatValue}>{sc.total_power_watts} Вт</span>
+                            </div>
+                            <div className={styles.scenarioStat}>
+                              <span className={styles.scenarioStatLabel}>
+                                {lang === 'uk' ? 'Автономія' : 'Autonomy'}
+                              </span>
+                              <span className={styles.scenarioStatValue}>~{sc.autonomy_hours} год</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ))}
