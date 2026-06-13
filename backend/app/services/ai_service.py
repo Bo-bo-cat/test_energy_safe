@@ -292,13 +292,24 @@ async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
         category = "Інше"
 
     power_watts = float(result.get("power_watts") or 0)
+    name = str(result.get("name", "")).strip()
+
+    # Fallback: if Gemini didn't find power but found a model name — ask Groq
+    if power_watts <= 0 and name and GROQ_API_KEY:
+        try:
+            groq_result = await _groq_classify(name)
+            power_watts = float(groq_result.get("power_watts") or 0)
+            if groq_result.get("category") and groq_result["category"] in VALID_CATEGORIES:
+                category = groq_result["category"]
+        except Exception:
+            pass
 
     startup_current_watts = None
     if power_watts > 0:
         power_watts, startup_current_watts = _validate_specs(category, power_watts, None)
 
     return {
-        "name": str(result.get("name", "")).strip(),
+        "name": name,
         "power_watts": power_watts if power_watts > 0 else None,
         "startup_current_watts": startup_current_watts,
         "category": category,
