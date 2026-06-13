@@ -1,18 +1,6 @@
-/* src/app/(main)/systems/page.module.css */
+/* src/app/(main)/picker/page.module.css */
 
-
-/* Іконка редагування (сіра) */
-.actionIconGray {
-  width: 20px;
-  height: 20px;
-  color: var(--text-muted);
-  transition: color 0.2s ease;
-}
-
-.iconBtn:hover .actionIconGray {
-  color: var(--text-main);
-}
-
+/* ЗАГАЛЬНІ ЕЛЕМЕНТИ СТОРІНКИ */
 .header {
   margin-bottom: 24px;
 }
@@ -30,12 +18,53 @@
   margin: 0;
 }
 
-/* Карусель вибору рекомендованих систем */
+/* ВКЛАДКИ (TABS) */
+.tabsContainer {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.tab {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-main);
+  border-color: var(--text-muted);
+}
+
+.tab.active {
+  color: #fff;
+  background-color: var(--accent-orange);
+  border-color: var(--accent-orange);
+}
+
+/* ГОРИЗОНТАЛЬНИЙ СКРОЛ СИСТЕМ (ЧІПИ) */
 .systemScroll {
   display: flex;
   gap: 12px;
   overflow-x: auto;
   padding-bottom: 12px;
+  margin-bottom: 8px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -47,7 +76,7 @@
 .systemChip {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 12px 20px;
   font-size: 15px;
   font-weight: 700;
@@ -59,6 +88,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+  min-width: max-content;
 }
 
 .systemChip:hover {
@@ -77,12 +107,12 @@
   opacity: 0.7;
 }
 
-/* Сітка сценаріїв */
+/* СІТКА КАРТОК СЦЕНАРІЇВ */
 .scenariosGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .scenarioCard {
@@ -108,6 +138,7 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 16px;
+  gap: 12px;
 }
 
 .scenarioTitle {
@@ -151,6 +182,7 @@
   height: 6px;
   border-radius: 50%;
   background-color: var(--accent-orange);
+  flex-shrink: 0;
 }
 
 .cardFooter {
@@ -182,493 +214,123 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .addBtn:hover {
   background-color: var(--text-main);
   color: var(--bg-main);
+  border-color: var(--text-main);
 }
 
+/* ФОРМИ: ШІ ТА РУЧНЕ ДОДАВАННЯ СИСТЕМ */
+.formsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 600px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.formBlock {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.formTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .formRow {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.input, .select {
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus, .select:focus {
+  border-color: var(--accent-orange);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.submitBtn {
+  background-color: var(--accent-orange);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+.submitBtn:hover {
+  background-color: #e05e00;
+}
+
+.submitBtn:disabled, .addBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ЗАВАНТАЖЕННЯ */
 .loading {
   text-align: center;
   padding: 40px;
   color: var(--text-muted);
   font-weight: 600;
-}
-
-/* =========================================
-   ПОРОЖНІЙ СТАН (EMPTY STATE)
-   ========================================= */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 64px 20px;
-  background-color: var(--bg-card);
-  border: 1px dashed var(--border-color);
-  border-radius: 16px;
-  margin-top: 16px;
-}
-
-.empty-icon-wrap {
-  width: 64px;
-  height: 64px;
-  background-color: var(--bg-card-inner);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.empty-svg {
-  width: 32px;
-  height: 32px;
-  color: var(--text-muted);
-}
-
-.empty-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 8px;
-}
-
-.empty-desc {
-  font-size: 15px;
-  color: var(--text-muted);
-  max-width: 400px;
-  line-height: 1.5;
-  margin-bottom: 24px;
-}
-
-.empty-btn {
-  background-color: var(--accent-orange);
-  color: #fff;
-  font-weight: 700;
-  padding: 12px 24px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-
-.empty-btn:hover {
-  opacity: 0.8;
-}
-
-/* Перемикач табів */
-.tabs {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px; 
-}
-
-.tabBtn {
-  padding: 8px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.tabBtn.active {
-  background-color: var(--text-main);
-  color: var(--bg-main);
-  border-color: var(--text-main);
-}
-
-.sectionTitle {
-  font-size: 24px; 
-  font-weight: 800;
-  color: var(--text-main);
-  margin: 0 0 16px 0;
-}
-
-/* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ ЯК НА МАКЕТІ --- */
-.topControls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
   width: 100%;
-}
-
-.addInput {
-  flex: 1; /* Змушує інпут зайняти весь вільний простір зліва */
-  height: 48px; 
-  padding: 0 20px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background-color: var(--bg-card);
-  font-size: 15px; 
-  color: var(--text-main);
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.addInput::placeholder {
-  color: var(--text-muted);
-}
-
-.addInput:focus { 
-  border-color: var(--accent-orange); 
-}
-
-/* Кнопка "Знайти систему" */
-.addBtn {
-  background-color: var(--accent-orange);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  height: 48px;
-  padding: 0 24px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0; /* Забороняє кнопці стискатися */
-}
-
-.addBtn:hover { 
-  opacity: 0.8;
-}
-
-/* Кнопка "Додати свою систему" */
-.customSysBtn {
-  background-color: #2c2c2c;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  height: 48px;
-  padding: 0 24px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0; /* Забороняє кнопці стискатися */
-}
-
-.customSysBtn:hover {
-  opacity: 0.8;
-}
-
-/* --- СІТКА КАРТОК --- */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 20px; 
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow 0.2s, background-color 0.3s, border-color 0.3s;
-}
-
-.card:hover {
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
-}
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
-  gap: 12px;
-}
-
-.cardTitle {
-  font-size: 20px; 
-  font-weight: 800;
-  color: var(--text-main);
-  word-break: break-word; 
-}
-
-.cardActions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.iconBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s;
-}
-
-.iconBtn:hover { opacity: 0.7; }
-
-.actionIconOrange {
-  width: 22px;
-  height: 22px;
-  color: var(--accent-orange);
-}
-
-.plusIconTop {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--accent-orange);
-  line-height: 0.8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.specs {
-  display: flex;
-  flex-direction: column;
-}
-
-.specRow {
-  display: flex;
-  flex-direction: row; 
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0; 
-  border-bottom: 1px solid var(--border-color);
-}
-
-.specLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.specValue {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-  text-align: right;
-  max-width: 60%; 
-}
-
-.calcRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  cursor: pointer;
-}
-
-.calcLabel {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text-main);
-}
-
-.hintBox {
-  background-color: var(--bg-card-inner);
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-top: 16px;
-  border: 1px solid var(--border-color);
-}
-
-.hintTitle {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 4px;
-}
-
-.hintText {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-/* =========================================
-   СТИЛІ ДЛЯ МОДАЛКИ "ВЛАСНА СИСТЕМА"
-   ========================================= */
-.modalOverlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.modalContent {
-  background-color: var(--bg-main);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 24px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modalHeader {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.modalForm {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.inputWrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.inputWrap label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.inputWrap input {
-  padding: 12px 16px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background-color: var(--bg-card);
-  color: var(--text-main);
-  font-size: 15px;
-  font-family: inherit;
-  outline: none;
-}
-
-.inputWrap input:focus {
-  border-color: var(--accent-orange);
-}
-
-.modalActions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.modalBtnCancel {
-  flex: 1;
-  background-color: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.modalBtnSave {
-  flex: 1;
-  background-color: var(--accent-orange);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-
-/* =========================================
-   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
-   ========================================= */
-
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-}
-
-/* Мобільні телефони (Вертикально) */
-@media (max-width: 768px) and (orientation: portrait) {
-  .sectionTitle { font-size: 20px; }
-  
-  .topControls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px; 
-  }
-  
-  .addInput {
-    width: 100%;
-    height: 48px; 
-    min-height: 48px; /* Жорстко фіксуємо висоту для мобільних */
-    padding: 0 20px;
-    box-sizing: border-box;
-    -webkit-appearance: none; /* Забороняємо телефонам псувати дизайн інпуту */
-    appearance: none;
-  }
-
-  /* --- ОНОВЛЕНІ СТИЛІ ДЛЯ КНОПОК --- */
-  .addBtn, .customSysBtn {
-    width: 100%;
-    height: 48px;
-    min-height: 48px;
-    -webkit-appearance: none; /* Скидаємо системний дизайн iOS */
-    appearance: none;
-    color: #FFFFFF;           /* Примусово білий колір тексту */
-    font-size: 15px;          /* Фіксуємо розмір */
-    white-space: normal;      /* Дозволяємо тексту переноситись на вузьких екранах */
-    text-align: center;       /* Центруємо текст */
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* Мобільні телефони (Горизонтально / Landscape) */
-@media (max-width: 950px) and (orientation: landscape) {
-  .addInput { padding: 8px 14px; font-size: 14px; }
-  .addBtn, .customSysBtn { height: 40px; padding: 0 16px; font-size: 13px; }
-  
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-  }
-  .card { padding: 12px 14px; }
-  .cardHeader { padding-bottom: 8px; }
-  .cardTitle { font-size: 15px; }
-  .specRow { padding: 6px 0; }
-  .specLabel { font-size: 10px; }
-  .specValue { font-size: 11px; max-width: 65%; }
 }
