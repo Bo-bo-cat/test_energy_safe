@@ -238,14 +238,20 @@ async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
 
     categories_str = ", ".join(f'"{c}"' for c in VALID_CATEGORIES)
     prompt = (
-        "Analyze this appliance label/sticker image. Extract:\n"
-        "1. Device model name (brand + model number if visible, e.g. 'Samsung RB34T632ESA')\n"
-        "2. Power consumption in watts (look for: W, Вт, watts, ~ symbol before number)\n"
-        f"3. Category — pick exactly one from: [{categories_str}]\n\n"
-        "Return ONLY valid JSON, no markdown:\n"
-        '{"name": "model name or description", "power_watts": 150, "category": "Холодильник"}\n\n'
-        "If the label is unreadable or not an appliance label, return:\n"
-        '{"error": "Не вдалося розпізнати етикетку"}'
+        "You are analyzing a home appliance label/sticker photo. Extract all information you can see.\n\n"
+        "1. name: Brand and model number (e.g. 'Samsung RB34T632ESA'). If no model, describe the device.\n"
+        "2. power_watts: Power in watts. Look carefully for ANY of these patterns:\n"
+        "   - 'XXX W' or 'XXX Вт' or 'XXXw'\n"
+        "   - '~ XXX W' (rated power)\n"
+        "   - 'Input: XXX W' or 'Max: XXX W'\n"
+        "   - A number followed by W anywhere on the label\n"
+        "   If multiple values exist, use the highest (rated/max power).\n"
+        "   If truly not visible, use null.\n"
+        f"3. category: Pick exactly one from [{categories_str}]\n\n"
+        "Return ONLY valid JSON, no markdown, no explanation:\n"
+        '{"name": "string", "power_watts": number_or_null, "category": "string"}\n\n'
+        "Only return an error if the image is completely unreadable (not a label at all):\n"
+        '{"error": "reason"}'
     )
 
     image_b64 = base64.b64encode(image_bytes).decode()
@@ -286,14 +292,14 @@ async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
         category = "Інше"
 
     power_watts = float(result.get("power_watts") or 0)
-    if power_watts <= 0:
-        raise HTTPException(status_code=422, detail="Не вдалося визначити потужність з етикетки. Спробуйте чіткіше фото")
 
-    power_watts, startup_current_watts = _validate_specs(category, power_watts, None)
+    startup_current_watts = None
+    if power_watts > 0:
+        power_watts, startup_current_watts = _validate_specs(category, power_watts, None)
 
     return {
         "name": str(result.get("name", "")).strip(),
-        "power_watts": power_watts,
+        "power_watts": power_watts if power_watts > 0 else None,
         "startup_current_watts": startup_current_watts,
         "category": category,
     }
