@@ -285,9 +285,9 @@ async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
     if category not in VALID_CATEGORIES:
         category = "Інше"
 
-    power_watts = float(result.get("power_watts", 0))
+    power_watts = float(result.get("power_watts") or 0)
     if power_watts <= 0:
-        raise HTTPException(status_code=422, detail="Не вдалося визначити потужність з етикетки")
+        raise HTTPException(status_code=422, detail="Не вдалося визначити потужність з етикетки. Спробуйте чіткіше фото")
 
     power_watts, startup_current_watts = _validate_specs(category, power_watts, None)
 
