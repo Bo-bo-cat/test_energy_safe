@@ -196,7 +196,7 @@ export default function ProfilePage() {
               </button>
 
               <button className={styles.supportBtn} onClick={() => setShowSupportModal(true)}>
-                {lang === 'uk' ? 'Підтримати нас ❤️' : 'Support Us ❤️'}
+                {lang === 'uk' ? 'Підтримати нас' : 'Support Us'} <span style={{filter: 'grayscale(1) brightness(0)'}}>❤️</span>
               </button>
 
               <button className={styles.supportBtnMobile} onClick={() => setIsMobileSupportOpen(true)}>
@@ -300,7 +300,7 @@ export default function ProfilePage() {
           <div className={styles.supportModal} onClick={e => e.stopPropagation()}>
             <button className={styles.supportModalClose} onClick={() => setShowSupportModal(false)}>✕</button>
             <p className={styles.supportModalTitle}>
-              {lang === 'uk' ? 'Підтримати нас ❤️' : 'Support Us ❤️'}
+              {lang === 'uk' ? 'Підтримати нас' : 'Support Us'} <span style={{filter: 'grayscale(1) brightness(0)'}}>❤️</span>
             </p>
             <p className={styles.supportModalDesc}>
               {lang === 'uk'

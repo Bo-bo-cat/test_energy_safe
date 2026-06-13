@@ -29,7 +29,7 @@ export function SupportBanner() {
   return (
     <div className={styles.banner}>
       <span className={styles.text}>
-        Подобається Energy Safe? Підтримай розвиток проєкту! ❤️
+        Подобається Energy Safe? Підтримай розвиток проєкту! <span style={{filter: 'grayscale(1) brightness(0)'}}>❤️</span>
       </span>
       <a
         href={MONO_URL}
