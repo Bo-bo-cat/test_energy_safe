@@ -2,17 +2,13 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 
 export default function PickerPage() {
-  const router = useRouter();
-
-  // Три вкладки, як ви просили
-  const [activeTab, setActiveTab] = useState<'my' | 'catalog' | 'scenarios'>('my');
+  // Залишаємо лише дві вкладки
+  const [activeTab, setActiveTab] = useState<'my' | 'catalog'>('my');
 
   const [mySystems, setMySystems] = useState<any[]>([]);
   const [catalogSystems, setCatalogSystems] = useState<any[]>([]);
-  const [readyScenarios, setReadyScenarios] = useState<any[]>([]);
   
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,15 +21,13 @@ export default function PickerPage() {
     setIsLoading(true);
     const token = localStorage.getItem('access_token');
     try {
-      const [myRes, catRes, scenRes] = await Promise.all([
+      const [myRes, catRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/my`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/recommended`).catch(() => null),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/recommended/all-scenarios`).catch(() => null)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/systems/recommended`).catch(() => null)
       ]);
 
       if (myRes && myRes.ok) setMySystems(await myRes.json());
       if (catRes && catRes.ok) setCatalogSystems(await catRes.json());
-      if (scenRes && scenRes.ok) setReadyScenarios(await scenRes.json());
     } catch (err) {
       console.error(err);
     } finally {
@@ -41,10 +35,9 @@ export default function PickerPage() {
     }
   };
 
-  const handleSearchSubmit = async () => {
+  const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     toast.success('Пошук системи: ' + searchQuery);
-    // Тут буде логіка вашого ШІ-пошуку
   };
 
   const handleAddCustom = () => {
@@ -68,16 +61,10 @@ export default function PickerPage() {
         >
           Рекомендовані
         </button>
-        <button 
-          className={`${styles.tab} ${activeTab === 'scenarios' ? styles.active : ''}`}
-          onClick={() => setActiveTab('scenarios')}
-        >
-          Рекомендовані сценарії
-        </button>
       </div>
 
       <div className={styles.mainCard}>
-        {/* ВКЛАДКА 1: МОЇ СИСТЕМИ (Точна копія зі скріншоту) */}
+        {/* ВКЛАДКА 1: МОЇ СИСТЕМИ */}
         {activeTab === 'my' && (
           <>
             <h2 className={styles.cardHeading}>Введіть вашу систему</h2>
@@ -138,27 +125,6 @@ export default function PickerPage() {
                 </div>
               )) : (
                 <p className={styles.emptyText}>Завантаження каталогу...</p>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* ВКЛАДКА 3: РЕКОМЕНДОВАНІ СЦЕНАРІЇ */}
-        {activeTab === 'scenarios' && (
-          <>
-            <h2 className={styles.cardHeading}>Готові сценарії під ваші потреби</h2>
-            <div className={styles.scenariosGrid}>
-              {readyScenarios.length > 0 ? readyScenarios.map((scen: any, idx: number) => (
-                <div key={idx} className={styles.scenarioCard}>
-                  <div className={styles.scenHeader}>
-                    <div className={styles.scenTitle}>{scen.name}</div>
-                    <div className={styles.scenBadge}>~{scen.autonomy_hours} год</div>
-                  </div>
-                  <p className={styles.scenDevices}>{scen.devices?.map((d: any) => d.name).join(', ')}</p>
-                  <button className={styles.orangeBtnFull}>Вибрати цей сценарій</button>
-                </div>
-              )) : (
-                <p className={styles.emptyText}>Завантаження сценаріїв...</p>
               )}
             </div>
           </>

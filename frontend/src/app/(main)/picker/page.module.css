@@ -99,7 +99,7 @@
   white-space: nowrap;
 }
 
-/* Порожній стан (Пунктир іконка) */
+/* Порожній стан */
 .emptyState {
   border: 2px dashed #E5E7EB;
   border-radius: 16px;
@@ -137,22 +137,32 @@
   margin: 0;
 }
 
-/* Сітки для інших вкладок */
-.systemsGrid, .scenariosGrid {
+/* Сітки карток систем */
+.systemsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
-.systemCard, .scenarioCard {
+.systemCard {
   border: 1px solid #E5E7EB;
   padding: 20px;
   border-radius: 16px;
   background: #FFFFFF;
 }
 
-.sysName { font-weight: 700; font-size: 18px; margin-bottom: 4px; color: #111827; }
-.sysMeta { font-size: 14px; color: #6B7280; margin-bottom: 16px; }
+.sysName { 
+  font-weight: 700; 
+  font-size: 18px; 
+  margin-bottom: 4px; 
+  color: #111827; 
+}
+
+.sysMeta { 
+  font-size: 14px; 
+  color: #6B7280; 
+  margin-bottom: 16px; 
+}
 
 .addSmallBtn {
   width: 100%;
@@ -169,41 +179,4 @@
 .addSmallBtn:hover {
   background: #FF6B00;
   color: #FFF;
-}
-
-.scenHeader {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.scenTitle { font-weight: 700; font-size: 18px; color: #111827; }
-.scenBadge { 
-  color: #FF6B00; 
-  font-weight: 700; 
-  background: rgba(255,107,0,0.1); 
-  padding: 4px 8px; 
-  border-radius: 8px;
-  font-size: 13px;
-}
-
-.scenDevices { 
-  font-size: 14px; 
-  color: #6B7280; 
-  margin-bottom: 20px; 
-  display: -webkit-box; 
-  -webkit-line-clamp: 2; 
-  -webkit-box-orient: vertical; 
-  overflow: hidden; 
-}
-
-.orangeBtnFull {
-  width: 100%;
-  background: #FF6B00;
-  color: #FFF;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
 }
