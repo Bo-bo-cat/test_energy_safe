@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
 from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -9,7 +9,7 @@ from app.models.device import (
     DeviceCreate, DeviceUpdate, DeviceResponse,
     ClassifyRequest, ClassifyResponse
 )
-from app.services.ai_service import lookup_device_specs
+from app.services.ai_service import lookup_device_specs, scan_label_image
 from app.auth import get_current_user_id
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
@@ -82,6 +82,16 @@ async def classify_only(payload: ClassifyRequest):
     db = get_database()
     specs = await _get_specs_with_cache(db, payload.model_name)
     return ClassifyResponse(is_valid=True, **specs)
+
+
+@router.post("/scan-label", summary="Розпізнати прилад з фото етикетки через Gemini")
+async def scan_label(
+    file: UploadFile = File(...),
+    user_id: str = Depends(get_current_user_id),
+):
+    image_bytes = await file.read()
+    mime_type = file.content_type or "image/jpeg"
+    return await scan_label_image(image_bytes, mime_type)
 
 
 @router.post("", response_model=DeviceResponse, status_code=201)

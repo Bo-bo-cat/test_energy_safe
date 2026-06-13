@@ -1,5 +1,6 @@
 import os
 import json
+import base64
 import httpx
 import xml.etree.ElementTree as ET
 from fastapi import HTTPException
@@ -227,6 +228,74 @@ async def lookup_device_specs(model_name: str) -> dict:
         "power_watts": power_watts,
         "startup_current_watts": startup_current_watts,
         "brand": brand,
+    }
+
+
+async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="GEMINI_API_KEY не налаштовано")
+
+    categories_str = ", ".join(f'"{c}"' for c in VALID_CATEGORIES)
+    prompt = (
+        "Analyze this appliance label/sticker image. Extract:\n"
+        "1. Device model name (brand + model number if visible, e.g. 'Samsung RB34T632ESA')\n"
+        "2. Power consumption in watts (look for: W, Вт, watts, ~ symbol before number)\n"
+        f"3. Category — pick exactly one from: [{categories_str}]\n\n"
+        "Return ONLY valid JSON, no markdown:\n"
+        '{"name": "model name or description", "power_watts": 150, "category": "Холодильник"}\n\n'
+        "If the label is unreadable or not an appliance label, return:\n"
+        '{"error": "Не вдалося розпізнати етикетку"}'
+    )
+
+    image_b64 = base64.b64encode(image_bytes).decode()
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}",
+                json={
+                    "contents": [{
+                        "parts": [
+                            {"text": prompt},
+                            {"inline_data": {"mime_type": mime_type, "data": image_b64}},
+                        ]
+                    }]
+                },
+            )
+            resp.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=502, detail=f"Gemini API помилка: {e.response.status_code}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Gemini API недоступний: {str(e)}")
+
+    text = resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    if text.startswith("```"):
+        text = "\n".join(l for l in text.splitlines() if not l.startswith("```")).strip()
+
+    try:
+        result = json.loads(text)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=502, detail="Не вдалося розпізнати відповідь від Gemini")
+
+    if "error" in result:
+        raise HTTPException(status_code=422, detail=result["error"])
+
+    category = result.get("category", "Інше")
+    if category not in VALID_CATEGORIES:
+        category = "Інше"
+
+    power_watts = float(result.get("power_watts", 0))
+    if power_watts <= 0:
+        raise HTTPException(status_code=422, detail="Не вдалося визначити потужність з етикетки")
+
+    power_watts, startup_current_watts = _validate_specs(category, power_watts, None)
+
+    return {
+        "name": str(result.get("name", "")).strip(),
+        "power_watts": power_watts,
+        "startup_current_watts": startup_current_watts,
+        "category": category,
     }
 
 

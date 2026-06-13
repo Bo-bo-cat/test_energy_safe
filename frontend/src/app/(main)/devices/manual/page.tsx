@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
 // ПІДКЛЮЧАЄМО СЛОВНИК
@@ -22,9 +22,12 @@ const ArrowIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-export default function ManualAddDevicePage() {
+const STARTUP_CATEGORIES = ['Холодильник', 'Пральна машина', 'Кондиціонер', 'Посудомийна машина'];
+
+function ManualAddDeviceContent() {
   const router = useRouter();
-  const { t, lang } = useTranslation(); 
+  const { t, lang } = useTranslation();
+  const params = useSearchParams();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -42,6 +45,25 @@ export default function ManualAddDevicePage() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [showStartupPower, setShowStartupPower] = useState(false);
   const [startupError, setStartupError] = useState('');
+
+  useEffect(() => {
+    const name = params.get('name');
+    const power = params.get('power');
+    const category = params.get('category');
+    const startup = params.get('startup');
+    if (name || power || category) {
+      setFormData(prev => ({
+        ...prev,
+        name: name || prev.name,
+        power: power || prev.power,
+        category: category || prev.category,
+        startupPower: startup || prev.startupPower,
+      }));
+      if (category && STARTUP_CATEGORIES.includes(category)) {
+        setShowStartupPower(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -319,5 +341,13 @@ export default function ManualAddDevicePage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ManualAddDevicePage() {
+  return (
+    <Suspense>
+      <ManualAddDeviceContent />
+    </Suspense>
   );
 }

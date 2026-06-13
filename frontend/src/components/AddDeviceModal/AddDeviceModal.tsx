@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './AddDeviceModal.module.css';
 
 import { CameraIcon } from '../icons/Camera';
-import { SearchIcon } from '../icons/Search'; // Підключаємо іконку лупи
-import { AlertModal } from '../AlertModal/AlertModal';
+import { SearchIcon } from '../icons/Search';
 import { useTranslation } from '../../context/LanguageContext';
+
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 interface AddDeviceModalProps {
   isOpen: boolean;
@@ -17,11 +18,11 @@ interface AddDeviceModalProps {
 export const AddDeviceModal = ({ isOpen, onClose }: AddDeviceModalProps) => {
   const { t, lang } = useTranslation();
   const router = useRouter();
-  
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Блокуємо скрол фону, коли модалка відкрита
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanError, setScanError] = useState('');
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -33,37 +34,77 @@ export const AddDeviceModal = ({ isOpen, onClose }: AddDeviceModalProps) => {
 
   if (!isOpen) return null;
 
-  const handleCameraClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsAlertOpen(true);
+  const handleCameraClick = () => {
+    setScanError('');
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsScanning(true);
+    setScanError('');
+
+    const token = localStorage.getItem('access_token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch(`${API}/devices/scan-label`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setScanError(data.detail || (lang === 'uk' ? 'Не вдалося розпізнати етикетку' : 'Could not read label'));
+        return;
+      }
+
+      const data = await res.json();
+      const params = new URLSearchParams({
+        name: data.name || '',
+        power: String(data.power_watts || ''),
+        category: data.category || '',
+        ...(data.startup_current_watts ? { startup: String(data.startup_current_watts) } : {}),
+      });
+
+      onClose();
+      router.push(`/devices/manual?${params.toString()}`);
+    } catch {
+      setScanError(lang === 'uk' ? 'Помилка з\'єднання з сервером' : 'Server connection error');
+    } finally {
+      setIsScanning(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleSearchClick = () => {
-    onClose(); 
-    // ВИПРАВЛЕНИЙ ШЛЯХ
-    router.push('/devices/manual'); 
+    onClose();
+    router.push('/devices/manual');
   };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         <button className={styles.closeBtn} onClick={onClose}>&times;</button>
-        
+
         <h1 className={styles.title}>{t.deviceAdd?.title || 'Додати прилад'}</h1>
 
         <section className={styles.cards}>
-          <button 
-            onClick={handleCameraClick} 
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            className={styles.card}
-          >
+          <button onClick={handleCameraClick} className={styles.card} disabled={isScanning}>
             <div className={styles.cardInner}>
               <span className={styles.icon}>
-                <CameraIcon className={styles.iconCamera} />
+                {isScanning
+                  ? <span style={{ fontSize: 32 }}>⏳</span>
+                  : <CameraIcon className={styles.iconCamera} />}
               </span>
               <h2 className={styles.cardTitle}>
-                {isHovered ? (t.deviceAdd?.soon || 'Незабаром') : (t.deviceAdd?.photoLabel || 'Сфотографувати етикетку')}
+                {isScanning
+                  ? (lang === 'uk' ? 'Розпізнаю...' : 'Scanning...')
+                  : (t.deviceAdd?.photoLabel || 'Сфотографувати етикетку')}
               </h2>
             </div>
           </button>
@@ -80,20 +121,26 @@ export const AddDeviceModal = ({ isOpen, onClose }: AddDeviceModalProps) => {
           </button>
         </section>
 
-        <section className={styles.hint}>
-          <h3 className={styles.hintTitle}>{t.deviceAdd?.hintTitle || 'Як це працює?'}</h3>
-          <p className={styles.hintText}>
-            {t.deviceAdd?.hintText || 'Сфотографуйте заводську етикетку приладу, або знайдіть його вручну за допомогою пошуку за моделлю.'}
+        {scanError && (
+          <p style={{ color: '#dc2626', fontSize: 13, fontWeight: 600, textAlign: 'center', marginTop: 8 }}>
+            {scanError}
           </p>
+        )}
+
+        <section className={styles.hint}>
+          <h3 className={styles.hintTitle}>{t.deviceAdd?.hintTitle || 'Підказка'}</h3>
+          <p className={styles.hintText}>{t.deviceAdd?.hintText}</p>
         </section>
 
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
       </div>
-      
-      <AlertModal 
-        isOpen={isAlertOpen}
-        onClose={() => setIsAlertOpen(false)}
-        title={t.deviceAdd?.soon || 'Незабаром'}
-      />
     </div>
   );
 };
