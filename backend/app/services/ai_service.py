@@ -253,7 +253,7 @@ async def scan_label_image(image_bytes: bytes, mime_type: str) -> dict:
     try:
         async with httpx.AsyncClient(timeout=20.0) as client:
             resp = await client.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}",
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}",
                 json={
                     "contents": [{
                         "parts": [
