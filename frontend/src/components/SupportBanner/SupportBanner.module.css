@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 9999;
-  background-color: #FF6E00;
+  background-color: #1a1a1a;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -28,7 +28,7 @@
 
 .link {
   background: #ffffff;
-  color: #FF6E00;
+  color: #1a1a1a;
   border-radius: 8px;
   padding: 6px 16px;
   font-size: 13px;
