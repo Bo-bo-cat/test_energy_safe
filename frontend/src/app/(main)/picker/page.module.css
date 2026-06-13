@@ -1,182 +1,587 @@
-/* page.module.css */
+/* src/app/(main)/systems/page.module.css */
 
-.pageTitle {
-  font-size: 32px;
-  font-weight: 800;
-  color: #FF6B00; 
-  margin-bottom: 24px;
+
+/* Іконка редагування (сіра) */
+.actionIconGray {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
 }
 
-/* Вкладки */
-.tabsWrapper {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+.iconBtn:hover .actionIconGray {
+  color: var(--text-main);
 }
 
-.tab {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-  background: #FFFFFF;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  color: #6B7280;
-  transition: all 0.2s;
-  font-family: inherit;
-}
 
-.tab.active {
-  background: #FF6B00;
-  color: #FFFFFF;
-  border-color: #FF6B00;
-}
+/* Додайте ці стилі до існуючого файлу page.module.css */
 
-/* Головна біла картка */
 .mainCard {
   background: #FFFFFF;
   border-radius: 16px;
-  padding: 40px;
-  min-height: 500px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+  padding: 30px;
+  min-height: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  margin-top: 20px;
 }
 
-.cardHeading {
-  font-size: 22px;
-  font-weight: 800;
-  color: #111827;
-  margin: 0 0 24px 0;
-}
-
-/* Пошуковий рядок */
-.searchRow {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 40px;
-}
-
-.searchInput {
-  flex: 1;
-  padding: 0 20px;
-  border-radius: 8px;
-  border: 1px solid #E5E7EB;
-  background: #FFFFFF;
-  font-size: 15px;
-  outline: none;
-  font-family: inherit;
-  color: #111827;
-  height: 48px;
-}
-
-.searchInput::placeholder {
-  color: #9CA3AF;
-}
-
-.orangeBtn {
-  background: #FF6B00;
-  color: #FFFFFF;
-  border: none;
-  padding: 0 24px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  height: 48px;
-  white-space: nowrap;
-}
-
-.blackBtn {
-  background: #111827;
-  color: #FFFFFF;
-  border: none;
-  padding: 0 24px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  height: 48px;
-  white-space: nowrap;
-}
-
-/* Порожній стан */
-.emptyState {
-  border: 2px dashed #E5E7EB;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.emptyIcon {
-  width: 64px;
-  height: 64px;
-  background: #F3F4F6;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  color: #9CA3AF;
-}
-
-.emptyTitle {
-  font-size: 20px;
-  font-weight: 800;
-  color: #111827;
-  margin: 0 0 12px 0;
-}
-
-.emptyText {
-  color: #6B7280;
-  line-height: 1.6;
-  font-size: 15px;
-  margin: 0;
-}
-
-/* Сітки карток систем */
-.systemsGrid {
+.scenariosGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
-.systemCard {
-  border: 1px solid #E5E7EB;
+.scenarioCard {
+  border: 1px solid var(--border-color);
   padding: 20px;
   border-radius: 16px;
-  background: #FFFFFF;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s;
 }
 
-.sysName { 
-  font-weight: 700; 
-  font-size: 18px; 
-  margin-bottom: 4px; 
-  color: #111827; 
+.scenarioCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-orange);
 }
 
-.sysMeta { 
-  font-size: 14px; 
-  color: #6B7280; 
-  margin-bottom: 16px; 
+.scenHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
 }
 
-.addSmallBtn {
-  width: 100%;
-  padding: 10px;
+.scenTitle {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.scenBadge {
+  color: var(--accent-orange);
+  font-weight: 800;
+  background: rgba(255, 107, 0, 0.1);
+  padding: 4px 10px;
   border-radius: 8px;
-  border: 1px solid #FF6B00;
-  color: #FF6B00;
-  background: transparent;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.scenDevices {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.4;
+  height: 40px;
+  overflow: hidden;
+}
+
+.scenFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.scenPower {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.orangeBtnFull {
+  width: 100%;
+  background: var(--accent-orange);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  
+  transition: opacity 0.2s;
+}
+
+.orangeBtnFull:hover {
+  opacity: 0.9;
+}
+/* =========================================
+   ПОРОЖНІЙ СТАН (EMPTY STATE)
+   ========================================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 20px;
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  margin-top: 16px;
+}
+
+.empty-icon-wrap {
+  width: 64px;
+  height: 64px;
+  background-color: var(--bg-card-inner);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.empty-svg {
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted);
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 400px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.empty-btn {
+  background-color: var(--accent-orange);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.empty-btn:hover {
+  opacity: 0.8;
+}
+
+/* Перемикач табів */
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px; 
+}
+
+.tabBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabBtn.active {
+  background-color: var(--text-main);
+  color: var(--bg-main);
+  border-color: var(--text-main);
+}
+
+.sectionTitle {
+  font-size: 24px; 
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 16px 0;
+}
+
+/* --- ОНОВЛЕНИЙ БЛОК ПОШУКУ ТА ДОДАВАННЯ ЯК НА МАКЕТІ --- */
+.topControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.addInput {
+  flex: 1; /* Змушує інпут зайняти весь вільний простір зліва */
+  height: 48px; 
+  padding: 0 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  font-size: 15px; 
+  color: var(--text-main);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.addInput::placeholder {
+  color: var(--text-muted);
+}
+
+.addInput:focus { 
+  border-color: var(--accent-orange); 
+}
+
+/* Кнопка "Знайти систему" */
+.addBtn {
+  background-color: var(--accent-orange);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Забороняє кнопці стискатися */
 }
 
-.addSmallBtn:hover {
-  background: #FF6B00;
-  color: #FFF;
+.addBtn:hover { 
+  opacity: 0.8;
+}
+
+/* Кнопка "Додати свою систему" */
+.customSysBtn {
+  background-color: #2c2c2c;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Забороняє кнопці стискатися */
+}
+
+.customSysBtn:hover {
+  opacity: 0.8;
+}
+
+/* --- СІТКА КАРТОК --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px; 
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, background-color 0.3s, border-color 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.cardTitle {
+  font-size: 20px; 
+  font-weight: 800;
+  color: var(--text-main);
+  word-break: break-word; 
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.iconBtn:hover { opacity: 0.7; }
+
+.actionIconOrange {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-orange);
+}
+
+.plusIconTop {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent-orange);
+  line-height: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.specs {
+  display: flex;
+  flex-direction: column;
+}
+
+.specRow {
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0; 
+  border-bottom: 1px solid var(--border-color);
+}
+
+.specLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.specValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: right;
+  max-width: 60%; 
+}
+
+.calcRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  cursor: pointer;
+}
+
+.calcLabel {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.hintBox {
+  background-color: var(--bg-card-inner);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.hintTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.hintText {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   СТИЛІ ДЛЯ МОДАЛКИ "ВЛАСНА СИСТЕМА"
+   ========================================= */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.modalContent {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modalHeader {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.inputWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputWrap label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.inputWrap input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+}
+
+.inputWrap input:focus {
+  border-color: var(--accent-orange);
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.modalBtnCancel {
+  flex: 1;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modalBtnSave {
+  flex: 1;
+  background-color: var(--accent-orange);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================================
+   АДАПТАЦІЯ ДЛЯ ЕКРАНІВ
+   ========================================= */
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Мобільні телефони (Вертикально) */
+@media (max-width: 768px) and (orientation: portrait) {
+  .sectionTitle { font-size: 20px; }
+  
+  .topControls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px; 
+  }
+  
+  .addInput {
+    width: 100%;
+    height: 48px; 
+    min-height: 48px; /* Жорстко фіксуємо висоту для мобільних */
+    padding: 0 20px;
+    box-sizing: border-box;
+    -webkit-appearance: none; /* Забороняємо телефонам псувати дизайн інпуту */
+    appearance: none;
+  }
+
+  /* --- ОНОВЛЕНІ СТИЛІ ДЛЯ КНОПОК --- */
+  .addBtn, .customSysBtn {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    -webkit-appearance: none; /* Скидаємо системний дизайн iOS */
+    appearance: none;
+    color: #FFFFFF;           /* Примусово білий колір тексту */
+    font-size: 15px;          /* Фіксуємо розмір */
+    white-space: normal;      /* Дозволяємо тексту переноситись на вузьких екранах */
+    text-align: center;       /* Центруємо текст */
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Мобільні телефони (Горизонтально / Landscape) */
+@media (max-width: 950px) and (orientation: landscape) {
+  .addInput { padding: 8px 14px; font-size: 14px; }
+  .addBtn, .customSysBtn { height: 40px; padding: 0 16px; font-size: 13px; }
+  
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .card { padding: 12px 14px; }
+  .cardHeader { padding-bottom: 8px; }
+  .cardTitle { font-size: 15px; }
+  .specRow { padding: 6px 0; }
+  .specLabel { font-size: 10px; }
+  .specValue { font-size: 11px; max-width: 65%; }
 }
