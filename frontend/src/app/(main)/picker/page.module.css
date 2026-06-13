@@ -1,112 +1,143 @@
+/* page.module.css */
+
 .pageTitle {
   font-size: 32px;
-  font-weight: 700;
-  color: var(--accent-orange);
+  font-weight: 800;
+  color: #FF6B00; 
   margin-bottom: 24px;
 }
 
+/* Вкладки */
 .tabsWrapper {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .tab {
-  padding: 8px 20px;
+  padding: 10px 20px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
-  color: var(--text-muted);
+  color: #6B7280;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .tab.active {
-  background: var(--accent-orange);
-  color: #fff;
-  border-color: var(--accent-orange);
+  background: #FF6B00;
+  color: #FFFFFF;
+  border-color: #FF6B00;
 }
 
+/* Головна біла картка */
 .mainCard {
-  background: #fff;
+  background: #FFFFFF;
   border-radius: 16px;
   padding: 40px;
   min-height: 500px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
 }
 
 .cardHeading {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 24px 0;
 }
 
+/* Пошуковий рядок */
 .searchRow {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 40px;
 }
 
 .searchInput {
   flex: 1;
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: #f9f9f9;
+  padding: 0 20px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  font-size: 15px;
   outline: none;
+  font-family: inherit;
+  color: #111827;
+  height: 48px;
+}
+
+.searchInput::placeholder {
+  color: #9CA3AF;
 }
 
 .orangeBtn {
-  background: var(--accent-orange);
-  color: #fff;
+  background: #FF6B00;
+  color: #FFFFFF;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
+  padding: 0 24px;
+  border-radius: 8px;
   font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  height: 48px;
+  white-space: nowrap;
 }
 
 .blackBtn {
-  background: #1a1a1a;
-  color: #fff;
+  background: #111827;
+  color: #FFFFFF;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
+  padding: 0 24px;
+  border-radius: 8px;
   font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  height: 48px;
+  white-space: nowrap;
 }
 
-/* Empty State */
+/* Порожній стан (Пунктир іконка) */
 .emptyState {
+  border: 2px dashed #E5E7EB;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 60px;
+  padding: 80px 20px;
   text-align: center;
 }
 
 .emptyIcon {
-  background: #f5f5f5;
-  padding: 30px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  color: #ccc;
+  width: 64px;
+  height: 64px;
+  background: #F3F4F6;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: #9CA3AF;
 }
 
 .emptyTitle {
   font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 12px 0;
 }
 
 .emptyText {
-  color: var(--text-muted);
+  color: #6B7280;
   line-height: 1.6;
+  font-size: 15px;
+  margin: 0;
 }
 
-/* Каталог та сценарії */
+/* Сітки для інших вкладок */
 .systemsGrid, .scenariosGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -114,24 +145,30 @@
 }
 
 .systemCard, .scenarioCard {
-  border: 1px solid var(--border-color);
+  border: 1px solid #E5E7EB;
   padding: 20px;
   border-radius: 16px;
-  background: #fff;
+  background: #FFFFFF;
 }
 
-.sysName { font-weight: 700; font-size: 18px; margin-bottom: 4px; }
-.sysMeta { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+.sysName { font-weight: 700; font-size: 18px; margin-bottom: 4px; color: #111827; }
+.sysMeta { font-size: 14px; color: #6B7280; margin-bottom: 16px; }
 
 .addSmallBtn {
   width: 100%;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid var(--accent-orange);
-  color: var(--accent-orange);
+  border: 1px solid #FF6B00;
+  color: #FF6B00;
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addSmallBtn:hover {
+  background: #FF6B00;
+  color: #FFF;
 }
 
 .scenHeader {
@@ -140,17 +177,33 @@
   margin-bottom: 12px;
 }
 
-.scenTitle { font-weight: 700; font-size: 18px; }
-.scenBadge { color: var(--accent-orange); font-weight: 700; }
-.scenDevices { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; height: 40px; overflow: hidden; }
+.scenTitle { font-weight: 700; font-size: 18px; color: #111827; }
+.scenBadge { 
+  color: #FF6B00; 
+  font-weight: 700; 
+  background: rgba(255,107,0,0.1); 
+  padding: 4px 8px; 
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.scenDevices { 
+  font-size: 14px; 
+  color: #6B7280; 
+  margin-bottom: 20px; 
+  display: -webkit-box; 
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical; 
+  overflow: hidden; 
+}
 
 .orangeBtnFull {
   width: 100%;
-  background: var(--accent-orange);
-  color: #fff;
+  background: #FF6B00;
+  color: #FFF;
   border: none;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
 }
