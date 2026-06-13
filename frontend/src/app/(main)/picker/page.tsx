@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation'; // ДОДАНО для переходу на дашборд
+import { useRouter } from 'next/navigation';
 
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
@@ -23,13 +23,12 @@ const cleanModelName = (name: string, fallback: string) => {
 
 export default function SystemsPage() {
   const { t, lang } = useTranslation();
-  const router = useRouter(); // ДОДАНО
+  const router = useRouter(); 
 
-  // ДОДАНО 'scenarios' до типів вкладок
   const [tab, setTab] = useState<'my' | 'recommended' | 'scenarios'>('my');
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
-  const [scenarios, setScenarios] = useState<any[]>([]); // ДОДАНО стейт сценаріїв
+  const [scenarios, setScenarios] = useState<any[]>([]); 
   const [query, setQuery] = useState('');
   
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
@@ -45,7 +44,7 @@ export default function SystemsPage() {
   useEffect(() => {
     fetchMySystems();
     fetchRecommended();
-    fetchScenarios(); // ДОДАНО
+    fetchScenarios(); 
   }, []);
 
   async function fetchMySystems() {
@@ -76,7 +75,6 @@ export default function SystemsPage() {
     }
   }
 
-  // ДОДАНО: Завантаження сценаріїв
   async function fetchScenarios() {
     try {
       const res = await fetch(`${API}/systems/recommended/all-scenarios`);
@@ -89,7 +87,6 @@ export default function SystemsPage() {
     }
   }
 
-  // ДОДАНО: Логіка збереження сценарію
   const handleSaveScenario = async (scenario: any) => {
     const token = localStorage.getItem('access_token');
     if (!token) { toast.error(lang === 'uk' ? 'Будь ласка, авторизуйтесь' : 'Please log in'); return; }
@@ -102,7 +99,7 @@ export default function SystemsPage() {
         body: JSON.stringify({
           model: scenario.system_model || 'Станція зі сценарію',
           type: 'Портативна електростанція',
-          power: scenario.total_power_watts * 1.2, // Запас 20%
+          power: scenario.total_power_watts * 1.2,
           battery: scenario.autonomy_hours + "h capacity",
           autonomy: scenario.autonomy_hours,
           selected_for_calculation: true 
@@ -317,6 +314,7 @@ export default function SystemsPage() {
         {tab === 'my' ? t.picker.titleMy : (tab === 'recommended' ? t.picker.titleRec : (lang === 'uk' ? 'Рекомендовані сценарії' : 'Recommended Scenarios'))}
       </h1>
 
+      {/* === ТУТ ДОДАНО ІДЕНТИФІКАТОРИ ДЛЯ ТУРУ === */}
       <div className={styles.tabs}>
         <button 
           className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`} 
@@ -325,13 +323,14 @@ export default function SystemsPage() {
           {t.picker.tabMy}
         </button>
         <button 
+          id="tour-recommended-systems" /* <--- ДОДАНО ДЛЯ ТУРУ */
           className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`} 
           onClick={() => setTab('recommended')}
         >
           {t.picker.tabRec}
         </button>
-        {/* ДОДАНО: Третя вкладка */}
         <button 
+          id="tour-system-scenarios" /* <--- ДОДАНО ДЛЯ ТУРУ */
           className={`${styles.tabBtn} ${tab === 'scenarios' ? styles.active : ''}`} 
           onClick={() => setTab('scenarios')}
         >
