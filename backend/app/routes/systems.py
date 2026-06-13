@@ -297,6 +297,37 @@ async def get_recommended_scenarios(system_id: str):
 
 
 @router.get(
+    "/recommended/{system_id}/scenarios/{scenario_index}",
+    response_model=ReadyMadeScenario,
+    summary="Деталі конкретного сценарію рекомендованої системи",
+)
+async def get_recommended_scenario(system_id: str, scenario_index: int):
+    db = get_database()
+    try:
+        oid = ObjectId(system_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Невалідний system_id")
+    doc = await db[col("systems")].find_one({"_id": oid, "is_recommended": True})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Рекомендовану систему не знайдено")
+    templates = _READY_SCENARIOS.get(doc["model"], [])
+    if not templates:
+        raise HTTPException(status_code=404, detail="Сценарії для цієї системи не знайдено")
+    if scenario_index < 0 or scenario_index >= len(templates):
+        raise HTTPException(status_code=404, detail=f"Сценарій з індексом {scenario_index} не існує")
+    tpl = templates[scenario_index]
+    battery_wh = _parse_battery_wh(doc.get("battery", ""))
+    total = sum(d["power_watts"] for d in tpl["devices"])
+    autonomy = round(battery_wh / total * 0.85, 1) if total > 0 and battery_wh > 0 else 0.0
+    return ReadyMadeScenario(
+        name=tpl["name"],
+        devices=[ReadyMadeDevice(**d) for d in tpl["devices"]],
+        total_power_watts=total,
+        autonomy_hours=autonomy,
+    )
+
+
+@router.get(
     "/my",
     response_model=List[SystemResponse],
     summary="Мої UPS-системи",
