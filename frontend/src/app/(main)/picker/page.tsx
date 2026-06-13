@@ -356,8 +356,8 @@ export default function SystemsPage() {
               {tab === 'my' && (
                 <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
                   <span className={styles.calcLabel}>
-                    {item.selected_for_calculation 
-                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                    {item.selected_for_calculation
+                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation')
                       : t.picker.addToCalc}
                   </span>
                   <button className={styles.iconBtn}>
@@ -369,6 +369,7 @@ export default function SystemsPage() {
                   </button>
                 </div>
               )}
+
             </div>
           ))}
         </div>

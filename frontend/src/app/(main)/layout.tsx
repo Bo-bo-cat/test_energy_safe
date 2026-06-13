@@ -20,6 +20,7 @@ import { MobileSwipeNav } from '../../components/MobileSwipeNav/MobileSwipeNav';
 import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
 import { InstallPrompt } from '../../components/InstallPrompt/InstallPrompt';
+import { SupportBanner } from '../../components/SupportBanner/SupportBanner';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -122,6 +123,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       />
 
       <InstallPrompt />
+      <SupportBanner />
       
       <Toaster 
         position="bottom-center"

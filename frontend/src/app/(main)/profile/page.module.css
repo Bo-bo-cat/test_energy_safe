@@ -214,6 +214,120 @@
   opacity: 0.8;
 }
 
+.supportBtn {
+  background-color: #FF6E00;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-align: left;
+}
+
+.supportBtn:hover {
+  opacity: 0.85;
+}
+
+/* =========================================
+   МОДАЛКА ПІДТРИМКИ
+   ========================================= */
+.supportOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.supportModal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 360px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.supportModalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.supportModalClose:hover {
+  color: var(--text-main);
+}
+
+.supportModalTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  text-align: center;
+}
+
+.supportModalDesc {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.qrWrap {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qrWrap img {
+  width: 180px;
+  height: 180px;
+  display: block;
+}
+
+.supportModalLink {
+  display: block;
+  width: 100%;
+  background-color: #FF6E00;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.supportModalLink:hover {
+  opacity: 0.85;
+}
+
 .dangerZone {
   margin-top: 16px;
   display: flex;
