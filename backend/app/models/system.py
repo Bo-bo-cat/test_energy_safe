@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 
@@ -63,15 +63,3 @@ class RecommendedSystemResponse(BaseModel):
     power: float
     battery: str
     autonomy: str
-
-
-class ReadyMadeDevice(BaseModel):
-    name: str
-    power_watts: float
-
-
-class ReadyMadeScenario(BaseModel):
-    name: str
-    devices: List[ReadyMadeDevice]
-    total_power_watts: float
-    autonomy_hours: float
