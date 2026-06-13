@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import styles from './layout.module.css';
 import { Toaster } from 'react-hot-toast'; 
 
+// Імпорт іконок
 import { LightningIcon } from '../../components/icons/Lightning';
 import { HomeIcon } from '../../components/icons/Home';
 import { DeviceIcon } from '../../components/icons/Device';
@@ -15,12 +16,14 @@ import { ProfileIcon } from '../../components/icons/Profile';
 import { LogOutIcon } from '../../components/icons/LogOut';
 import { LogInIcon } from '../../components/icons/Log-in'; 
 
-import { DecisionModal } from '../../components/DecisionModal/DecisionModal' ;
+// Імпорт компонентів
+import { DecisionModal } from '../../components/DecisionModal/DecisionModal';
 import { MobileSwipeNav } from '../../components/MobileSwipeNav/MobileSwipeNav';
-import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
-
 import { InstallPrompt } from '../../components/InstallPrompt/InstallPrompt';
-import { SupportBanner } from '../../components/SupportBanner/SupportBanner';
+import { OnboardingTour } from '../../components/OnboardingTour/OnboardingTour'; // ПІДКЛЮЧЕНО ТУР
+
+// Контекст мови
+import { LanguageProvider, useTranslation } from '../../context/LanguageContext';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -41,7 +44,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // ДОДАНО: властивість tourId для інтерактивного онбордингу
+  // Елементи навігації з доданими tourId для підсвічування в онбордингу
   const navItems = [
     { href: '/dashboard', label: t.sidebar.home, Icon: HomeIcon, tourId: 'tour-nav-home' },
     { href: '/devices', label: t.sidebar.devices, Icon: DeviceIcon, tourId: 'tour-nav-devices' },
@@ -81,7 +84,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
               <Link 
                 key={item.href} 
                 href={item.href} 
-                id={item.tourId} /* ДОДАНО: ID для react-joyride */
+                id={item.tourId} // ID мітка для react-joyride
                 className={`${styles['nav-link']} ${isActive ? styles['nav-link-active'] : ''}`}
               >
                 <div className={styles['icon-wrapper']}>
@@ -123,8 +126,8 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       />
 
       <InstallPrompt />
-      <SupportBanner />
       
+      {/* Глобальний Toaster для сповіщень */}
       <Toaster 
         position="bottom-center"
         toastOptions={{
@@ -140,6 +143,9 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
           }
         }}
       />
+
+      {/* ФІНАЛЬНИЙ КОМПОНЕНТ ОНБОРДИНГУ */}
+      <OnboardingTour />
     </div>
   );
 }

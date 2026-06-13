@@ -322,7 +322,8 @@ export default function CalculatorPage() {
     <div className={styles.layout}>
       <div className={styles['main-content']}>
         
-        <div className={styles.devicesSection}>
+        {/* ДОДАНО: id="tour-calc-devices" для секції приладів */}
+        <div className={styles.devicesSection} id="tour-calc-devices">
           <div className={`${styles['filters-row']} no-swipe`} {...swipeHandlers}>
               {locations.map(loc => (
                 <div 
@@ -422,7 +423,8 @@ export default function CalculatorPage() {
             </div>
           </div>
 
-          <div className={styles.systemsSection}>
+          {/* ДОДАНО: id="tour-select-system" для секції систем живлення */}
+          <div className={styles.systemsSection} id="tour-select-system">
             <h2 className={styles.subSectionTitle}>
               {lang === 'uk' ? 'Система живлення' : 'Power System'}
             </h2>
@@ -532,6 +534,7 @@ export default function CalculatorPage() {
 
             return (
               <button 
+                id="tour-save-scenario" /* ДОДАНО: ID для react-joyride */
                 className={styles['save-btn']}
                 disabled={!calcResult || isOverloaded || selectedDeviceIds.length === 0 || hasInvalidHours}
                 onClick={() => setIsModalOpen(true)}

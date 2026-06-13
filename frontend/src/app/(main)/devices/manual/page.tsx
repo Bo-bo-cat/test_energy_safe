@@ -176,8 +176,6 @@ export default function ManualAddDevicePage() {
     }
   };
 
-  // ЗМІНА ТУТ: Логіка відображення підказки
-  // Підказка показується, якщо хоча б одне з ключових полів порожнє
   const showHint = !formData.name.trim() || !formData.category || !formData.power;
 
   return (
@@ -189,7 +187,6 @@ export default function ManualAddDevicePage() {
         <div className={styles['input-group']}>
           <label htmlFor="name" className={styles['label']}>{t.deviceManual.deviceName}</label>
           
-          {/* Динамічний інфо-блок */}
           {showHint && (
             <div className={styles['info-box']}>
               <svg className={styles['info-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -205,7 +202,8 @@ export default function ManualAddDevicePage() {
             </div>
           )}
 
-          <div className={styles['search-row']}>
+          {/* ДОДАНО: id="tour-smart-search" для підсвічування розумного пошуку */}
+          <div className={styles['search-row']} id="tour-smart-search">
             <input
               type="text"
               id="name"
