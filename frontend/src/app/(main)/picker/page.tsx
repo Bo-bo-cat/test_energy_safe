@@ -2,12 +2,11 @@
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
 
 import { CheckboxIcon } from '../../../components/icons/Checkbox';
 import { CheckboxCheckedIcon } from '../../../components/icons/Checkbox_checked';
 import { DeleteIcon } from '../../../components/icons/Delete'; 
-import { PenIcon } from '../../../components/icons/Pen'; 
+import { PenIcon } from '../../../components/icons/Pen'; // ІМПОРТ ІКОНКИ РЕДАГУВАННЯ
 import { SystemIcon } from '../../../components/icons/System'; 
 import { DecisionModal } from '../../../components/DecisionModal/DecisionModal';
 import { AddSystemModal } from '../../../components/AddSystemModal/AddSystemModal';
@@ -23,271 +22,389 @@ const cleanModelName = (name: string, fallback: string) => {
 
 export default function SystemsPage() {
   const { t, lang } = useTranslation();
-  const router = useRouter();
 
-  const [tab, setTab] = useState<'my' | 'recommended' | 'scenarios'>('my');
-  
+  const [tab, setTab] = useState<'my' | 'recommended'>('my');
   const [systems, setSystems] = useState<any[]>([]);
   const [recommended, setRecommended] = useState<any[]>([]);
-  const [scenarios, setScenarios] = useState<any[]>([]); 
-  
   const [query, setQuery] = useState('');
+  
   const [systemToDelete, setSystemToDelete] = useState<string | null>(null);
+  
+  // Стейт для створення
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [modalInitialData, setModalInitialData] = useState<{ model: string; power: string; battery: string } | null>(null);
+  
+  // ДОДАНО: Стейт для редагування існуючої системи
   const [editingSystem, setEditingSystem] = useState<any | null>(null);
+
   const [hiddenAutonomy, setHiddenAutonomy] = useState('');
   const [hiddenType, setHiddenType] = useState('ДБЖ / Власна збірка');
 
   useEffect(() => {
     fetchMySystems();
     fetchRecommended();
-    fetchScenarios();
   }, []);
 
   async function fetchMySystems() {
     const token = localStorage.getItem('access_token');
     if (!token) return;
     try {
-      const res = await fetch(`${API}/systems/my`, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.ok) setSystems(await res.json() || []);
-    } catch (err) { console.error(err); }
+      const res = await fetch(`${API}/systems/my`, { 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSystems(data || []);
+      }
+    } catch (err) { 
+      console.error(err); 
+    }
   }
 
   async function fetchRecommended() {
     try {
       const res = await fetch(`${API}/systems/recommended`);
-      if (res.ok) setRecommended(await res.json() || []);
-    } catch (err) { console.error(err); }
-  }
-
-  async function fetchScenarios() {
-    try {
-      const res = await fetch(`${API}/systems/recommended/all-scenarios`);
-      if (res.ok) setScenarios(await res.json() || []);
-    } catch (err) { console.error(err); }
-  }
-
-  const handleSaveScenario = async (scenario: any) => {
-    const token = localStorage.getItem('access_token');
-    if (!token) { toast.error(lang === 'uk' ? 'Будь ласка, авторизуйтесь' : 'Please log in'); return; }
-
-    const toastId = toast.loading(lang === 'uk' ? 'Збереження...' : 'Saving...');
-    try {
-      const sysRes = await fetch(`${API}/systems`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          model: scenario.system_model || 'Станція зі сценарію',
-          type: 'Портативна електростанція',
-          power: scenario.total_power_watts * 1.2, 
-          battery: scenario.autonomy_hours + "h capacity",
-          autonomy: scenario.autonomy_hours,
-          selected_for_calculation: true 
-        })
-      });
-      const savedSystem = await sysRes.json();
-
-      await fetch(`${API}/scenarios`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          name: scenario.name,
-          totalPowerWatts: scenario.total_power_watts,
-          autonomyHours: scenario.autonomy_hours,
-          selectedSystemId: savedSystem.id || savedSystem._id,
-          devicesSnapshot: scenario.devices.map((d: any) => ({ model_name: d.name, power_watts: d.power_watts, qty: 1 }))
-        })
-      });
-
-      toast.dismiss(toastId);
-      toast.success(lang === 'uk' ? 'Сценарій успішно додано!' : 'Scenario successfully added!');
-      router.push('/dashboard');
-    } catch (err) {
-      toast.dismiss(toastId);
-      toast.error(t.common.error || 'Помилка');
+      if (res.ok) {
+        const data = await res.json();
+        setRecommended(data || []);
+      }
+    } catch (err) { 
+      console.error(err); 
     }
-  };
+  }
 
   const handleAddByName = async () => {
     if (!query.trim()) return;
     const token = localStorage.getItem('access_token');
     if (!token) return;
+    
     const toastId = toast.loading(lang === 'uk' ? 'Пошук характеристик...' : 'Searching specs...');
+    
     try {
       const res = await fetch(`${API}/systems/parse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ model: query })
       });
+      
       if (res.ok) {
         const data = await res.json();
         setQuery('');
         toast.dismiss(toastId);
-        setModalInitialData({ model: data.model || query, power: data.power ? String(data.power) : '', battery: data.battery ? String(data.battery) : '' });
+        
+        setModalInitialData({
+          model: data.model || query,
+          power: data.power ? String(data.power) : '',
+          battery: data.battery ? String(data.battery) : ''
+        });
+        
         setHiddenAutonomy(data.autonomy || '');
         setHiddenType(data.type || 'ДБЖ / Власна збірка');
+        
         setIsCustomModalOpen(true);
       } else {
         toast.dismiss(toastId);
         toast.error(lang === 'uk' ? 'Систему не знайдено' : 'System not found');
       }
     } catch (err) { 
+      console.error(err); 
       toast.dismiss(toastId);
-      toast.error(t.common.error || 'Помилка');
+      toast.error(t.common.error);
     }
   };
 
-  const handleOpenEmptyModal = () => { setModalInitialData(null); setHiddenAutonomy(''); setHiddenType('ДБЖ / Власна збірка'); setIsCustomModalOpen(true); };
-  
-  const handleCreateCustomSystem = async (formData: any) => {
+  const handleOpenEmptyModal = () => {
+    setModalInitialData(null);
+    setHiddenAutonomy(''); 
+    setHiddenType('ДБЖ / Власна збірка');
+    setIsCustomModalOpen(true);
+  };
+
+  const handleCreateCustomSystem = async (formData: { model: string; power: string; battery: string }) => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
-    const res = await fetch(`${API}/systems`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ ...formData, power: Number(formData.power), type: hiddenType, autonomy: hiddenAutonomy || '-', selected_for_calculation: true }),
-    });
-    if (res.ok) { setIsCustomModalOpen(false); fetchMySystems(); toast.success(lang === 'uk' ? 'Систему збережено' : 'System saved'); }
+    
+    try {
+      const res = await fetch(`${API}/systems`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          ...formData,
+          power: Number(formData.power),
+          type: hiddenType,
+          autonomy: hiddenAutonomy || '-',
+          selected_for_calculation: true 
+        }),
+      });
+      
+      if (res.ok) {
+        setIsCustomModalOpen(false);
+        fetchMySystems();
+        toast.success(lang === 'uk' ? 'Систему збережено' : 'System saved');
+      } else {
+        toast.error(lang === 'uk' ? 'Помилка збереження системи' : 'Error saving system');
+      }
+    } catch (err) { 
+      console.error(err); 
+      toast.error(t.common.error);
+    }
   };
-  
-  const handleUpdateSystem = async (formData: any) => {
+
+  // ДОДАНО: Логіка оновлення існуючої системи
+  const handleUpdateSystem = async (formData: { model: string; power: string; battery: string }) => {
     if (!editingSystem) return;
     const token = localStorage.getItem('access_token');
-    const res = await fetch(`${API}/systems/${editingSystem.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ model: formData.model, power: Number(formData.power), battery: formData.battery }),
-    });
-    if (res.ok) { setEditingSystem(null); fetchMySystems(); toast.success(lang === 'uk' ? 'Систему оновлено' : 'System updated'); }
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API}/systems/${editingSystem.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          model: formData.model,
+          power: Number(formData.power),
+          battery: formData.battery
+        }),
+      });
+
+      if (res.ok) {
+        setEditingSystem(null);
+        fetchMySystems();
+        toast.success(lang === 'uk' ? 'Систему оновлено' : 'System updated');
+      } else {
+        toast.error(lang === 'uk' ? 'Помилка оновлення' : 'Update error');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(t.common.error);
+    }
   };
-  
+
   const handleAddRecommended = async (rec: any) => {
     const token = localStorage.getItem('access_token');
-    const res = await fetch(`${API}/systems`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ model: rec.model, type: rec.type, power: rec.power, battery: rec.battery, autonomy: rec.autonomy, selected_for_calculation: true }),
-    });
-    if (res.ok) { fetchMySystems(); toast.success(lang === 'uk' ? 'Систему додано' : 'System added'); }
+    if (!token) return;
+    try {
+      const res = await fetch(`${API}/systems`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          model: rec.model, 
+          type: rec.type, 
+          power: rec.power, 
+          battery: rec.battery, 
+          autonomy: rec.autonomy, 
+          selected_for_calculation: true 
+        }),
+      });
+      if (res.ok) {
+        fetchMySystems();
+        toast.success(lang === 'uk' ? 'Систему додано' : 'System added');
+      }
+    } catch (err) { 
+      console.error(err); 
+      toast.error(t.common.error);
+    }
   };
-  
+
   const confirmDelete = async () => {
     if (!systemToDelete) return;
+    const id = systemToDelete;
+    setSystemToDelete(null); 
+    setSystems(prev => prev.filter(s => s.id !== id));
+    
     const token = localStorage.getItem('access_token');
-    await fetch(`${API}/systems/${systemToDelete}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-    setSystemToDelete(null); fetchMySystems(); toast.success(lang === 'uk' ? 'Систему видалено' : 'System deleted');
+    if (!token) return;
+    
+    try {
+      await fetch(`${API}/systems/${id}`, { 
+        method: 'DELETE', 
+        headers: { Authorization: `Bearer ${token}` } 
+      });
+      toast.success(lang === 'uk' ? 'Систему видалено' : 'System deleted');
+    } catch (err) { 
+      console.error(err); 
+      fetchMySystems(); 
+      toast.error(t.common.error);
+    }
   };
-  
+
   const handleToggleSelect = async (id: string, currentState: boolean) => {
+    const newState = !currentState;
+    setSystems(prev => prev.map(s => s.id === id ? { ...s, selected_for_calculation: newState } : s));
+    
     const token = localStorage.getItem('access_token');
-    await fetch(`${API}/systems/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ selected_for_calculation: !currentState })
-    });
-    fetchMySystems();
+    if (!token) return;
+    
+    try {
+      await fetch(`${API}/systems/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ selected_for_calculation: newState })
+      });
+      if (newState) {
+        toast.success(lang === 'uk' ? 'Додано до розрахунку' : 'Added to calculation');
+      }
+    } catch (err) { 
+      console.error(err); 
+    }
   };
+
+  const displayedList = tab === 'my' ? systems : recommended;
 
   return (
     <div className="global-page-wrap">
-      <h1 className="page-title" style={{color: 'var(--accent-orange)'}}>Система</h1>
+      <h1 className="page-title">{tab === 'my' ? t.picker.titleMy : t.picker.titleRec}</h1>
 
       <div className={styles.tabs}>
-        <button className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`} onClick={() => setTab('my')}>
+        <button 
+          className={`${styles.tabBtn} ${tab === 'my' ? styles.active : ''}`} 
+          onClick={() => setTab('my')}
+        >
           {t.picker.tabMy}
         </button>
-        <button className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`} onClick={() => setTab('recommended')}>
+        <button 
+          className={`${styles.tabBtn} ${tab === 'recommended' ? styles.active : ''}`} 
+          onClick={() => setTab('recommended')}
+        >
           {t.picker.tabRec}
         </button>
-        <button className={`${styles.tabBtn} ${tab === 'scenarios' ? styles.active : ''}`} onClick={() => setTab('scenarios')}>
-          Рекомендовані сценарії
-        </button>
       </div>
 
-      <div className={styles.mainCard}>
-        {tab === 'my' && (
-          <>
-            <h2 className={styles.sectionTitle}>{t.picker.enterYours || 'Введіть вашу систему'}</h2>
-            <div className={styles.topControls}>
-              <input 
-                type="text" className={styles.addInput} placeholder={t.picker.inputPlaceholder || 'Наприклад: EcoFlow'} 
-                value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
-              />
-              <button className={styles.addBtn} onClick={handleAddByName}>{t.picker?.findSystem || 'Знайти систему'}</button>
-              <button className={styles.customSysBtn} onClick={handleOpenEmptyModal}>{t.picker?.addCustomSystem || 'Додати свою систему'}</button>
+      {tab === 'my' && (
+        <>
+          <h2 className={styles.sectionTitle}>{t.picker.enterYours}</h2>
+          <div className={styles.topControls}>
+            <input 
+              type="text" 
+              className={styles.addInput} 
+              placeholder={t.picker.inputPlaceholder} 
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddByName()}
+            />
+            <button className={styles.addBtn} onClick={handleAddByName}>
+              {t.picker?.findSystem || 'Знайти систему'}
+            </button>
+            <button className={styles.customSysBtn} onClick={handleOpenEmptyModal}>
+              {t.picker?.addCustomSystem || 'Додати свою систему'}
+            </button>
+          </div>
+        </>
+      )}
+
+      {displayedList.length === 0 ? (
+        <div className={styles['empty-state']}>
+          <div className={styles['empty-icon-wrap']}>
+            <SystemIcon className={styles['empty-svg']} />
+          </div>
+          <h3 className={styles['empty-title']}>
+            {tab === 'my' 
+              ? (lang === 'uk' ? 'Немає систем' : 'No systems found') 
+              : (lang === 'uk' ? 'Немає рекомендацій' : 'No recommendations')}
+          </h3>
+          <p className={styles['empty-desc']}>
+            {tab === 'my' 
+              ? (lang === 'uk' ? 'Ви ще не додали жодної системи резервного живлення. Знайдіть її в базі або додайте вручну.' : 'You haven\'t added any power systems yet. Find one in the database or add manually.') 
+              : (lang === 'uk' ? 'Завантаження списку рекомендованих систем...' : 'Loading recommendations list...')}
+          </p>
+        </div>
+      ) : (
+        <div className={styles.grid}>
+          {displayedList.map((item) => (
+            <div key={item.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model)}</div>
+                
+                <div className={styles.cardActions}>
+                  {tab === 'my' ? (
+                    <>
+                      {/* ДОДАНО: Кнопка редагування */}
+                      <button className={styles.iconBtn} onClick={() => setEditingSystem(item)}>
+                        <PenIcon className={styles.actionIconGray} />
+                      </button>
+                      <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}>
+                        <DeleteIcon className={styles.actionIconOrange} />
+                      </button>
+                    </>
+                  ) : (
+                    <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}>
+                      <span className={styles.plusIconTop}>+</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.specs}>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.type}</span>
+                  <span className={styles.specValue}>{item.type}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.power}</span>
+                  <span className={styles.specValue}>{item.power} {t.common.w}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.battery}</span>
+                  <span className={styles.specValue}>{item.battery}</span>
+                </div>
+                <div className={styles.specRow}>
+                  <span className={styles.specLabel}>{t.common.autonomy}</span>
+                  <span className={styles.specValue}>{item.autonomy}</span>
+                </div>
+              </div>
+
+              {tab === 'my' && (
+                <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
+                  <span className={styles.calcLabel}>
+                    {item.selected_for_calculation 
+                      ? (lang === 'uk' ? 'Прибрати з розрахунку' : 'Remove from calculation') 
+                      : t.picker.addToCalc}
+                  </span>
+                  <button className={styles.iconBtn}>
+                    {item.selected_for_calculation ? (
+                      <CheckboxCheckedIcon className={styles.actionIconOrange} />
+                    ) : (
+                      <CheckboxIcon className={styles.actionIconOrange} />
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
+          ))}
+        </div>
+      )}
 
-            {systems.length === 0 ? (
-              <div className={styles['empty-state']}>
-                <div className={styles['empty-icon-wrap']}><SystemIcon className={styles['empty-svg']} /></div>
-                <h3 className={styles['empty-title']}>{lang === 'uk' ? 'Немає систем' : 'No systems'}</h3>
-                <p className={styles['empty-desc']}>{lang === 'uk' ? 'Ви ще не додали жодної системи. Знайдіть її в базі або додайте вручну.' : 'Add your first system.'}</p>
-              </div>
-            ) : (
-              <div className={styles.grid}>
-                {systems.map((item) => (
-                  <div key={item.id} className={styles.card}>
-                    <div className={styles.cardHeader}>
-                      <div className={styles.cardTitle}>{cleanModelName(item.model, t.common.model || 'Модель')}</div>
-                      <div className={styles.cardActions}>
-                        <button className={styles.iconBtn} onClick={() => setEditingSystem(item)}><PenIcon className={styles.actionIconGray} /></button>
-                        <button className={styles.iconBtn} onClick={() => setSystemToDelete(item.id)}><DeleteIcon className={styles.actionIconOrange} /></button>
-                      </div>
-                    </div>
-                    <div className={styles.specs}>
-                      <div className={styles.specRow}><span className={styles.specLabel}>{t.common.power || 'Потужність'}</span><span className={styles.specValue}>{item.power} Вт</span></div>
-                      <div className={styles.specRow}><span className={styles.specLabel}>{t.common.battery || 'Батарея'}</span><span className={styles.specValue}>{item.battery}</span></div>
-                    </div>
-                    <div className={styles.calcRow} onClick={() => handleToggleSelect(item.id, item.selected_for_calculation)}>
-                      <span className={styles.calcLabel}>{item.selected_for_calculation ? 'У розрахунку' : t.picker.addToCalc || 'Додати до розрахунку'}</span>
-                      {item.selected_for_calculation ? <CheckboxCheckedIcon className={styles.actionIconOrange} /> : <CheckboxIcon className={styles.actionIconGray} />}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+      {tab === 'recommended' && displayedList.length > 0 && (
+        <div className={styles.hintBox}>
+          <div className={styles.hintTitle}>{t.picker.hintTitle}</div>
+          <div className={styles.hintText}>{t.picker.hintText}</div>
+        </div>
+      )}
 
-        {tab === 'recommended' && (
-          <div className={styles.grid}>
-            {recommended.map((item) => (
-              <div key={item.id} className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.cardTitle}>{item.model}</div>
-                  <button className={styles.iconBtn} onClick={() => handleAddRecommended(item)}><span className={styles.plusIconTop}>+</span></button>
-                </div>
-                <div className={styles.specs}>
-                  <div className={styles.specRow}><span className={styles.specLabel}>{t.common.power || 'Потужність'}</span><span className={styles.specValue}>{item.power} Вт</span></div>
-                  <div className={styles.specRow}><span className={styles.specLabel}>{t.common.battery || 'Батарея'}</span><span className={styles.specValue}>{item.battery}</span></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* УНІВЕРСАЛЬНА МОДАЛКА (працює і для створення, і для редагування) */}
+      <AddSystemModal 
+        isOpen={isCustomModalOpen || editingSystem !== null} 
+        onClose={() => {
+          setIsCustomModalOpen(false);
+          setEditingSystem(null);
+        }} 
+        onSave={editingSystem ? handleUpdateSystem : handleCreateCustomSystem} 
+        initialData={
+          editingSystem 
+            ? { model: editingSystem.model, power: String(editingSystem.power), battery: editingSystem.battery } 
+            : modalInitialData
+        }
+        title={editingSystem ? (lang === 'uk' ? 'Редагувати систему' : 'Edit system') : undefined}
+      />
 
-        {tab === 'scenarios' && (
-          <div className={styles.scenariosGrid}>
-            {scenarios.map((scen, idx) => (
-              <div key={idx} className={styles.scenarioCard}>
-                <div className={styles.scenHeader}>
-                  <div className={styles.scenTitle}>{scen.name}</div>
-                  <div className={styles.scenBadge}>~{scen.autonomy_hours} год</div>
-                </div>
-                <p className={styles.scenDevices}>{scen.devices?.map((d: any) => d.name).join(', ')}</p>
-                <div className={styles.scenFooter}>
-                   <span className={styles.scenPower}>{scen.total_power_watts} Вт</span>
-                   <button className={styles.orangeBtnFull} onClick={() => handleSaveScenario(scen)}>Додати цей сценарій</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <AddSystemModal isOpen={isCustomModalOpen || editingSystem !== null} onClose={() => { setIsCustomModalOpen(false); setEditingSystem(null); }} onSave={editingSystem ? handleUpdateSystem : handleCreateCustomSystem} initialData={editingSystem ? { model: editingSystem.model, power: String(editingSystem.power), battery: editingSystem.battery } : modalInitialData} title={editingSystem ? 'Редагувати систему' : undefined} />
-      <DecisionModal isOpen={systemToDelete !== null} onClose={() => setSystemToDelete(null)} onConfirm={confirmDelete} title={t.picker.deleteSystem || 'Видалити систему?'} confirmText={t.common.yes || 'Так'} cancelText={t.common.no || 'Ні'} />
+      <DecisionModal 
+        isOpen={systemToDelete !== null}
+        onClose={() => setSystemToDelete(null)}
+        onConfirm={confirmDelete}
+        title={t.picker.deleteSystem}
+        confirmText={t.common.yes}
+        cancelText={t.common.no}
+      />
     </div>
   );
 }
