@@ -109,9 +109,8 @@ export default function ProfilePage() {
     try {
       const formData = new FormData();
       formData.append('message', feedbackText);
-      formData.append('email', user.email); // Передаємо email юзера для зворотного зв'язку
+      formData.append('email', user.email);
 
-      // Відправка на бекенд (бекенд вже має відправити це на energyappsf@gmail.com)
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/`, {
         method: 'POST',
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -157,7 +156,6 @@ export default function ProfilePage() {
       ) : (
         <div className={styles.profileLayout}>
           
-          {/* ЛІВА КОЛОНКА */}
           <div className={styles.leftColumn}>
             <div className={styles.profileHeader}>
               <div className={styles.avatar} style={{ backgroundColor: avatarColor }}>
@@ -191,7 +189,8 @@ export default function ProfilePage() {
                 {(t.profile as any)?.changePassword || 'Змінити пароль'}
               </button>
 
-              <button className={styles.faqBtn} onClick={() => router.push('/faq')}>
+              {/* ДОДАНО: id="tour-profile-faq" для інтерактивного туру */}
+              <button id="tour-profile-faq" className={styles.faqBtn} onClick={() => router.push('/faq')}>
                 {lang === 'uk' ? 'Відповіді на часті запитання (FAQ)' : 'Frequently Asked Questions (FAQ)'}
               </button>
 
@@ -214,7 +213,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ПРАВА КОЛОНКА */}
           <div className={`${styles.rightColumn} ${isMobileSupportOpen ? styles.mobileOpen : ''}`}>
             <div className={styles.mobileBackdrop} onClick={() => setIsMobileSupportOpen(false)}></div>
             

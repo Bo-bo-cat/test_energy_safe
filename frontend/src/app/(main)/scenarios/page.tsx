@@ -167,7 +167,7 @@ export default function ScenariosPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {scenarios.map(scenario => {
+          {scenarios.map((scenario, idx) => {
             const powerWatts = scenario.totalPowerWatts || scenario.total_power_watts || 0;
             const autonomyHours = scenario.autonomyHours || scenario.duration_hours || 0;
             const loadPercent = scenario.loadPercent || scenario.load_percent || 0;
@@ -194,7 +194,9 @@ export default function ScenariosPage() {
                     >
                       <PenIcon />
                     </button>
+                    {/* ДОДАНО: id для react-joyride ТІЛЬКИ на перший елемент списку */}
                     <span 
+                      id={idx === 0 ? "tour-open-scenario" : undefined}
                       className={styles.infoMarker}
                       onClick={(e) => handleOpenInfo(e, scenario)}
                       title={lang === 'uk' ? 'Деталі сценарію' : 'Scenario details'}

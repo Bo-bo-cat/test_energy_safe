@@ -327,9 +327,9 @@ export default function DevicesPage() {
             )}
           </div>
 
-          {/* ДЕСКТОПНА КНОПКА (ховається на мобілці) */}
+          {/* ДОДАНО: id="tour-add-device" */}
           {hasDevices && (
-            <button onClick={() => setIsAddModalOpen(true)} className={`${styles['add-btn']} ${styles['desktop-add-btn']}`}>
+            <button id="tour-add-device" onClick={() => setIsAddModalOpen(true)} className={`${styles['add-btn']} ${styles['desktop-add-btn']}`}>
               {lang === 'uk' ? 'Додати прилад' : 'Add device'}
             </button>
           )}
@@ -499,12 +499,12 @@ export default function DevicesPage() {
 
       {/* МОБІЛЬНА КНОПКА (ховається на десктопі, завжди знизу екрана) */}
       {hasDevices && (
-  <div className={styles['mobile-add-container']}>
-    <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
-      {lang === 'uk' ? 'Додати прилад' : 'Add device'}
-    </button>
-  </div>
-)}
+        <div className={styles['mobile-add-container']}>
+          <button onClick={() => setIsAddModalOpen(true)} className={styles['add-btn']}>
+            {lang === 'uk' ? 'Додати прилад' : 'Add device'}
+          </button>
+        </div>
+      )}
 
       {/* Модалка видалення */}
       <DecisionModal 
