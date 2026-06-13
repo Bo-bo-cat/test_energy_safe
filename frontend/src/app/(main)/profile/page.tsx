@@ -27,8 +27,8 @@ export default function ProfilePage() {
   const [showNameModal, setShowNameModal] = useState(false);
   const [showPassModal, setShowPassModal] = useState(false);
 
-  // === Стейт для мобільної модалки підтримки ===
   const [isMobileSupportOpen, setIsMobileSupportOpen] = useState(false);
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   // === Стейт для форми зворотного зв'язку ===
   const [feedbackText, setFeedbackText] = useState('');
@@ -195,6 +195,10 @@ export default function ProfilePage() {
                 {lang === 'uk' ? 'Відповіді на часті запитання (FAQ)' : 'Frequently Asked Questions (FAQ)'}
               </button>
 
+              <button className={styles.supportBtn} onClick={() => setShowSupportModal(true)}>
+                {lang === 'uk' ? '❤️ Підтримати нас' : '❤️ Support Us'}
+              </button>
+
               <button className={styles.supportBtnMobile} onClick={() => setIsMobileSupportOpen(true)}>
                 {lang === 'uk' ? 'Служба підтримки' : 'Support Team'}
               </button>
@@ -290,6 +294,37 @@ export default function ProfilePage() {
         confirmText={(t.common as any)?.delete || 'Видалити'}
         cancelText={(t.common as any)?.no || 'Ні'}
       />
+
+      {showSupportModal && (
+        <div className={styles.supportOverlay} onClick={() => setShowSupportModal(false)}>
+          <div className={styles.supportModal} onClick={e => e.stopPropagation()}>
+            <button className={styles.supportModalClose} onClick={() => setShowSupportModal(false)}>✕</button>
+            <p className={styles.supportModalTitle}>
+              {lang === 'uk' ? '❤️ Підтримати нас' : '❤️ Support Us'}
+            </p>
+            <p className={styles.supportModalDesc}>
+              {lang === 'uk'
+                ? 'Скануй QR-код або натисни кнопку, щоб підтримати розвиток Energy Safe через Monobank'
+                : 'Scan the QR code or tap the button to support Energy Safe via Monobank'}
+            </p>
+            <div className={styles.qrWrap}>
+              <img
+                src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=https%3A%2F%2Fsend.monobank.ua%2Fjar%2F4NtaqVTLTB&choe=UTF-8`}
+                alt="QR Monobank"
+              />
+            </div>
+            <a
+              href="https://send.monobank.ua/jar/4NtaqVTLTB"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.supportModalLink}
+              onClick={() => setShowSupportModal(false)}
+            >
+              {lang === 'uk' ? 'Відкрити банку' : 'Open donation link'}
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
