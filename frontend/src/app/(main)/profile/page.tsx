@@ -196,7 +196,7 @@ export default function ProfilePage() {
               </button>
 
               <button className={styles.supportBtn} onClick={() => setShowSupportModal(true)}>
-                {lang === 'uk' ? '❤️ Підтримати нас' : '❤️ Support Us'}
+                {lang === 'uk' ? 'Підтримати нас ❤️' : 'Support Us ❤️'}
               </button>
 
               <button className={styles.supportBtnMobile} onClick={() => setIsMobileSupportOpen(true)}>
@@ -300,7 +300,7 @@ export default function ProfilePage() {
           <div className={styles.supportModal} onClick={e => e.stopPropagation()}>
             <button className={styles.supportModalClose} onClick={() => setShowSupportModal(false)}>✕</button>
             <p className={styles.supportModalTitle}>
-              {lang === 'uk' ? '❤️ Підтримати нас' : '❤️ Support Us'}
+              {lang === 'uk' ? 'Підтримати нас ❤️' : 'Support Us ❤️'}
             </p>
             <p className={styles.supportModalDesc}>
               {lang === 'uk'
@@ -309,8 +309,10 @@ export default function ProfilePage() {
             </p>
             <div className={styles.qrWrap}>
               <img
-                src={`https://chart.googleapis.com/chart?chs=180x180&cht=qr&chl=https%3A%2F%2Fsend.monobank.ua%2Fjar%2F4NtaqVTLTB&choe=UTF-8`}
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://send.monobank.ua/jar/4NtaqVTLTB"
                 alt="QR Monobank"
+                width={180}
+                height={180}
               />
             </div>
             <a
