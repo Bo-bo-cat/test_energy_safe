@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './layout.module.css';
-import { Toaster } from 'react-hot-toast'; // ДОДАНО: Імпорт Toaster
+import { Toaster } from 'react-hot-toast'; 
 
 import { LightningIcon } from '../../components/icons/Lightning';
 import { HomeIcon } from '../../components/icons/Home';
@@ -40,13 +40,14 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // ДОДАНО: властивість tourId для інтерактивного онбордингу
   const navItems = [
-    { href: '/dashboard', label: t.sidebar.home, Icon: HomeIcon },
-    { href: '/devices', label: t.sidebar.devices, Icon: DeviceIcon },
-    { href: '/calculator', label: t.sidebar.calculator, Icon: CalcIcon },
-    { href: '/scenarios', label: t.sidebar.scenarios, Icon: ScenarioIcon },
-    { href: '/picker', label: t.sidebar.system, Icon: SystemIcon }, 
-    { href: '/profile', label: t.sidebar.profile, Icon: ProfileIcon },
+    { href: '/dashboard', label: t.sidebar.home, Icon: HomeIcon, tourId: 'tour-nav-home' },
+    { href: '/devices', label: t.sidebar.devices, Icon: DeviceIcon, tourId: 'tour-nav-devices' },
+    { href: '/calculator', label: t.sidebar.calculator, Icon: CalcIcon, tourId: 'tour-nav-calculator' },
+    { href: '/scenarios', label: t.sidebar.scenarios, Icon: ScenarioIcon, tourId: 'tour-nav-scenarios' },
+    { href: '/picker', label: t.sidebar.system, Icon: SystemIcon, tourId: 'tour-nav-systems' }, 
+    { href: '/profile', label: t.sidebar.profile, Icon: ProfileIcon, tourId: 'tour-nav-profile' },
   ];
 
   const handleLogout = () => {
@@ -66,7 +67,6 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles['layout-container']}>
       <aside className={styles['sidebar']}>
-        {/* ... (Ваш попередній код сайдбару залишається без змін) ... */}
         <div className={styles['logo-container']}>
           <LightningIcon className={styles['logo-icon']} />
           <div className={styles['logo-text']}>Energy Safe</div>
@@ -80,6 +80,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
               <Link 
                 key={item.href} 
                 href={item.href} 
+                id={item.tourId} /* ДОДАНО: ID для react-joyride */
                 className={`${styles['nav-link']} ${isActive ? styles['nav-link-active'] : ''}`}
               >
                 <div className={styles['icon-wrapper']}>
@@ -122,7 +123,6 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 
       <InstallPrompt />
       
-      {/* ДОДАНО: Глобальний Toaster для нотифікацій */}
       <Toaster 
         position="bottom-center"
         toastOptions={{
