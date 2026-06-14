@@ -165,34 +165,26 @@ export const OnboardingTour = () => {
       run={run}
       continuous={true}
       callback={handleJoyrideCallback}
+      
       {...({
         showProgress: true,
-        showSkipButton: true,
+        showSkipButton: true, /* <--- ВАЖЛИВО */
         disableOverlayClose: true,
       } as any)}
+
       styles={{
         options: {
           primaryColor: '#FF6B00',
           textColor: '#111827',
           backgroundColor: '#FFFFFF',
-          overlayColor: 'rgba(17, 24, 39, 0.6)', /* М'якший темний фон */
+          overlayColor: 'rgba(17, 24, 39, 0.6)',
           zIndex: 10000,
         },
         tooltip: {
-          fontFamily: 'inherit', /* Підтягує ваш шрифт */
-          borderRadius: '16px',  /* Заокруглення як у ваших карток */
+          fontFamily: 'inherit',
+          borderRadius: '16px',
           padding: '24px',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
-        },
-        tooltipContainer: {
-          textAlign: 'left',
-          fontFamily: 'inherit',
-        },
-        tooltipContent: {
-          fontFamily: 'inherit',
-          fontSize: '15px',
-          padding: '10px 0',
-          lineHeight: '1.5',
         },
         buttonNext: {
           backgroundColor: '#FF6B00',
@@ -202,7 +194,6 @@ export const OnboardingTour = () => {
           fontFamily: 'inherit',
           padding: '10px 20px',
           border: 'none',
-          outline: 'none',
         },
         buttonBack: {
           color: '#6B7280',
@@ -210,6 +201,7 @@ export const OnboardingTour = () => {
           fontWeight: 600,
           marginRight: '16px',
         },
+        /* 2. СТИЛІЗУЄМО КНОПКУ ПРОПУСКУ */
         buttonSkip: {
           color: '#9CA3AF',
           fontFamily: 'inherit',
@@ -217,9 +209,11 @@ export const OnboardingTour = () => {
           fontSize: '14px',
         }
       } as any}
+      
+      /* 3. ДОДАЄМО ПЕРЕКЛАД */
       locale={{
         last: lang === 'uk' ? 'Зрозуміло' : 'Got it',
-        skip: lang === 'uk' ? 'Пропустити' : 'Skip',
+        skip: lang === 'uk' ? 'Пропустити' : 'Skip', /* <--- ТЕКСТ КНОПКИ */
         next: lang === 'uk' ? 'Далі' : 'Next',
         back: lang === 'uk' ? 'Назад' : 'Back'
       }}
